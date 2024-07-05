@@ -59,11 +59,11 @@ const handleClear = async () => {
   options.value = initialItems.value
   emit('click:clear')
 }
-const removeDuplicates = (array:any) => {
+const removeDuplicates = (array: any) => {
   const uniqueIds = new Set()
-  return array.filter((item:any) => {
-    if (!uniqueIds.has(item.id)) {
-      uniqueIds.add(item.id)
+  return array.filter((item: any) => {
+    if (!uniqueIds.has(item[props.itemValue])) {
+      uniqueIds.add(item[props.itemValue])
       return true
     }
     return false
@@ -80,9 +80,9 @@ watch(innerSearch, async (searchValue: string) => {
         return item[key].toLowerCase().includes(searchValue.toLowerCase())
       })
     })
-  if (props.checkDuplicate==true) {
-    options.value = removeDuplicates(options.value)
-  }
+    if (props.checkDuplicate == true) {
+      options.value = removeDuplicates(options.value)
+    }
     options.value = filteredItems
 
     // options.value = []
@@ -128,12 +128,9 @@ watch(
 )
 
 onMounted(() => {
-
   selected.value = null
-  if(props.checkDuplicate==true){
+  if (props.checkDuplicate == true) {
     options.value = removeDuplicates(options.value)
-
-    
   }
 
   if (props.modelValue) {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormLayoutType } from '~/types/FormLayoutType'
+import type { FormLayoutType, LoadingsType } from '~/types/FormLayoutType'
 import type { PermissionType } from '~/types/PermissionType'
 
 type TProps = {
@@ -15,32 +15,46 @@ const defaultProps: TProps = {
       create: {
         show: false,
         cta: 'Create New',
+        activateLoading: false,
+        isLoadingDefault: true,
         path: '' // /purchase/purchase-order/create
       },
       save: {
         show: true,
         cta: 'Create & Save',
+        activateLoading: true,
+        isLoadingDefault: true,
         type: 'submit'
       },
       cancel: {
         show: true,
-        cta: 'Cancel'
+        cta: 'Cancel',
+        activateLoading: false,
+        isLoadingDefault: true
       },
       pdf: {
         show: false,
-        cta: 'Download PDF'
+        cta: 'Download PDF',
+        activateLoading: true,
+        isLoadingDefault: true
       },
       csv: {
         show: false,
-        cta: 'Download CSV'
+        cta: 'Download CSV',
+        activateLoading: true,
+        isLoadingDefault: true
       },
       duplicate: {
         show: false,
-        cta: 'Duplicate'
+        cta: 'Duplicate',
+        activateLoading: true,
+        isLoadingDefault: true
       },
       clear: {
         show: false,
-        cta: 'Clear'
+        cta: 'Clear',
+        activateLoading: true,
+        isLoadingDefault: true
       }
     },
     tabs: [],
@@ -72,7 +86,12 @@ const emits = defineEmits([
   'update:currentTab',
   'update:triggerLayout',
   'click:duplicate',
-  'click:clear'
+  'click:clear',
+  'click:save:loading',
+  'click:pdf:loading',
+  'click:csv:loading',
+  'click:duplicate:loading',
+  'click:clear:loading'
 ])
 
 const router = useRouter()
@@ -193,6 +212,12 @@ watch(
   { deep: true, immediate: true }
 )
 
+const localLoadingsState = ref<LoadingsType>({
+  pdf: false,
+  csv: false,
+  save: false
+})
+
 onMounted(() => {
   document.body.style.overflowY = 'hidden'
 
@@ -209,7 +234,7 @@ watchEffect(() => {
 
     mergedConfig.value.button = mergedConfig.value.button ?? {}
     mergedConfig.value.button.save = mergedConfig.value.button.save ?? {}
-    mergedConfig.value.button.save.cta = 'Save Change'
+    mergedConfig.value.button.save.cta = 'Update'
   }
 
   if (mergedConfig.value.triggerLayout) {
@@ -220,6 +245,13 @@ watchEffect(() => {
   }
 })
 
+// watch(
+//   () => mergedConfig.value.button.pdf?.loading,
+//   (newValue, oldValue) => {
+//     console.log(newValue, oldValue, 'pdf loading formLayout')
+//   }
+// )
+
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updateHeight)
 })
@@ -227,10 +259,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="flex h-[52rem] flex-col gap-5"
+    class="flex h-[80vh] flex-col gap-5"
     @click="updateHeight"
     v-if="isAllowed"
   >
+    <slot name="top" v-if="slots.top" />
     <slot name="action"></slot>
     <div
       v-if="!!mergedConfig.isAction"
@@ -250,14 +283,18 @@ onBeforeUnmount(() => {
           <d-button
             v-if="mergedConfig.button?.create?.show"
             :cta="mergedConfig?.button?.create?.cta ?? 'Create New'"
-            :class="[
-              'rounded-none bg-[#4094D4] transition-all ease-in-out hover:!bg-[#3882ba]',
-              mergedConfig.button?.create?.class ?? ''
-            ]"
-            :text-class="[
-              '!text-white mx-auto',
-              mergedConfig.button?.create?.textClass ?? ''
-            ]"
+            :class="
+              classMerge(
+                'rounded-none bg-[#4094D4] transition-all ease-in-out hover:!bg-[#3882ba]',
+                mergedConfig.button?.create?.class ?? ''
+              )
+            "
+            :text-class="
+              classMerge(
+                'text-white mx-auto !font-bold',
+                mergedConfig.button?.create?.textClass ?? ''
+              )
+            "
             :no-icon="true"
             type="submit"
             @click="handleClickCreate"
@@ -266,37 +303,53 @@ onBeforeUnmount(() => {
           <d-button
             v-if="mergedConfig.button?.save?.show"
             :cta="mergedConfig?.button?.save?.cta ?? 'Save Change'"
-            :class="[
-              'rounded-none !border border-[#4094D4] transition-all ease-in-out hover:bg-sky-50',
-              {
-                '!bg-[#4094D4] hover:!bg-[#3882ba]':
+            :class="
+              classMerge(
+                'rounded-none !border border-solid border-[#4094D4] text-white transition-all ease-in-out hover:bg-sky-50',
+                `${
                   mergedConfig.mode == 'create'
-              } as any,
-              mergedConfig.button?.save?.class ?? ''
-            ]"
-            :text-class="[
-              'text-[#4094D4] mx-auto',
-              {
-                'text-white': mergedConfig.mode == 'create'
-              } as any,
-              mergedConfig.button?.save?.textClass ?? ''
-            ]"
+                    ? '!bg-[#4094D4] hover:!bg-[#3882ba]'
+                    : ''
+                }`,
+                mergedConfig.button?.save?.class ?? ''
+              )
+            "
+            :text-class="
+              classMerge(
+                'text-[#4094D4] mx-auto',
+                mergedConfig.button?.save?.textClass ?? '',
+                `${mergedConfig.mode == 'create' ? '!text-white' : ''}`
+              )
+            "
+            :loading="props.config.button?.save?.loading"
+            :activate-loading="mergedConfig.button?.save?.activateLoading"
+            :is-loading-default="mergedConfig.button?.save?.isLoadingDefault"
             :no-icon="true"
             type="submit"
             @click="handleClickSave"
+            @click:loading="emits('click:save:loading', $event)"
           />
 
           <d-button
             v-if="mergedConfig.button?.duplicate?.show"
             :cta="mergedConfig?.button?.duplicate?.cta ?? 'Duplicate'"
-            :class="[
-              'rounded-none bg-zinc-200 transition-all ease-in-out hover:!bg-zinc-300',
-              mergedConfig.button?.duplicate?.class ?? ''
-            ]"
-            :text-class="[
-              'text-black mx-auto',
-              mergedConfig.button?.duplicate?.textClass ?? ''
-            ]"
+            :class="
+              classMerge(
+                'rounded-none bg-zinc-200 transition-all ease-in-out hover:!bg-zinc-300',
+                mergedConfig.button?.duplicate?.class ?? ''
+              )
+            "
+            :text-class="
+              classMerge(
+                'text-zinc-800 mx-auto',
+                mergedConfig.button?.duplicate?.textClass ?? ''
+              )
+            "
+            :loading="props.config.button?.duplicate?.loading"
+            :activate-loading="mergedConfig.button?.duplicate?.activateLoading"
+            :is-loading-default="
+              mergedConfig.button?.duplicate?.isLoadingDefault
+            "
             :no-icon="true"
             type="submit"
             @click="handleClickDuplicate"
@@ -304,47 +357,71 @@ onBeforeUnmount(() => {
           <d-button
             v-if="mergedConfig.button?.pdf?.show"
             :cta="mergedConfig?.button?.pdf?.cta ?? 'Download PDF'"
-            :class="[
-              'rounded-none bg-zinc-200 transition-all ease-in-out hover:!bg-zinc-300',
-              mergedConfig.button?.pdf?.class ?? ''
-            ]"
-            :text-class="[
-              'text-black mx-auto',
-              mergedConfig.button?.pdf?.textClass ?? ''
-            ]"
+            :class="
+              classMerge(
+                'rounded-none bg-zinc-200 transition-all ease-in-out hover:!bg-zinc-300',
+                mergedConfig.button?.pdf?.class ?? ''
+              )
+            "
+            :text-class="
+              classMerge(
+                'text-zinc-800 mx-auto',
+                mergedConfig.button?.pdf?.textClass ?? ''
+              )
+            "
+            :loading="props.config.button?.pdf?.loading"
+            :activate-loading="mergedConfig.button?.pdf?.activateLoading"
+            :is-loading-default="mergedConfig.button?.pdf?.isLoadingDefault"
             :no-icon="true"
             type="submit"
             @click="handleClickPdf"
+            @click:loading="emits('click:pdf:loading', $event)"
           />
           <d-button
             v-if="mergedConfig.button?.csv?.show"
             :cta="mergedConfig?.button?.csv?.cta ?? 'Download CSV'"
-            :class="[
-              'rounded-none bg-emerald-200 transition-all ease-in-out hover:!bg-emerald-300',
-              mergedConfig.button?.csv?.class ?? ''
-            ]"
-            :text-class="[
-              'text-black mx-auto',
-              mergedConfig.button?.csv?.textClass ?? ''
-            ]"
+            :class="
+              classMerge(
+                'rounded-none bg-emerald-200 transition-all ease-in-out hover:!bg-emerald-300',
+                mergedConfig.button?.csv?.class ?? ''
+              )
+            "
+            :text-class="
+              classMerge(
+                'text-zinc-800 mx-auto',
+                mergedConfig.button?.csv?.textClass ?? ''
+              )
+            "
+            :loading="props.config.button?.csv?.loading"
+            :activate-loading="mergedConfig.button?.csv?.activateLoading"
+            :is-loading-default="mergedConfig.button?.csv?.isLoadingDefault"
             :no-icon="true"
             type="submit"
             @click="handleClickCsv"
+            @click:loading="emits('click:csv:loading', $event)"
           />
           <d-button
             v-if="mergedConfig.button?.clear?.show"
             :cta="mergedConfig?.button?.clear?.cta ?? 'Clear'"
-            :class="[
-              'rounded-none bg-zinc-200 transition-all ease-in-out hover:!bg-zinc-300',
-              mergedConfig.button?.clear?.class ?? ''
-            ]"
-            :text-class="[
-              'text-black mx-auto',
-              mergedConfig.button?.clear?.textClass ?? ''
-            ]"
+            :class="
+              classMerge(
+                'rounded-none bg-zinc-200 transition-all ease-in-out hover:!bg-zinc-300',
+                mergedConfig.button?.clear?.class ?? ''
+              )
+            "
+            :text-class="
+              classMerge(
+                'text-zinc-800 mx-auto',
+                mergedConfig.button?.clear?.textClass ?? ''
+              )
+            "
+            :loading="props.config.button?.clear?.loading"
+            :activate-loading="mergedConfig.button?.clear?.activateLoading"
+            :is-loading-default="mergedConfig.button?.clear?.isLoadingDefault"
             :no-icon="true"
             type="submit"
             @click="handleClickClear"
+            @click:loading="emits('click:clear:loading', $event)"
           />
           <d-back
             v-if="mergedConfig.parentPath || mergedConfig.button?.cancel?.show"
@@ -390,12 +467,13 @@ onBeforeUnmount(() => {
         ref="contentlayout"
         class="p-1"
         @resize="updateHeight"
-        :class="['max-h-[28rem] overflow-y-auto', mergedConfig.contentClass]"
+        :class="['max-h-[50vh] overflow-y-auto', mergedConfig.contentClass]"
       >
         <slot name="content" />
         <slot></slot>
       </div>
     </div>
+    <slot name="bottom" v-if="slots.bottom" />
   </div>
 
   <div v-else>

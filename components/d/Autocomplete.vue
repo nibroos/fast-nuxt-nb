@@ -104,6 +104,7 @@ watch(innerSearch, async (searchValue: string) => {
         .post(props.api, queryObject.value)
         .finally(() => {
           loadingSearch.value = false
+          isInitialLoad.value = false
         })
     } else {
       apiUrl = `${props.api}?${queryString.value}&page=${page.value}`
@@ -111,6 +112,7 @@ watch(innerSearch, async (searchValue: string) => {
         .get(apiUrl)
         .finally(() => {
           loadingSearch.value = false
+          isInitialLoad.value = false
         })
     }
 
@@ -191,7 +193,7 @@ const getList = async () => {
     response = await useMyFetch().get(apiUrl)
   }
 
-  console.log('status code', statusCode)
+  isInitialLoad.value = false
 
   if (statusCode !== 200) {
     loadingData.value = false
@@ -219,9 +221,9 @@ const getList = async () => {
   loadingData.value = false
 }
 
-const removeDuplicates = (array:any) => {
+const removeDuplicates = (array: any) => {
   const uniqueIds = new Set()
-  return array.filter((item:any) => {
+  return array.filter((item: any) => {
     if (!uniqueIds.has(item.id)) {
       uniqueIds.add(item.id)
       return true
@@ -470,6 +472,18 @@ watch(
           :start-align="props.startAlignDisplay"
         />
       </span>
+    </template>
+
+    <template #no-data>
+      <div
+        v-if="!loadingSearch && !isInitialLoad && options.length === 0"
+        class="font-weight-bold flex items-center justify-center p-3 text-center"
+      >
+        <div>No data available</div>
+      </div>
+      <div v-else-if="loadingSearch || isInitialLoad">
+        <v-skeleton-loader type="list-item-two-line"></v-skeleton-loader>
+      </div>
     </template>
 
     <!-- <template v-slot:item="{ props, item }">

@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<IProps>(), {
   precision: 3,
   decimal: '.',
   separator: ',',
-  prefix: '⠀',
+  prefix: ' ',
   suffix: '',
   nullValue: '',
   masked: false,
@@ -38,7 +38,7 @@ const format = ref({
   precision: 3 as number | string,
   decimal: '.',
   separator: ',',
-  prefix: '⠀',
+  prefix: ' ',
   suffix: '',
   nullValue: '' as number | string | null,
   masked: false,
@@ -73,7 +73,6 @@ onMounted(() => {
   if (props.initialValue && props.initialValue !== null) {
     value = Number(props.initialValue).toFixed(props.precision as number)
   }
-
   emitValue(value)
 
   format.value.decimal = props.decimal

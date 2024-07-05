@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useLayouts from '~/stores/configs/LayoutsStore'
+import useLayouts from '~/stores/configs/layouts'
 import { useCurrencyInput } from 'vue-currency-input'
 import type { VAutocomplete } from 'vuetify/components'
 
@@ -127,7 +127,7 @@ const emitValue = (value: any): void => {
   emits('update:modelValue', Number(value))
   emits('change', Number(value))
   // console.log(value);
-
+  
 }
 
 const { inputRef, formattedValue, numberValue, setValue, setOptions } =
@@ -160,7 +160,7 @@ watch(
     // console.log(value,'aaaa');
     setValue(value)
     //  console.log(value,'ssdf');
-
+    
     emitValue(numberValue.value)
   }
 )
@@ -174,13 +174,13 @@ watch(
 
 onMounted(() => {
   // console.log(props.modelValue,'porp');
-
+  
   let value = Number(props.modelValue)
-
+  
   if (!!props.initialValue) {
     value = Number(props.initialValue)
   }
-
+  
   // console.log(props.modelValue,'porp 2');
   emitValue(value)
 
@@ -202,7 +202,18 @@ watchEffect(() => {
 </script>
 
 <template>
-  <v-text-field v-model="formattedValue" :density="props.density" :variant="props.variant" :suffix="props.suffix"
-    ref="inputRef" :label="props.label" :hide-details="props.hideDetails" :class="[combineClass]"
-    :clearable="props.clearable" :reverse="props.reverse" :disabled="props.disabled" :placeholder="props.placeholder" />
+  <v-text-field
+    v-model="formattedValue"
+    :density="props.density"
+    :variant="props.variant"
+    :suffix="props.suffix"
+    ref="inputRef"
+    :label="props.label"
+    :hide-details="props.hideDetails"
+    :class="[combineClass]"
+    :clearable="props.clearable"
+    :reverse="props.reverse"
+    :disabled="props.disabled"
+    :placeholder="props.placeholder"
+  />
 </template>

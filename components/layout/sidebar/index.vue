@@ -25,10 +25,19 @@ const itemShippings = [
 const itemOrders = [
   {
     title: 'Sales Order',
-    icon: 'mdi-credit-card-outline',
+    icon: 'mdi-cart-outline',
     link: '/orders/sales-order',
     permissions: ['ORDER_READ']
   },
+  {
+    title: 'Proforma & OCS',
+    icon: 'mdi-cart-outline',
+    link: '/orders/proforma',
+    permissions: ['ORDER_CREATE', 'PROFORMA_READ']
+  }
+]
+
+const itemSales = [
   {
     title: 'Sales Invoices',
     icon: 'mdi-credit-card-outline',
@@ -44,6 +53,12 @@ const itemOrders = [
 ]
 const itemPurchase = [
   {
+    title: 'Request Order',
+    icon: 'mdi-credit-card-outline',
+    link: '/purchase/request-order',
+    permissions: ['PURCHASE_READ']
+  },
+  {
     title: 'Purchase Order',
     icon: 'mdi-credit-card-outline',
     link: '/purchase/purchase-order',
@@ -54,12 +69,6 @@ const itemPurchase = [
     icon: 'mdi-credit-card-outline',
     link: '/purchase/purchase-invoice',
     permissions: ['PURCHASE_INVOICE_READ']
-  },
-  {
-    title: 'Request Order',
-    icon: 'mdi-credit-card-outline',
-    link: '/purchase/request-order',
-    permissions: ['PURCHASE_READ']
   },
   {
     title: 'Purchase Adjustment',
@@ -104,43 +113,44 @@ const itemInventory = [
 
 const itemExim = [
   {
-    title: 'BC 1',
+    title: 'Lp. Pemasukan Barang',
     icon: 'mdi-credit-card-outline',
     link: '/inventory/exim/bc1',
     permissions: ['INVENTORY_READ']
   },
   {
-    title: 'BC 2',
+    title: 'Lp. Pengeluaran Barang',
     icon: 'mdi-credit-card-outline',
     link: '/inventory/exim/bc2',
     permissions: ['INVENTORY_READ']
   },
   {
-    title: 'BC 3',
+    title: 'Lp. Posisi Barang',
     icon: 'mdi-credit-card-outline',
     link: '/inventory/exim/bc3',
     permissions: ['INVENTORY_READ']
   },
   {
-    title: 'BC 4',
+    title: 'Lp. Pertanggungjawaban Mutasi Barang',
     icon: 'mdi-credit-card-outline',
     link: '/inventory/exim/bc4',
     permissions: ['INVENTORY_READ']
   },
   {
-    title: 'BC 5',
+    title: 'Lp. Pertanggungjawaban Mutasi Barang Jadi',
     icon: 'mdi-credit-card-outline',
     link: '/inventory/exim/bc5',
     permissions: ['INVENTORY_READ']
   },
   {
-    title: 'BC 6',
+    title: 'Lp. Pertanggungjawaban Mutasi Barang dan Sisa Scrap',
     icon: 'mdi-credit-card-outline',
     link: '/inventory/exim/bc6',
     permissions: ['INVENTORY_READ']
   },
   {
-    title: 'BC 7',
+    title:
+      'Lp. Pertanggungjawaban Mutasi Mesin dan Peralatan Perkantoran Kawasan Berikat',
     icon: 'mdi-credit-card-outline',
     link: '/inventory/exim/bc7',
     permissions: ['INVENTORY_READ']
@@ -196,13 +206,21 @@ const isPermissionAllChildExists = (parentName: string) => {
   let joinPermissions = []
 
   let dashboard = ['dashboard']
-  let management = ['orders', 'purchase', 'inventory', 'production', 'shipping']
+  let management = [
+    'orders',
+    'sales',
+    'purchase',
+    'inventory',
+    'production',
+    'shipping'
+  ]
   let master = ['master', 'style']
 
   switch (parentName) {
     case 'management':
       // get all permissions from management
       joinPermissions = itemOrders
+        .concat(itemSales)
         .concat(itemPurchase)
         .concat(itemInventory)
         .concat(itemProduction)
@@ -229,6 +247,14 @@ const isPermissionOnChildExists = (parentName: string) => {
       // itemOrders
       childPermissions = itemOrders.map((item) => item.permissions.join())
       return useAuth.permit(childPermissions)
+    case 'sales':
+      // itemOrders
+      childPermissions = itemSales.map((item) => item.permissions.join())
+      return useAuth.permit(childPermissions)
+    case 'master':
+      // itemPurchase
+      childPermissions = itemMaster.map((item) => item.permissions.join())
+      return useAuth.permit(childPermissions)
     case 'purchase':
       // itemPurchase
       childPermissions = itemPurchase.map((item) => item.permissions.join())
@@ -247,12 +273,16 @@ const isPermissionOnChildExists = (parentName: string) => {
 }
 
 const isExpanded = ref(false)
+
+const handleExpanded = (value: boolean) => {
+  isExpanded.value = value
+}
 const handleMouseHover = () => {
   if (isCloseSidebar.value == true) {
     if (!isExpanded.value) {
-      isExpanded.value = true
+      useDebouncedRef(handleExpanded(true), 1000)
     } else {
-      isExpanded.value = false
+      useDebouncedRef(handleExpanded(false), 1000)
     }
   }
 }
@@ -276,7 +306,7 @@ onMounted(async () => {
   <div
     @mouseenter="handleMouseHover"
     @mouseleave="handleMouseHover"
-    class="flex h-full w-full flex-col items-center justify-between"
+    class="flex h-full flex-col items-center justify-between"
   >
     <div class="flex w-full flex-col gap-y-5 py-5">
       <!-- Logo App -->
@@ -296,7 +326,7 @@ onMounted(async () => {
       </div>
 
       <!-- Menu List -->
-      <div class="w-full">
+      <div class="max-h-[80vh] w-full overflow-y-auto">
         <v-list
           v-if="useAuth.permit('REPORT_READ')"
           color="#fff"
@@ -329,7 +359,7 @@ onMounted(async () => {
         </v-list>
         <v-divider></v-divider>
         <v-list
-          v-if="isPermissionOnChildExists('orders')"
+          v-if="isPermissionOnChildExists('master')"
           color="#fff"
           density="compact"
         >
@@ -379,6 +409,9 @@ onMounted(async () => {
             MANAGEMENT
           </v-list-item-title>
 
+          <!-- List static -->
+          <template v-for="(item, i) in itemOrders" :key="i"></template>
+
           <v-list-group
             v-if="isPermissionOnChildExists('orders')"
             value="Orders"
@@ -393,6 +426,29 @@ onMounted(async () => {
               ></v-list-item>
             </template>
             <template v-for="(item, i) in itemOrders" :key="i">
+              <v-list-item
+                v-if="useAuth.permit(item.permissions)"
+                :to="item.link"
+                :title="item.title"
+                :value="item"
+                variant="text"
+                rounded="lg"
+                density="compact"
+                color="#898F99"
+              ></v-list-item>
+            </template>
+          </v-list-group>
+          <v-list-group v-if="isPermissionOnChildExists('sales')" value="Sales">
+            <template #activator="{ props }">
+              <v-list-item
+                v-bind="props"
+                prepend-icon="mdi-credit-card-outline"
+                title="Sales"
+                density="compact"
+                rounded="lg"
+              ></v-list-item>
+            </template>
+            <template v-for="(item, i) in itemSales" :key="i">
               <v-list-item
                 v-if="useAuth.permit(item.permissions)"
                 :title="item.title"
@@ -457,18 +513,23 @@ onMounted(async () => {
                 color="#898F99"
               ></v-list-item>
             </template>
+          </v-list-group>
 
-            <v-list-group value="Exim">
-              <template #activator="{ props }">
-                <v-list-item
-                  v-bind="props"
-                  rounded="lg"
-                  title="Exim"
-                  density="compact"
-                ></v-list-item>
-              </template>
+          <v-list-group value="Exim">
+            <template #activator="{ props }">
+              <v-list-item
+                v-bind="props"
+                rounded="lg"
+                prepend-icon="mdi-file-sign"
+                title="Exim"
+                density="compact"
+              ></v-list-item>
+            </template>
 
-              <template v-for="(item, i) in itemExim" :key="i">
+            <template v-for="(item, i) in itemExim" :key="i">
+              <!-- <v-tooltip location="end" :text="item.title">
+                <template v-slot:activator="{ props }"> -->
+              <div :title="item.title" class="">
                 <v-list-item
                   v-if="useAuth.permit(item.permissions)"
                   :title="item.title"
@@ -478,8 +539,10 @@ onMounted(async () => {
                   density="compact"
                   color="#898F99"
                 ></v-list-item>
-              </template>
-            </v-list-group>
+              </div>
+              <!-- </template>
+              </v-tooltip> -->
+            </template>
           </v-list-group>
 
           <v-list-group
@@ -530,7 +593,8 @@ onMounted(async () => {
 
     <!-- Profile Account -->
     <div
-      class="flex h-[77px] w-full items-center justify-stretch gap-x-5 bg-[#121c2b] lg:px-2"
+      @click="navigateTo('/master-data/account-setting')"
+      class="flex h-[77px] w-full cursor-pointer items-center justify-stretch gap-x-5 bg-slate-900 transition-all ease-in-out hover:bg-slate-900/60 lg:px-2"
     >
       <v-avatar
         :image="`${BASE_URL}/storage/app/public/master/users/${data?.photo}`"
@@ -545,3 +609,10 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+<style scoped>
+* {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: thin;
+  scrollbar-color: #898f99 #121c2b;
+}
+</style>

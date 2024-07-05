@@ -41,10 +41,6 @@ const props = withDefaults(defineProps<IProps>(), {
 
 const realValue = ref(props.modelValue)
 
-const dynamicClass = computed(() => ({
-  [props.class]: true
-}))
-
 const slots = useSlots()
 
 const emits = defineEmits(['update:modelValue'])
@@ -81,7 +77,7 @@ watch(
       :density="density"
       :placeholder="placeholder"
       :type="type"
-      :class="[dynamicClass, '']"
+      :class="classMerge('w-full', props.class)"
       :rows="rows"
       :auto-grow="autoGrow"
       :clearable="clearable"

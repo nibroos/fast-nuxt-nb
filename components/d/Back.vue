@@ -18,14 +18,16 @@ const props = withDefaults(defineProps<IProps>(), {
 
 <template>
   <button
-    :class="[
-      props.class,
-      'flex cursor-pointer items-center gap-x-2 border-solid p-2 transition-all ease-in-out hover:bg-zinc-100 sm:gap-x-1 md:gap-x-2'
-    ]"
+    :class="
+      classMerge(
+        'flex cursor-pointer items-center gap-x-2 border-solid p-2 transition-all ease-in-out hover:bg-zinc-100 sm:gap-x-1 md:gap-x-2',
+        props.class
+      )
+    "
     @click="navigateTo(props.parentPath)"
   >
     <v-icon icon="mdi-keyboard-backspace" size="25" v-if="!props.noIcon" />
-    <div :class="[props.textClass, 'font-medium']">
+    <div :class="classMerge('font-medium', props.textClass)">
       {{ props.cta }}
     </div>
   </button>

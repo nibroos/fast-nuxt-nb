@@ -231,17 +231,18 @@ watchEffect(() => {
 })
 onBeforeUnmount(() => {
   // console.log("oop", isActiveTabIndex.value);
-  
 }),
-
-onMounted(() => {
-  layoutState.defineTitlePath(configs.value)
-})
+  onMounted(() => {
+    layoutState.defineTitlePath(configs.value)
+  })
 </script>
 
 <template>
   <div class="absolute z-10 h-screen w-full bg-white">
-    <div class="mb-3 h-max w-full overflow-auto rounded-lg border shadow">
+    <div
+      class="mb-3 h-max w-full overflow-auto rounded-lg border shadow"
+      v-if="listItem.length > 0"
+    >
       <v-list
         shaped
         nav
@@ -253,22 +254,26 @@ onMounted(() => {
       >
         <v-list-item
           v-for="(item, i) in listItem"
+          base-color="black"
+          color="blue"
+          :active="item.number===isActiveTabIndex"
           :key="item.number"
           :value="item.number"
-          min-width="70"
           @click="handleChangePage(item)"
         >
-          <div
-            :class="[
-              item.number === isActiveTabIndex
-                ? 'bg-blue-100 !text-blue-600'
-                : ''
-            ]"
-            class="flex h-full w-full flex-col items-center justify-center gap-1 rounded-lg p-2 tracking-normal text-zinc-500"
-          >
-            <v-icon :icon="item.icon" size="24"></v-icon>
-            <div class="text-sm capitalize">{{ item.title }}</div>
-          </div>
+          <template v-slot:default="{ isActive }">
+            <div
+             :class="[
+                item.number === isActiveTabIndex
+                  ? 'text-blue'
+                  : 'text-zinc-500'
+              ]" 
+              class="flex flex-col items-center justify-center gap-1 rounded-lg tracking-normal "
+            >
+              <v-icon :icon="item.icon" size="24"></v-icon>
+              <div class="text-sm capitalize">{{ item.title }}</div>
+            </div>
+          </template>
         </v-list-item>
       </v-list>
     </div>

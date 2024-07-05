@@ -156,13 +156,13 @@ watchEffect(() => {})
 
 <template>
   <div
-    class="flex h-[52rem] flex-col gap-4 overflow-hidden"
+    class="flex h-[90vh] flex-col gap-4 overflow-hidden"
     @click="updateHeight"
     v-if="isAllowed"
   >
     <slot name="top" v-if="slots.top" />
 
-    <div class="flex h-[46rem] w-full flex-col rounded-lg">
+    <div class="flex h-[90vh] w-full flex-col rounded-lg">
       <d-tabs
         v-if="config?.tabs?.length ?? 0 > 0"
         :tabs="config?.tabs"
@@ -180,7 +180,7 @@ watchEffect(() => {})
         ref="contentlayout"
         @resize="updateHeight"
         :class="[
-          'max-h-[35rem] !overflow-y-auto  rounded-b-lg !border !border-zinc-300',
+          'max-h-[80vh] !overflow-y-auto  rounded-b-lg !border !border-zinc-300',
           mergedConfig.contentClass
         ]"
       >
