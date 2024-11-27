@@ -43,10 +43,17 @@ const negativeCheckClass = computed(() => {
 </script>
 
 <template>
-  <div :class="[dynamicClass, 'flex justify-between whitespace-nowrap']">
+  <div
+    :class="classMerge('flex justify-between whitespace-nowrap', props.class)"
+  >
     <!-- <div>{{ symbol }}</div> -->
     <div>
-      <slot name="symbol" v-bind="props">{{ props.symbol }}</slot>
+      <slot
+        name="symbol"
+        v-bind="props"
+      >
+        {{ props.symbol }}
+      </slot>
     </div>
 
     <div
@@ -57,7 +64,11 @@ const negativeCheckClass = computed(() => {
         }
       ]"
     >
-      <slot name="default" v-bind="props" v-if="slots.default"></slot>
+      <slot
+        name="default"
+        v-bind="props"
+        v-if="slots.default"
+      ></slot>
       <div v-else>
         {{
           props.noValue

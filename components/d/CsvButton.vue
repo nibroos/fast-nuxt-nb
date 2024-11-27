@@ -19,8 +19,8 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 const localLoadingState = ref(props.loadingState)
 const checkLoad = () => {
-  // console.log(props.loadingState)
-  // console.log(props.loadingState == undefined, 'bool')
+  console.log(props.loadingState)
+  console.log(props.loadingState == undefined, 'bool')
 }
 watch(
   () => props.loadingState,
@@ -33,7 +33,7 @@ watch(
     } else {
       localLoadingState.value = newVal
     }
-    // console.log(localLoadingState.value, 'state')
+    console.log(localLoadingState.value, 'state')
   }
 )
 onMounted(() => {
@@ -43,8 +43,18 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-row items-center gap-2">
-    <v-btn variant="tonal" height="35" density="comfortable" append-icon="mdi-download" class="text-none grow"
-      rounded="md" color="#1fb829" type="submit" :loading="localLoadingState" @click="handleClickSubmit()">
+    <v-btn
+      variant="tonal"
+      height="35"
+      density="comfortable"
+      append-icon="mdi-download"
+      class="text-none grow"
+      rounded="md"
+      color="#1fb829"
+      type="submit"
+      :loading="localLoadingState"
+      @click="handleClickSubmit()"
+    >
       CSV
     </v-btn>
   </div>

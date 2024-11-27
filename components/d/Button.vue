@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { classMerge } from '~/utils/strings'
 // import {normalizeClass}
 interface IProps {
   cta?: string
@@ -11,6 +12,7 @@ interface IProps {
   disabled?: boolean
   loading?: boolean | undefined
   disabledTextClass?: string
+  disabledClass?: string
   activateLoading?: boolean
   isLoadingDefault?: boolean
 }
@@ -26,6 +28,7 @@ const props = withDefaults(defineProps<IProps>(), {
   disabled: false,
   loading: false,
   disabledTextClass: '',
+  disabledClass: '',
   activateLoading: false,
   isLoadingDefault: true
 })
@@ -37,7 +40,7 @@ const mergedConfig = computed(() => {
 const emits = defineEmits(['click', 'click:loading'])
 
 const localLoadingState = ref<boolean | undefined>(false)
-const localDisabled = ref<boolean>(false)
+const localDisabled = ref<boolean>(props.disabled)
 const localDisabledTextClass = ref<string>(props.disabledTextClass)
 const handleClick = () => {
   if (localDisabled.value) return
@@ -71,7 +74,7 @@ watch(
     // if (newVal !== oldVal && typeof newVal === 'boolean') {
     //   localDisabled.value = newVal
     // }
-    console.log('oldVal', oldVal, 'newVal mergedConfig', newVal)
+    // console.log('oldVal', oldVal, 'newVal mergedConfig', newVal)
   },
   { deep: true, immediate: true }
 )
@@ -124,21 +127,25 @@ onMounted(() => {})
       classMerge(
         'cursor-pointer items-center p-3 transition-all ease-in-out hover:bg-zinc-100 sm:gap-x-1',
         props.class,
-        `${localDisabled ? 'cursor-not-allowed' : ''}`
+        `${localDisabled && !!disabledClass ? disabledClass : localDisabled ? 'cursor-not-allowed bg-zinc-400 hover:!bg-zinc-400' : ''}`
       )
     "
     @click="handleClick"
     :type="type"
     :disabled="localDisabled"
   >
-    <v-icon :icon="props.icon" :size="iconSize" v-if="!props.noIcon" />
+    <v-icon
+      :icon="props.icon"
+      :size="iconSize"
+      v-if="!props.noIcon"
+    />
 
     <span
       :class="
         classMerge(
           'flex items-center justify-center font-medium transition-all ease-in-out',
           props.textClass,
-          `${localDisabled && !!localDisabledTextClass ? localDisabledTextClass ?? 'text-zinc-400' : ''}`,
+          `${localDisabled && !!localDisabledTextClass ? (localDisabledTextClass ?? 'text-zinc-400') : ''}`,
           `${localLoadingState ? 'flex-row gap-3' : ''}`
         )
       "
@@ -166,13 +173,17 @@ onMounted(() => {})
     :type="type"
     :disabled="localDisabled"
   >
-    <v-icon :icon="props.icon" :size="iconSize" v-if="!props.noIcon" />
+    <v-icon
+      :icon="props.icon"
+      :size="iconSize"
+      v-if="!props.noIcon"
+    />
     <span
       :class="
         classMerge(
           'flex items-center justify-center font-medium transition-all ease-in-out',
           props.textClass,
-          `${localDisabled && !!localDisabledTextClass ? localDisabledTextClass ?? 'text-zinc-400' : ''}`,
+          `${localDisabled && !!localDisabledTextClass ? (localDisabledTextClass ?? 'text-zinc-400') : ''}`,
           `${localLoadingState ? 'flex-row gap-3' : ''}`
         )
       "

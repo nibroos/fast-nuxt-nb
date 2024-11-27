@@ -43,7 +43,7 @@ export type AutocompleteType = {
 }
 
 export type AutocompleteClientType = {
-  modelValue?: string | number
+  modelValue?: string | number | null
   disabled?: boolean
   variant?: Variant
   items?: any[]

@@ -1,23 +1,23 @@
-import Form from 'vform'
+// import Form from 'vform'
 import type { Pagination } from '~/interfaces/LaravelPaginationInterface'
 import type { PabeanDocumentType } from '~/types/PabeanDocumentType'
 
-const formCreateEditSalesOrder = new Form({
+const formCreateEditSalesOrder = {
   id: '',
-  customer_id: '',
-  currency_id: '',
+  customer_id: null,
+  currency_id: 2,
   pph23_id: '',
-  order_type_id: '',
-  shipping_term_id: '',
+  order_type_id: 3,
+  shipping_term_id: null,
   buyer_po_number: '',
   order_date: '',
   shipping_date: '',
   shipping_destination: '',
-  payment_term: '',
+  payment_term: null,
   remark: '',
   discount: '',
   is_vat: '',
-  status: '',
+  status: 'Order',
   total_amount: '',
   total_discount: '',
   total_pph23: '',
@@ -33,8 +33,9 @@ const formCreateEditSalesOrder = new Form({
   master_color_methods: [],
   master_color_variants: [],
   deleted_styles: [],
-  deleted_color_methods: []
-})
+  deleted_color_methods: [],
+  item: []
+}
 
 const pagination = {
   current_page: 1,
@@ -97,8 +98,19 @@ const formCreateEditRequestOrder = {
     grand_total: 0
   }
 }
+const formCreateEditRequestPlan = {
+  id: '',
+  request_date: null,
+  remark: '',
+  items: [],
+  selected_type: '',
+  ro_number: '',
+  summary: {
+    grand_total: 0
+  }
+}
 
-const formCreateEditInventoryIn = new Form({
+const formCreateEditInventoryIn = {
   id: null,
   customer_id: null,
   io_type_id: null,
@@ -118,9 +130,9 @@ const formCreateEditInventoryIn = new Form({
   aju_number: '',
   discount: 0,
   shipping_destination: ''
-})
+}
 
-const formCreateEditInventoryOut = new Form({
+const formCreateEditInventoryOut = {
   id: '',
   customer_id: null as number | null,
   io_type_id: null as number | null,
@@ -139,8 +151,8 @@ const formCreateEditInventoryOut = new Form({
   doc_date: '',
   aju_number: '',
   discount: 0,
-  shipping_destination: ''
-})
+  shipping_address: ''
+}
 
 const formCreateEditShipping = {
   customer_id: null as any,
@@ -232,7 +244,7 @@ const formCreateEditMasterStyle = {
   boms: [] as any,
   packing_materials: [] as any,
   data_color_group: [] as any,
-  is_active: 0
+  is_active: 1
 }
 
 const formCreateEditProductionPlan = {
@@ -461,7 +473,130 @@ const formCreateEditCeisa: PabeanDocumentType = {
   ceisa_details: []
 }
 
+const formEditWIP = {}
+
+const formCreateEditWIPHistory = {
+  wip_history_id: null,
+  wip_id: null,
+  production_type_id: null,
+  io_type_id: null,
+  subcon_id: null,
+  qty: 0,
+  production_date: ''
+}
+
 const perPageOptions = [10, 20, 50, 100]
+
+const orderType = {
+  coloring: 1,
+  sample: 2,
+  order: 3,
+  replacement: 4,
+  material: 5
+}
+
+const ioWIPSubconId = [22, 24]
+
+const statusDisabledWIP = ['HOLD', 'CANCEL']
+
+const selectedBulkModeType = {
+  validation: 1,
+  cancelValidation: 2,
+  editShippingDate: 3
+}
+
+const listItemTopMenu = {
+  user: {
+    title: 'User',
+    number: 0
+  },
+  accountSetting: {
+    title: 'Account Setting',
+    number: 1
+  },
+  barcode: {
+    title: 'Barcode',
+    number: 2
+  },
+  companyProfile: {
+    title: 'Company Profile',
+    number: 3
+  },
+  customerType: {
+    title: 'Customer Type',
+    number: 4
+  },
+  customer: {
+    title: 'Customer',
+    number: 5
+  },
+  rule: {
+    title: 'Rule',
+    number: 6
+  },
+  item: {
+    title: 'Item',
+    number: 7
+  },
+  unit: {
+    title: 'Unit',
+    number: 8
+  },
+  warehouse: {
+    title: 'Warehouse',
+    number: 9
+  },
+  line: {
+    title: 'Line',
+    number: 10
+  },
+  colorMethod: {
+    title: 'Color Method',
+    number: 12
+  },
+  cap: {
+    title: 'Cap',
+    number: 13
+  },
+  rolePermission: {
+    title: 'Role & Permission',
+    number: 14
+  },
+  process: {
+    title: 'Process',
+    number: 15
+  },
+  finishing: {
+    title: 'Finishing',
+    number: 16
+  },
+  customization: {
+    title: 'Customization',
+    number: 17
+  }
+}
+
+export const statusProforma = {
+  order: 'ORDER',
+  cancel: 'CANCEL' as 'CANCEL',
+  revision: 'REVISION' as 'REVISION'
+}
+
+const formCreateEditProforma = {
+  id: null,
+  invoice_no: '',
+  invoice_date: '',
+  invoice_sheet_date: '',
+  customer_id: null,
+  remark: '',
+  status: statusProforma.order,
+  qty: 0,
+  grand_total: 0,
+  grand_total_sheet: 0,
+  proformas_details: [],
+  valiator_1_id: null,
+  valiator_2_id: null
+}
 
 export const useInitials = {
   formCreateEditSalesOrder,
@@ -478,7 +613,16 @@ export const useInitials = {
   formCreateEditSalesAdjustment,
   formCreateEditPurchaseAdjustment,
   formCreateEditCeisa,
+  formCreateEditProforma,
+  formEditWIP,
+  formCreateEditWIPHistory,
+  formCreateEditRequestPlan,
+  statusDisabledWIP,
   qIndexOpname,
   pagination,
-  perPageOptions
+  perPageOptions,
+  orderType,
+  ioWIPSubconId,
+  selectedBulkModeType,
+  listItemTopMenu
 }

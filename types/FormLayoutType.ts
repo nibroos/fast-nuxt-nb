@@ -31,6 +31,12 @@ type TButtonConfig = {
   path?: string
   class?: string
   textClass?: string
+  loading?: boolean | undefined
+  disabledTextClass?: string
+  disabledClass?: string
+  activateLoading?: boolean
+  isLoadingDefault?: boolean
+  disabled?: boolean
 }
 
 export type DefaultHeaderProps = {
@@ -60,3 +66,5 @@ type IItemsType<T> = Array<ItemType<T>>
 type ItemType<T> = {
   [key: string]: T
 }
+
+export type LoadingsType = { [key: string]: boolean }

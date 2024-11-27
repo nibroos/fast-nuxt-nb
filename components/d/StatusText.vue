@@ -4,12 +4,14 @@ interface IProps {
   class?: string
   parentClass?: string
   colors?: string[]
+  capitalize?: boolean
 }
 const props = withDefaults(defineProps<IProps>(), {
   value: '',
   class: '',
   parentClass: '',
-  colors: () => []
+  colors: () => [],
+  capitalize: false
 })
 
 const processColor = ref(
@@ -17,6 +19,14 @@ const processColor = ref(
 )
 // ['Order', 'Process', 'Shipping', 'Invoice', 'Finish', 'Cancel', 'Pending', 'Production']);
 const initialColors = ref([
+  {
+    name: 'Hold',
+    code: 'bg-zinc-200 text-zinc-600 border !border-zinc-200'
+  },
+  {
+    name: 'Planning',
+    code: 'bg-yellow-100 text-yellow-700 border !border-yellow-700'
+  },
   {
     name: 'Order',
     code: 'bg-yellow-100 text-yellow-700 border !border-yellow-700'
@@ -83,18 +93,21 @@ watchEffect(() => {
     colorFound.value = color as { name: string; code: string }
     finalClass.value = color ? color.code : processColor.value
   }
+
+  if (!!props.capitalize) {
+    status.value = capitalizeEachWord(status.value)
+  }
 })
 </script>
 
 <template>
   <div class="flex items-center justify-center">
-    <div
-      :class="[
-        'w-max rounded-full px-2 py-0.5 text-sm',
-        finalClass,
-        dynamicClass
-      ]"
-    >
+    <div :class="classMerge(
+      'w-max rounded-full px-2 py-0.5 text-sm',
+      finalClass,
+      props.class
+    )
+      ">
       {{ status }}
     </div>
   </div>

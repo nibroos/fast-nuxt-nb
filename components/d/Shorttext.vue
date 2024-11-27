@@ -26,6 +26,8 @@ const formatString = computed(() => {
 
 <template>
   <span class="whitespace-nowrap" :title="props.text">
+    <slot name="prefix"></slot>
     {{ formatString }}
+    <slot name="suffix"></slot>
   </span>
 </template>

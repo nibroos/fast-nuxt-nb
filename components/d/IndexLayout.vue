@@ -156,40 +156,49 @@ watchEffect(() => {})
 
 <template>
   <div
+    v-if="isAllowed"
     class="flex h-[90vh] flex-col gap-4 overflow-hidden"
     @click="updateHeight"
-    v-if="isAllowed"
   >
-    <slot name="top" v-if="slots.top" />
+    <slot
+      v-if="slots.top"
+      name="top"
+    />
 
     <div class="flex h-[90vh] w-full flex-col rounded-lg">
       <d-tabs
         v-if="config?.tabs?.length ?? 0 > 0"
         :tabs="config?.tabs"
         :current="config?.currentTab"
-        @update:current="handleChangeTab"
         :class="'rounded-t-lg border-x border-t border-zinc-300'"
+        @update:current="handleChangeTab"
       />
 
-      <div v-if="slots.filter" class="border-x border-t border-zinc-300">
+      <div
+        v-if="slots.filter"
+        class="border-x border-t border-zinc-300"
+      >
         <slot name="filter" />
       </div>
 
       <div
         :id="randomContentElementId"
         ref="contentlayout"
-        @resize="updateHeight"
         :class="[
           'max-h-[80vh] !overflow-y-auto  rounded-b-lg !border !border-zinc-300',
           mergedConfig.contentClass
         ]"
+        @resize="updateHeight"
       >
         <slot name="content" />
         <slot />
       </div>
     </div>
 
-    <slot name="bottom" v-if="slots.bottom" />
+    <slot
+      v-if="slots.bottom"
+      name="bottom"
+    />
   </div>
 
   <div v-else>

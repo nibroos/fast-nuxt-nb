@@ -30,7 +30,7 @@ const props = withDefaults(defineProps<AutocompleteType>(), {
   initialValue: '',
   disableInitialLoad: true,
   methodApi: 'get',
-  placeholder: (props) => `Select/search ${props.label}` ?? 'Select/Search',
+  placeholder: (props) => `Select/search ${props.label}`,
   chips: false,
   maxLengthDisplay: 16,
   startAlignDisplay: 'left',
@@ -90,7 +90,7 @@ const convertQuery = (searchValue?: string): string => {
   return qs.stringify(queryString)
 }
 
-watch(innerSearch, async (searchValue: string) => {
+watch(innerSearch, async (searchValue: string, oldSearchValue: string) => {
   if (!props.api) return
   if (isMenuShow.value) {
     loadingSearch.value = true
@@ -98,6 +98,11 @@ watch(innerSearch, async (searchValue: string) => {
 
     let response
     let apiUrl
+
+    if (searchValue !== oldSearchValue) {
+      page.value = 1
+    }
+
     if (props.methodApi === 'post') {
       queryObject.value.page = page.value
       response = await useMyFetch()
@@ -130,11 +135,12 @@ watch(innerSearch, async (searchValue: string) => {
 watch(
   () => props.query,
   (newValue, oldValue) => {
-    let newVal = JSON.stringify(newValue)
-    let oldVal = JSON.stringify(oldValue)
+    let newValStr = JSON.stringify(newValue)
+    let oldValStr = JSON.stringify(oldValue)
 
-    if (newVal !== oldVal) {
+    if (newValStr !== oldValStr) {
       page.value = 1
+      options.value = []
       useDebouncedRef(getList(), 100)
     }
   }
@@ -184,7 +190,7 @@ const getList = async () => {
     // try {
     response = await useMyFetch()
       .post(props.api, queryObject.value)
-      .catch((err) => {
+      .catch((err: any) => {
         statusCode = err?.response?.status
         console.log(err, 'Failed to fetch list data')
       })
@@ -419,66 +425,30 @@ watch(
 </script>
 
 <template>
-  <v-autocomplete
-    ref="vAComp"
-    v-model="selected"
-    :items="options"
-    :item-title="props.itemTitle"
-    :item-value="props.itemValue"
-    :variant="props.variant"
-    :label="props.label"
-    :placeholder="props.placeholder"
-    :density="props.density"
-    :chips="props.chips"
-    :list-props="{ slim: true }"
-    no-filter
-    :loading="loadingSearch"
-    @update:search="innerSearch = $event"
-    @update:menu="onMenuChange"
-    :focused="isFocused"
-    @update:focused="onFocus"
-    :readonly="isReadOnly"
-    :clearable="props.clearable"
-    @click:clear="handleClear"
-    :disabled="props.disabled"
-    :class="props.aClass"
-    :multiple="props.multiple"
-    :return-object="returnObject"
-    :hide-details="props.hideDetails"
-  >
+  <v-autocomplete ref="vAComp" v-model="selected" :items="options" :item-title="props.itemTitle"
+    :item-value="props.itemValue" :variant="props.variant" :label="props.label" :placeholder="props.placeholder"
+    :density="props.density" :chips="props.chips" :list-props="{ slim: true }" no-filter :loading="loadingSearch"
+    @update:search="innerSearch = $event" @update:menu="onMenuChange" :focused="isFocused" @update:focused="onFocus"
+    :readonly="isReadOnly" :clearable="props.disabled ? false : props.clearable" @click:clear="handleClear"
+    :disabled="props.disabled" :class="props.aClass" :multiple="props.multiple" :return-object="returnObject"
+    :hide-details="props.hideDetails">
     <template v-slot:append-item>
-      <div
-        v-if="!paginationDone && !!api && options.length > 0"
-        v-intersect="onIntersect"
-        class="pa-4 teal--text"
-      >
+      <div v-if="!paginationDone && !!api && options.length > 0" v-intersect="onIntersect" class="pa-4 teal--text">
         Loading more items ...
       </div>
     </template>
     <template v-slot:selection="{ item }">
       <span class="whitespace-nowrap">
-        <d-shorttext
-          v-if="props.multiple"
-          :text="item.title"
-          :max-length="Number(props.maxLengthDisplay)"
-          :class="props.aClass"
-          :start-align="props.startAlignDisplay"
-        />
-        <d-shorttext
-          v-else
-          :text="displayTitle || item.title"
-          :max-length="Number(props.maxLengthDisplay)"
-          :class="props.aClass"
-          :start-align="props.startAlignDisplay"
-        />
+        <d-shorttext v-if="props.multiple" :text="item.title" :max-length="Number(props.maxLengthDisplay)"
+          :class="props.aClass" :start-align="props.startAlignDisplay" />
+        <d-shorttext v-else :text="displayTitle || item.title" :max-length="Number(props.maxLengthDisplay)"
+          :class="props.aClass" :start-align="props.startAlignDisplay" />
       </span>
     </template>
 
     <template #no-data>
-      <div
-        v-if="!loadingSearch && !isInitialLoad && options.length === 0"
-        class="font-weight-bold flex items-center justify-center p-3 text-center"
-      >
+      <div v-if="!loadingSearch && !isInitialLoad && options.length === 0"
+        class="font-weight-bold flex items-center justify-center p-3 text-center">
         <div>No data available</div>
       </div>
       <div v-else-if="loadingSearch || isInitialLoad">

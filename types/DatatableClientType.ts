@@ -10,6 +10,7 @@ import {
   type PaginationMeta,
   type Meta
 } from '~/interfaces/LaravelPaginationInterface'
+import type { AxiosResponse } from 'axios'
 
 type Density = VAutocomplete['$props']['density']
 // type ReadonlyHeaders = VDataTable['$props']['headers']
@@ -45,7 +46,7 @@ export type DatatableConfig = {
   actions: Actions
   savedCreateState?: any
   api?: boolean & ApiType
-  triggerUpdateTable?:boolean
+  triggerUpdateTable?: boolean
 }
 
 export type ApiType = {

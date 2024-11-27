@@ -172,7 +172,7 @@ const openCloseDP = () => {
 onMounted(() => {
   innerValue.value = !!props.startDate
     ? formatDisplayDate(props.startDate)
-    : props.modelValue ?? ''
+    : (props.modelValue ?? '')
 
   const dpElement = document.getElementById(`${dpElementId.value}`)
   dpElement?.addEventListener('keydown', handleKeyPress)
@@ -213,7 +213,7 @@ watch(
       text-input
       auto-apply
       :placeholder="props.placeholder"
-      :clearable="props.clearable"
+      :clearable="props.disabled ? false : props.clearable"
       :month-change-on-scroll="props.monthChangeOnScroll"
       :model-type="props.displayFormat"
       :start-date="props.startDate"
@@ -243,7 +243,7 @@ watch(
           :class="props.inputClass"
           :prepend-inner-icon="props.prependInnerIcon"
           :append-inner-icon="props.appendInnerIcon"
-          :clearable="props.clearableInput"
+          :clearable="props.disabled ? false : props.clearable"
           :placeholder="props.placeholder"
           @update:focused="onBlurInner"
           @click:append-inner="openCloseDP"

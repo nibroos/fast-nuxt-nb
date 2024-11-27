@@ -7,7 +7,14 @@ const alertSuccess = (message?: string | null, title?: string | null) => {
     showConfirmButton: true,
     icon: 'success',
     showCloseButton: true,
-    timer: 2000
+    // timer: 2000,
+    customClass: {
+      popup: 'p-3',
+      container: '',
+      actions: 'flex gap-3 w-full',
+      confirmButton:
+        '!bg-[#4094D4] transition-all ease-in-out hover:!bg-[#3882ba] text-white grow'
+    }
   })
 }
 
@@ -21,6 +28,18 @@ const alertLoading = () => {
     }
   })
 }
+
+const alertLoading2 = (options = {}) => {
+  Swal.fire({
+    title: options.title || 'Loading',
+    html: options.html || 'Please Wait',
+    icon: options.icon || 'warning',
+    allowOutsideClick: options.allowOutsideClick ?? true, // Defaults to true if not provided
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+};
 
 const showPopupConfirmation = async (
   title?: string,
@@ -87,8 +106,14 @@ const alertError = (message?: string | null, opt?: any) => {
     title: opt?.title || 'Error',
     html: message || 'Warning',
     showConfirmButton: opt?.showConfirmButton || true,
-    confirmButtonColor: opt?.confirmButtonColor || '#0760ef',
-    icon: opt?.icon || 'error'
+    icon: opt?.icon || 'error',
+    customClass: {
+      popup: 'p-3',
+      container: '',
+      actions: 'flex gap-3 w-full',
+      confirmButton:
+        '!bg-[#4094D4] transition-all ease-in-out hover:!bg-[#3882ba] text-white grow'
+    }
   })
 }
 
@@ -114,5 +139,6 @@ export const useAlert = {
   alertWarning,
   hideAlert,
   showPopupConfirmation,
-  alertLoading
+  alertLoading,
+  alertLoading2
 }

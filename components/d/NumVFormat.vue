@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import useLayouts from '~/stores/configs/layouts'
 import { useCurrencyInput } from 'vue-currency-input'
 import type { VAutocomplete } from 'vuetify/components'
+import { defineExpose, onMounted, ref, watch, watchEffect } from 'vue'
+import { classMerge } from '#imports'
 
 type Variant = VAutocomplete['$props']['variant']
 type Density = VAutocomplete['$props']['density']
@@ -47,6 +48,7 @@ interface CurrencyInputOptions {
 interface IProps {
   modelValue: number | string | null | undefined
   precision?: NumberRange
+  valueRange?: NumberRange
   decimal?: string
   separator?: string
   prefix?: string
@@ -102,7 +104,7 @@ const props = withDefaults(defineProps<IProps>(), {
   placeholder: (props) => `0`
 })
 
-const defaultClass = ''
+const defaultClass = 'h-max'
 const combineClass = ref(defaultClass)
 
 const currencyInputOptions = ref({
@@ -112,7 +114,7 @@ const currencyInputOptions = ref({
   hideGroupingSeparatorOnFocus: false,
   hideNegligibleDecimalDigitsOnFocus: props.hideNegligibleDecimalDigitsOnFocus,
   precision: props.precision,
-  valueRange: undefined,
+  valueRange: props.valueRange,
   accountingSign: props.accountingSign,
   autoSign: props.autoSign
 } as CurrencyInputOptions)
@@ -127,7 +129,6 @@ const emitValue = (value: any): void => {
   emits('update:modelValue', Number(value))
   emits('change', Number(value))
   // console.log(value);
-  
 }
 
 const { inputRef, formattedValue, numberValue, setValue, setOptions } =
@@ -156,11 +157,10 @@ watch(
 watch(
   () => props.modelValue,
   (value: any) => {
-
     // console.log(value,'aaaa');
     setValue(value)
     //  console.log(value,'ssdf');
-    
+
     emitValue(numberValue.value)
   }
 )
@@ -172,15 +172,20 @@ watch(
   }
 )
 
+// with this, focus can be moved to another input field via arrow key
+defineExpose({
+  focus: () => inputRef.value?.focus()
+})
+
 onMounted(() => {
   // console.log(props.modelValue,'porp');
-  
+
   let value = Number(props.modelValue)
-  
+
   if (!!props.initialValue) {
     value = Number(props.initialValue)
   }
-  
+
   // console.log(props.modelValue,'porp 2');
   emitValue(value)
 
@@ -203,14 +208,14 @@ watchEffect(() => {
 
 <template>
   <v-text-field
+    ref="inputRef"
     v-model="formattedValue"
     :density="props.density"
     :variant="props.variant"
     :suffix="props.suffix"
-    ref="inputRef"
     :label="props.label"
     :hide-details="props.hideDetails"
-    :class="[combineClass]"
+    :class="classMerge(defaultClass, props.class)"
     :clearable="props.clearable"
     :reverse="props.reverse"
     :disabled="props.disabled"

@@ -21,7 +21,7 @@ import type {
   ApiParamsType,
   ErrorResponseApiType
 } from '~/types/DatatableClientType'
-import type { AxiosResponse } from 'axios'
+// import type { AxiosResponse } from 'axios'
 
 type Density = VAutocomplete['$props']['density']
 
@@ -72,7 +72,7 @@ const defaultProps: DatatableClientType = {
           show: false,
           title: 'Detail',
           message: (props: any): string => {
-            return `Detail ${props.label}` ?? (`Detail` as string)
+            return `Detail ${props.label}`
           },
           confirmText: 'Detail',
           cancelText: 'Cancel'
@@ -87,7 +87,7 @@ const defaultProps: DatatableClientType = {
           show: false,
           title: 'Create',
           message: (props: any): string => {
-            return `Create ${props.label}` ?? (`Create` as string)
+            return `Create ${props.label}`
           },
           confirmText: 'Create',
           cancelText: 'Cancel'
@@ -102,7 +102,7 @@ const defaultProps: DatatableClientType = {
           show: false,
           title: 'Edit',
           message: (props: any): string => {
-            return `Edit ${props.label}` ?? (`Edit` as string)
+            return `Edit ${props.label}`
           },
           confirmText: 'Edit',
           cancelText: 'Cancel'
@@ -117,7 +117,7 @@ const defaultProps: DatatableClientType = {
           show: false,
           title: 'Delete',
           message: (props: any): string => {
-            return `Delete ${props.label}` ?? (`Delete` as string)
+            return `Delete ${props.label}`
           },
           confirmText: 'Delete',
           cancelText: 'Cancel'
@@ -132,7 +132,7 @@ const defaultProps: DatatableClientType = {
           show: false,
           title: 'Duplicate',
           message: (props: any): string => {
-            return `Duplicate ${props.label}` ?? (`Duplicate` as string)
+            return `Duplicate ${props.label}`
           },
           confirmText: 'Duplicate',
           cancelText: 'Cancel'
@@ -223,7 +223,7 @@ const emits = defineEmits([
   'click:duplicate',
   'update:items-table',
   'update:options',
-  'update:trigger-table',
+  'update:trigger-table'
 ] as { [key: string]: any })
 
 const isMethodAttributeType = (value: any): value is MethodAttributeType => {
@@ -267,28 +267,28 @@ const generateHeaderProps = () => {
   } else {
     initialHeader = itemsTable.value?.length
       ? Object.keys(itemsTable.value[0]).map((key) => {
-          let title = key
+        let title = key
 
-          if (autoTitleSeparatorTable.value == 'camel') {
-            title = key.replace(/([a-z])([A-Z])/g, '$1 $2')
-          } else if (autoTitleSeparatorTable.value == 'pascal') {
-            title = key.replace(/([A-Z])/g, ' $1')
-          } else if (autoTitleSeparatorTable.value == 'snake') {
-            title = key.replace(/_/g, ' ')
-          } else if (autoTitleSeparatorTable.value == 'kebab') {
-            title = key.replace(/-/g, ' ')
-          }
+        if (autoTitleSeparatorTable.value == 'camel') {
+          title = key.replace(/([a-z])([A-Z])/g, '$1 $2')
+        } else if (autoTitleSeparatorTable.value == 'pascal') {
+          title = key.replace(/([A-Z])/g, ' $1')
+        } else if (autoTitleSeparatorTable.value == 'snake') {
+          title = key.replace(/_/g, ' ')
+        } else if (autoTitleSeparatorTable.value == 'kebab') {
+          title = key.replace(/-/g, ' ')
+        }
 
-          // cnvert camelCase to Pascal Case
-          title = title.charAt(0).toUpperCase() + title.slice(1)
+        // cnvert camelCase to Pascal Case
+        title = title.charAt(0).toUpperCase() + title.slice(1)
 
-          return {
-            ...defaultHeaderPropsTable.value,
-            title: title,
-            key: key,
-            value: key
-          }
-        })
+        return {
+          ...defaultHeaderPropsTable.value,
+          title: title,
+          key: key,
+          value: key
+        }
+      })
       : []
   }
 
@@ -427,20 +427,17 @@ watch(
   () => props.config.triggerUpdateTable,
   (newVal, oldVal) => {
     // console.log('mergedConfig.value.config.triggerUpdateTable', mergedConfig.value.config.triggerUpdateTable);
-    if (newVal===true) {
+    if (newVal === true) {
       // console.log(props.config.items,'items');
-      
+
       updateItemsTable(props.config.items)
       emits('update:trigger-table', false)
       // console.log('updateItemsTable', itemsTable.value);
       // console.log('mergedConfig.value.config.triggerUpdateTable', mergedConfig.value.config.triggerUpdateTable);
-      
-      
     }
   },
   { deep: true, immediate: true }
 )
-
 
 const filteredModalForms = ref<ModelFormType>({})
 
@@ -828,7 +825,7 @@ const updateOptions = async (options: UpdateOptionsType) => {
           response: response.data,
           loading: false
         })
-      } catch (error: ErrorResponseApiType) {
+      } catch (error: unknown | ErrorResponseApiType) {
         itemsTable.value = []
         updateItemsTable(itemsTable.value)
 
@@ -854,7 +851,7 @@ const updateOptions = async (options: UpdateOptionsType) => {
           response: response.data,
           loading: false
         })
-      } catch (error: ErrorResponseApiType) {
+      } catch (error: unknown | ErrorResponseApiType) {
         itemsTable.value = []
         updateItemsTable(itemsTable.value)
 
@@ -889,28 +886,21 @@ watchEffect(() => {
 </script>
 <template>
   <div class="flex w-full flex-col gap-4">
-    <div
-      class="flex w-full items-center"
-      :class="{
-        'justify-between': !!mergedConfig.config.title && isCreatable,
-        'justify-end': !mergedConfig.config.title || !isCreatable
-      }"
-    >
+    <div class="flex w-full items-center" :class="{
+      'justify-between': !!mergedConfig.config.title && isCreatable,
+      'justify-end': !mergedConfig.config.title || !isCreatable
+    }">
       <div v-if="!!mergedConfig.config.title">
         <h1 class="text-lg font-semibold">{{ title }}</h1>
       </div>
-      <BaseCustomButton
-        v-if="isCreatable"
-        btn-save
-        @click="
-          openModal(
-            'create',
-            mergedConfig.config.actions.create,
-            undefined,
-            true
-          )
-        "
-      >
+      <BaseCustomButton v-if="isCreatable" btn-save @click="
+        openModal(
+          'create',
+          mergedConfig.config.actions.create,
+          undefined,
+          true
+        )
+        ">
         <div class="flex items-center gap-2 sm:gap-1 md:gap-3">
           <v-icon icon="mdi-plus"></v-icon>
           <span>{{ mergedConfig.config.actions.create?.cta }}</span>
@@ -918,96 +908,61 @@ watchEffect(() => {
       </BaseCustomButton>
     </div>
     <div class="w-full overflow-x-auto">
-      <v-data-table
-        class="table-hover"
-        :headers="computedAllHeaderKeyProps"
-        :items="itemsTable"
-        :item-value="itemValueTable"
-        :return-object="returnObjectTable"
-        :density="densityTable"
-        :header-props="headerPropsTable"
-        :row-props="rowPropsTable"
-        :loading="isLoadingTable"
-        :show-current-page="isShowCurrentPageTable"
-        :loading-text="loadingTextTable"
-        :items-per-page-options="perPageOptionsTable"
-        :hover="hoverTable"
-        :show-select="showSelectTable"
-        :select-strategy="selectStrategyTable"
-        :show-expand="showExpandTable"
-        :multi-sort="multiSortTable"
-        :page="page"
-        :items-per-page="itemsPerPage"
-        v-model="selectedParent"
-        @update:options="updateOptions"
-      >
+      <v-data-table class="table-hover" :headers="computedAllHeaderKeyProps" :items="itemsTable"
+        :item-value="itemValueTable" :return-object="returnObjectTable" :density="densityTable"
+        :header-props="headerPropsTable" :row-props="rowPropsTable" :loading="isLoadingTable"
+        :show-current-page="isShowCurrentPageTable" :loading-text="loadingTextTable"
+        :items-per-page-options="perPageOptionsTable" :hover="hoverTable" :show-select="showSelectTable"
+        :select-strategy="selectStrategyTable" :show-expand="showExpandTable" :multi-sort="multiSortTable" :page="page"
+        :items-per-page="itemsPerPage" v-model="selectedParent" @update:options="updateOptions">
         <!-- <template #header.data-table-select="" -->
-        <template
-          #header.data-table-select="{
-            allSelected,
-            selectAll,
-            someSelected
-          }: {
-            allSelected: any
-            selectAll: any
-            someSelected: any
-          }"
-        >
-          <v-checkbox-btn
-            :model-value="allSelected"
-            @update:model-value="selectAll"
-            :indeterminate="someSelected && !allSelected"
-            class="flex w-full items-center justify-center"
-            hide-details
-          />
+        <template #header.data-table-select="{
+          allSelected,
+          selectAll,
+          someSelected
+        }: {
+          allSelected: any
+          selectAll: any
+          someSelected: any
+        }">
+          <v-checkbox-btn :model-value="allSelected" @update:model-value="selectAll"
+            :indeterminate="someSelected && !allSelected" class="flex w-full items-center justify-center"
+            hide-details />
         </template>
 
-        <template
-          #item="{
-            item,
-            isSelected,
-            toggleSelect,
-            index
-          }: {
-            item: any
-            isSelected: any
-            toggleSelect: any
-            index: any
-          }"
-        >
+        <template #item="{
+          item,
+          isSelected,
+          toggleSelect,
+          index
+        }: {
+          item: any
+          isSelected: any
+          toggleSelect: any
+          index: any
+        }">
           <tr>
             <td v-if="showSelectTable">
-              <v-checkbox-btn
-                :model-value="isSelected({ value: item, selectable: false })"
-                @update:model-value="
-                  toggleSelect({
-                    value: item,
-                    selectable: false
-                  })
-                "
-                class="flex w-full flex-row items-center justify-center"
-              />
+              <v-checkbox-btn :model-value="isSelected({ value: item, selectable: false })" @update:model-value="
+                toggleSelect({
+                  value: item,
+                  selectable: false
+                })
+                " class="flex w-full flex-row items-center justify-center" />
             </td>
             <td v-if="isShowIndexNumberTable">
               <div class="flex w-full flex-row items-center justify-center">
                 {{ index + 1 }}
               </div>
             </td>
-            <td
-              v-for="(header, iHeader) in headersTable"
-              :key="iHeader"
-              :class="['whitespace-nowrap', header.cellClass]"
-            >
+            <td v-for="(header, iHeader) in headersTable" :key="iHeader"
+              :class="['whitespace-nowrap', header.cellClass]">
               <div v-if="isColumnDisplay(header, 'text')">
                 {{ displayColumn(header, item[header.value ?? header.key]) }}
               </div>
               <div v-if="isColumnDisplay(header, 'reference')">
-                <d-shorttext
-                  :text="
-                    displayColumn(header, item[header.value ?? header.key])
-                  "
-                  :max-length="20"
-                />
+                <d-shorttext :text="displayColumn(header, item[header.value ?? header.key])
+                  " :max-length="20" />
               </div>
               <div v-else-if="isColumnDisplay(header, 'date')">
                 {{ displayColumn(header, item[header.value ?? header.key]) }}
@@ -1019,46 +974,29 @@ watchEffect(() => {
                 {{ displayColumn(header, item[header.value ?? header.key]) }}
               </div>
               <div v-else-if="isColumnDisplay(header, 'number')">
-                <d-num-layout
-                  :value="
-                    displayColumn(header, item[header.value ?? header.key])
-                  "
-                />
+                <d-num-layout :value="displayColumn(header, item[header.value ?? header.key])
+                  " />
 
                 {{}}
               </div>
               <div v-else-if="isColumnDisplay(header, 'boolean')">
-                <v-icon
-                  :color="
-                    item[header.value ?? header.key] ? 'success' : 'error'
-                  "
-                >
+                <v-icon :color="item[header.value ?? header.key] ? 'success' : 'error'
+                  ">
                   {{
                     item[header.value ?? header.key] ? 'mdi-check' : 'mdi-close'
                   }}
                 </v-icon>
               </div>
               <div v-else-if="isColumnDisplay(header, 'image')">
-                <v-img
-                  :src="item[header.value ?? header.key]"
-                  width="50"
-                  height="50"
-                  contain
-                ></v-img>
+                <v-img :src="item[header.value ?? header.key]" width="50" height="50" contain></v-img>
               </div>
               <div v-else-if="isColumnDisplay(header, 'array')">
-                <span
-                  v-for="(value, index) in item[header.value ?? header.key]"
-                  :key="index"
-                >
+                <span v-for="(value, index) in item[header.value ?? header.key]" :key="index">
                   {{ value }}
                 </span>
               </div>
               <div v-else-if="isColumnDisplay(header, 'object')">
-                <span
-                  v-for="(value, key) in item[header.value ?? header.key]"
-                  :key="key"
-                >
+                <span v-for="(value, key) in item[header.value ?? header.key]" :key="key">
                   {{ key }}: {{ value }}
                 </span>
               </div>
@@ -1066,122 +1004,83 @@ watchEffect(() => {
 
             <td class="action-table sticky-right">
               <div class="action-button">
-                <div
-                  v-if="!slots['item:actions-all']"
-                  class="flex flex-row gap-1"
-                >
+                <div v-if="!slots['item:actions-all']" class="flex flex-row gap-1">
                   <div>
-                    <div
-                      v-if="
-                        !slots['item:action-duplicate'] &&
-                        mergedConfig.config.actions?.duplicate?.show
-                      "
-                      :class="[
-                        mergedConfig.config.actions?.duplicate?.class,
-                        'cursor-pointer rounded-lg bg-indigo-400 px-2 py-1 text-white transition-all ease-in-out hover:bg-indigo-500'
-                      ]"
-                      @click="
-                        clickAction(
-                          'duplicate',
-                          mergedConfig.config.actions.duplicate,
-                          index
-                        )
-                      "
-                    >
+                    <div v-if="
+                      !slots['item:action-duplicate'] &&
+                      mergedConfig.config.actions?.duplicate?.show
+                    " :class="[
+                      mergedConfig.config.actions?.duplicate?.class,
+                      'cursor-pointer rounded-lg bg-indigo-400 px-2 py-1 text-white transition-all ease-in-out hover:bg-indigo-500'
+                    ]" @click="
+                      clickAction(
+                        'duplicate',
+                        mergedConfig.config.actions.duplicate,
+                        index
+                      )
+                      ">
                       {{ mergedConfig.config.actions?.duplicate?.cta }}
                     </div>
-                    <slot
-                      name="item:action-duplicate"
-                      :item="item"
-                      :index="index"
-                      v-else
-                    />
+                    <slot name="item:action-duplicate" :item="item" :index="index" v-else />
                   </div>
 
                   <div>
-                    <div
-                      v-if="
-                        !slots['item:action-detail'] &&
-                        mergedConfig.config.actions?.detail?.show
-                      "
-                      :class="[
-                        mergedConfig.config.actions?.detail?.class,
-                        'cursor-pointer rounded-lg bg-blue-400 px-2 py-1 text-white transition-all ease-in-out hover:bg-blue-500'
-                      ]"
-                      @click="
-                        openModal(
-                          'detail',
-                          mergedConfig.config.actions.detail,
-                          item,
-                          true
-                        )
-                      "
-                    >
+                    <div v-if="
+                      !slots['item:action-detail'] &&
+                      mergedConfig.config.actions?.detail?.show
+                    " :class="[
+                      mergedConfig.config.actions?.detail?.class,
+                      'cursor-pointer rounded-lg bg-blue-400 px-2 py-1 text-white transition-all ease-in-out hover:bg-blue-500'
+                    ]" @click="
+                      openModal(
+                        'detail',
+                        mergedConfig.config.actions.detail,
+                        item,
+                        true
+                      )
+                      ">
                       {{ mergedConfig.config.actions?.detail?.cta }}
                     </div>
-                    <slot
-                      name="item:action-detail"
-                      :item="item"
-                      :index="index"
-                      v-else
-                    />
+                    <slot name="item:action-detail" :item="item" :index="index" v-else />
                   </div>
 
                   <div>
-                    <div
-                      v-if="
-                        !slots['item:action-edit'] &&
-                        mergedConfig.config.actions?.edit?.show
-                      "
-                      :class="[
-                        mergedConfig.config.actions?.edit?.class,
-                        'cursor-pointer rounded-lg bg-emerald-400 px-2 py-1 text-white transition-all ease-in-out hover:bg-emerald-500'
-                      ]"
-                      @click="
-                        clickAction(
-                          'edit',
-                          mergedConfig.config.actions.edit,
-                          index,
-                          item
-                        )
-                      "
-                    >
+                    <div v-if="
+                      !slots['item:action-edit'] &&
+                      mergedConfig.config.actions?.edit?.show
+                    " :class="[
+                      mergedConfig.config.actions?.edit?.class,
+                      'cursor-pointer rounded-lg bg-emerald-400 px-2 py-1 text-white transition-all ease-in-out hover:bg-emerald-500'
+                    ]" @click="
+                      clickAction(
+                        'edit',
+                        mergedConfig.config.actions.edit,
+                        index,
+                        item
+                      )
+                      ">
                       {{ mergedConfig.config.actions?.edit?.cta }}
                     </div>
-                    <slot
-                      name="item:action-edit"
-                      :item="item"
-                      :index="index"
-                      v-else
-                    />
+                    <slot name="item:action-edit" :item="item" :index="index" v-else />
                   </div>
 
                   <div>
-                    <div
-                      v-if="
-                        !slots['item:action-delete'] &&
-                        mergedConfig.config.actions?.delete?.show
-                      "
-                      :class="[
-                        mergedConfig.config.actions?.delete?.class,
-                        'cursor-pointer rounded-lg bg-rose-500 px-2 py-1 text-white transition-all ease-in-out hover:bg-rose-700'
-                      ]"
-                      @click="
-                        clickAction(
-                          'delete',
-                          mergedConfig.config.actions.delete,
-                          index
-                        )
-                      "
-                    >
+                    <div v-if="
+                      !slots['item:action-delete'] &&
+                      mergedConfig.config.actions?.delete?.show
+                    " :class="[
+                      mergedConfig.config.actions?.delete?.class,
+                      'cursor-pointer rounded-lg bg-rose-500 px-2 py-1 text-white transition-all ease-in-out hover:bg-rose-700'
+                    ]" @click="
+                      clickAction(
+                        'delete',
+                        mergedConfig.config.actions.delete,
+                        index
+                      )
+                      ">
                       {{ mergedConfig.config.actions?.delete?.cta }}
                     </div>
-                    <slot
-                      name="item:action-delete"
-                      :item="item"
-                      :index="index"
-                      v-else
-                    />
+                    <slot name="item:action-delete" :item="item" :index="index" v-else />
                   </div>
                 </div>
 
@@ -1207,22 +1106,14 @@ watchEffect(() => {
     </div>
   </div>
 
-  <ModalsFinalModal
-    v-for="(action, key) in mergedConfig.config.actions"
-    :name="action?.modal?.key ?? key"
-    :is-open="action?.modal?.show"
-    :size="action?.modal?.size ?? 'sm'"
-    :label="action?.modal?.title"
+  <ModalsFinalModal v-for="(action, key) in mergedConfig.config.actions" :name="action?.modal?.key ?? key"
+    :is-open="action?.modal?.show" :size="action?.modal?.size ?? 'sm'" :label="action?.modal?.title"
     :header-text-class="['text-xl', action?.modal?.headerTextClass ?? '']"
-    :custom-class="['p-6', action?.modal?.customClass ?? '']"
-    @update:is-open="toggleOpenModal(action, key, $event)"
-    v-if="isModalOpenable"
-  >
+    :custom-class="['p-6', action?.modal?.customClass ?? '']" @update:is-open="toggleOpenModal(action, key, $event)"
+    v-if="isModalOpenable">
     <template #label>
       <slot :name="`modal:${key}-label`" v-bind="{ modal: action?.modal }">
-        <div
-          :class="['flex items-center gap-2', action?.modal?.headerClass ?? '']"
-        >
+        <div :class="['flex items-center gap-2', action?.modal?.headerClass ?? '']">
           <span :class="['text-xl', action?.modal?.headerTextClass ?? '']">
             {{ action?.modal?.title }}
           </span>
@@ -1232,161 +1123,90 @@ watchEffect(() => {
 
     <div v-if="action?.modal?.show">
       <slot :name="`modal:${key}-content`" v-bind="{ modal: action?.modal }">
-        <form
-          @submit.prevent="submitModal(action, key)"
-          :class="['flex flex-col gap-5', action?.modal?.contentClass ?? '']"
-        >
+        <form @submit.prevent="submitModal(action, key)"
+          :class="['flex flex-col gap-5', action?.modal?.contentClass ?? '']">
           <!-- <div
           :class="[action?.modal?.contentClass ?? '']"
           v-for="(field, iField) in headersTable"
           :key="iField"
           v-if="isDisplayRow(key)"
         > -->
-          <div
-            v-for="(modelForm, keyModelForm, iModelForm) in filteredModalForms"
-            :key="keyModelForm"
-          >
-            <slot
-              :name="`modal:${key}-${keyModelForm}`"
-              v-bind="{
-                item: modelForm,
-                configKey: filteredModalForms[keyModelForm],
-                keyModelForm: keyModelForm,
-                options: modelForm.headerOptions,
-                methodKey: key,
-                permitted: isColumnDisplay(
-                  modelForm.headerOptions,
-                  modelForm.headerOptions.methods[key]?.type ?? 'text',
-                  key
-                ),
-                filteredModalForms: filteredModalForms
-              }"
-            >
+          <div v-for="(modelForm, keyModelForm, iModelForm) in filteredModalForms" :key="keyModelForm">
+            <slot :name="`modal:${key}-${keyModelForm}`" v-bind="{
+              item: modelForm,
+              configKey: filteredModalForms[keyModelForm],
+              keyModelForm: keyModelForm,
+              options: modelForm.headerOptions,
+              methodKey: key,
+              permitted: isColumnDisplay(
+                modelForm.headerOptions,
+                modelForm.headerOptions.methods[key]?.type ?? 'text',
+                key
+              ),
+              filteredModalForms: filteredModalForms
+            }">
               <div v-if="isColumnDisplay(modelForm.headerOptions, 'text', key)">
-                <d-text-input
-                  :model-value="filteredModalForms[keyModelForm].payload"
-                  @update:model-value="
-                    filteredModalForms[keyModelForm].payload = $event
-                  "
-                  :label="modelForm.headerOptions.title"
-                />
+                <d-text-input :model-value="filteredModalForms[keyModelForm].payload" @update:model-value="
+                  filteredModalForms[keyModelForm].payload = $event
+                  " :label="modelForm.headerOptions.title" />
               </div>
               <div v-if="isColumnDisplay(modelForm.headerOptions, 'view', key)">
                 {{ modelForm.headerOptions.title }}
               </div>
-              <div
-                v-if="isColumnDisplay(modelForm.headerOptions, 'disabled', key)"
-              >
-                <d-text-input
-                  :model-value="filteredModalForms[keyModelForm].payload"
-                  @update:model-value="
-                    filteredModalForms[keyModelForm].payload = $event
-                  "
-                  :label="modelForm.headerOptions.title"
-                  :disabled="true"
-                />
+              <div v-if="isColumnDisplay(modelForm.headerOptions, 'disabled', key)">
+                <d-text-input :model-value="filteredModalForms[keyModelForm].payload" @update:model-value="
+                  filteredModalForms[keyModelForm].payload = $event
+                  " :label="modelForm.headerOptions.title" :disabled="true" />
               </div>
-              <div
-                v-if="
-                  isColumnDisplay(
-                    modelForm.headerOptions,
-                    'autocomplete-client',
-                    key
-                  )
-                "
-              >
-                <d-autocomplete-client
-                  :model-value="filteredModalForms[keyModelForm].payload"
-                  @update:model-value="
-                    filteredModalForms[keyModelForm].payload = $event
-                  "
-                  :label="modelForm.headerOptions.title"
-                  :items="modelForm.headerOptions.methods[key]?.others?.items"
-                  :item-title="
-                    modelForm.headerOptions.methods[key]?.others?.itemTitle ??
+              <div v-if="
+                isColumnDisplay(
+                  modelForm.headerOptions,
+                  'autocomplete-client',
+                  key
+                )
+              ">
+                <d-autocomplete-client :model-value="filteredModalForms[keyModelForm].payload" @update:model-value="
+                  filteredModalForms[keyModelForm].payload = $event
+                  " :label="modelForm.headerOptions.title" :items="modelForm.headerOptions.methods[key]?.others?.items"
+                  :item-title="modelForm.headerOptions.methods[key]?.others?.itemTitle ??
                     'name'
-                  "
-                  :item-value="
-                    modelForm.headerOptions.methods[key]?.others?.itemValue ??
-                    'id'
-                  "
-                  :is-display-multiple-key="
-                    modelForm.headerOptions.methods[key]?.others
-                      ?.isDisplayMultipleKey ?? false
-                  "
-                  :display-multiple-keys="
-                    modelForm.headerOptions.methods[key]?.others
-                      ?.displayMultipleKeys ?? ['id', 'name']
-                  "
-                  :max-length-display="
-                    modelForm.headerOptions.methods[key]?.others
-                      ?.maxLengthDisplay ?? 70
-                  "
-                />
+                    " :item-value="modelForm.headerOptions.methods[key]?.others?.itemValue ??
+                      'id'
+                      " :is-display-multiple-key="modelForm.headerOptions.methods[key]?.others
+                        ?.isDisplayMultipleKey ?? false
+                        " :display-multiple-keys="modelForm.headerOptions.methods[key]?.others
+                          ?.displayMultipleKeys ?? ['id', 'name']
+                          " :max-length-display="modelForm.headerOptions.methods[key]?.others
+                            ?.maxLengthDisplay ?? 70
+                            " />
               </div>
               <div v-if="isColumnDisplay(modelForm.headerOptions, 'date', key)">
-                <d-date-picker-light
-                  v-model="filteredModalForms[keyModelForm].payload"
-                  :label="modelForm.headerOptions.title"
-                  :dp-class="
-                    modelForm.headerOptions.methods[key]?.others?.dpClass
-                  "
-                  :clearable="
-                    modelForm.headerOptions.methods[key]?.others?.clearable
-                  "
-                  :placeholder="modelForm.headerOptions.placeholder"
-                  :density="
-                    modelForm.headerOptions.methods[key]?.others?.density
-                  "
-                  :variant="
-                    modelForm.headerOptions.methods[key]?.others?.variant
-                  "
-                ></d-date-picker-light>
+                <d-date-picker-light v-model="filteredModalForms[keyModelForm].payload"
+                  :label="modelForm.headerOptions.title" :dp-class="modelForm.headerOptions.methods[key]?.others?.dpClass
+                    " :clearable="modelForm.headerOptions.methods[key]?.others?.clearable
+                      " :placeholder="modelForm.headerOptions.placeholder" :density="modelForm.headerOptions.methods[key]?.others?.density
+                        " :variant="modelForm.headerOptions.methods[key]?.others?.variant
+                          "></d-date-picker-light>
               </div>
-              <div
-                v-if="isColumnDisplay(modelForm.headerOptions, 'datetime', key)"
-              >
-                <d-date-picker-light
-                  v-model="filteredModalForms[keyModelForm].payload"
-                  :label="modelForm.headerOptions.title"
-                  :dp-class="
-                    modelForm.headerOptions.methods[key]?.others?.dpClass
-                  "
-                  :clearable="
-                    modelForm.headerOptions.methods[key]?.others?.clearable
-                  "
-                  :placeholder="modelForm.headerOptions.placeholder"
-                  :density="
-                    modelForm.headerOptions.methods[key]?.others?.density
-                  "
-                  :variant="
-                    modelForm.headerOptions.methods[key]?.others?.variant
-                  "
-                ></d-date-picker-light>
+              <div v-if="isColumnDisplay(modelForm.headerOptions, 'datetime', key)">
+                <d-date-picker-light v-model="filteredModalForms[keyModelForm].payload"
+                  :label="modelForm.headerOptions.title" :dp-class="modelForm.headerOptions.methods[key]?.others?.dpClass
+                    " :clearable="modelForm.headerOptions.methods[key]?.others?.clearable
+                      " :placeholder="modelForm.headerOptions.placeholder" :density="modelForm.headerOptions.methods[key]?.others?.density
+                        " :variant="modelForm.headerOptions.methods[key]?.others?.variant
+                          "></d-date-picker-light>
               </div>
-              <div
-                v-if="isColumnDisplay(modelForm.headerOptions, 'currency', key)"
-              >
+              <div v-if="isColumnDisplay(modelForm.headerOptions, 'currency', key)">
                 {{ modelForm.headerOptions.title }}
               </div>
-              <div
-                v-if="isColumnDisplay(modelForm.headerOptions, 'number', key)"
-              >
-                <d-num-v-format
-                  :label="modelForm.headerOptions.title"
-                  :reverse="false"
-                  :hide-currency-display="true"
-                  v-model="filteredModalForms[keyModelForm].payload"
-                />
+              <div v-if="isColumnDisplay(modelForm.headerOptions, 'number', key)">
+                <d-num-v-format :label="modelForm.headerOptions.title" :reverse="false" :hide-currency-display="true"
+                  v-model="filteredModalForms[keyModelForm].payload" />
               </div>
-              <div
-                v-if="isColumnDisplay(modelForm.headerOptions, 'boolean', key)"
-              >
+              <div v-if="isColumnDisplay(modelForm.headerOptions, 'boolean', key)">
                 {{ modelForm.headerOptions.title }}
               </div>
-              <div
-                v-if="isColumnDisplay(modelForm.headerOptions, 'image', key)"
-              >
+              <div v-if="isColumnDisplay(modelForm.headerOptions, 'image', key)">
                 {{ modelForm.headerOptions.title }}
               </div>
             </slot>
@@ -1400,47 +1220,23 @@ watchEffect(() => {
     <template #footer>
       <slot :name="`modal:${key}-footer`" v-bind="{ modal: action?.modal }">
         <div class="flex w-full items-center gap-3 pt-3">
-          <d-button
-            v-if="!slots[`modal:${key}-cancel`]"
-            @click="closeModal(action, key)"
-            :class="[
-              'grow justify-center rounded-lg !border !border-solid !border-rose-700 py-2 !text-rose-700 transition-all ease-in-out hover:!bg-rose-50',
-              action?.modal?.cancelClass ?? ''
-            ]"
-            :text-class="[
-              action?.modal?.cancelTextClass ?? 'text-rose-700 text-lg'
-            ]"
-            :cta="action?.modal?.cancelText"
-            type="submit"
-            :no-icon="true"
-          ></d-button>
+          <d-button v-if="!slots[`modal:${key}-cancel`]" @click="closeModal(action, key)" :class="classMerge(
+            'grow justify-center rounded-lg !border !border-solid !border-rose-700 py-2 !text-rose-700 transition-all ease-in-out hover:!bg-rose-50',
+            action?.modal?.cancelClass ?? ''
+          )
+            " :text-class="action?.modal?.cancelTextClass ?? 'text-rose-700 text-lg'
+              " :cta="action?.modal?.cancelText" type="submit" :no-icon="true"></d-button>
 
-          <slot
-            v-else
-            :name="`modal:${key}-cancel`"
-            v-bind="{ modal: action?.modal }"
-            class="grow"
-          ></slot>
+          <slot v-else :name="`modal:${key}-cancel`" v-bind="{ modal: action?.modal }" class="grow"></slot>
 
-          <d-button
-            v-if="!slots[`modal:${key}-confirm`]"
-            :class="[
-              ' w-2/3 justify-center rounded-lg !bg-[#4094D4] py-2 text-white transition-all ease-in-out hover:!bg-[#3882ba]',
-              action?.modal?.confirmClass ?? ''
-            ]"
-            :text-class="[
-              action?.modal?.confirmTextClass ?? 'text-white text-lg'
-            ]"
-            :cta="action?.modal?.confirmText"
-            @click="submitModal(action, key)"
-            type="submit"
-            :no-icon="true"
-          ></d-button>
-          <slot
-            v-else
-            :name="`modal:${key}-confirm`"
-            v-bind="{ modal: action?.modal }"
-          ></slot>
+          <d-button v-if="!slots[`modal:${key}-confirm`]" :class="classMerge(
+            'w-2/3 justify-center rounded-lg !bg-[#4094D4] py-2 text-white transition-all ease-in-out hover:!bg-[#3882ba]',
+            action?.modal?.confirmClass ?? ''
+          )
+            " :text-class="action?.modal?.confirmTextClass ?? 'text-white text-lg'
+              " :cta="action?.modal?.confirmText" @click="submitModal(action, key)" type="submit"
+            :no-icon="true"></d-button>
+          <slot v-else :name="`modal:${key}-confirm`" v-bind="{ modal: action?.modal }"></slot>
         </div>
       </slot>
     </template>

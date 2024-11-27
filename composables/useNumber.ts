@@ -111,11 +111,21 @@ const numberInputFormat = {
   reverseFill: false
 }
 
+function sumArrayKey(array: Record<string, any>[], key: string): number {
+  let sum = 0
+  array.forEach((item) => {
+    sum += item[key]
+  })
+
+  return sum
+}
+
 export const useNumber = {
   formatIdr,
   formatUSD,
   formatCurrency,
   formatNumberSeparator,
   formatWithoutCurrencySymbol,
-  numberInputFormat
+  numberInputFormat,
+  sumArrayKey
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { VAutocomplete } from 'vuetify/components'
-
+import { useNumber } from '~/composables/useNumber'
+const { formatNumberSeparator } = useNumber
 type Variant = VAutocomplete['$props']['variant']
 type Density = VAutocomplete['$props']['density']
 
@@ -18,6 +19,8 @@ interface IProps {
   replaceDetailsWithError?: boolean
   initialValue?: string
   readonly?: boolean
+  minPrecision?: number
+  maxPrecision?: number
 }
 const props = withDefaults(defineProps<IProps>(), {
   disabled: false,
@@ -32,7 +35,9 @@ const props = withDefaults(defineProps<IProps>(), {
   class: '',
   errors: () => [],
   replaceDetailsWithError: false,
-  initialValue: ''
+  initialValue: '',
+  minPrecision: 3,
+  maxPrecision: 3
 })
 
 const realValue = ref(props.modelValue)
@@ -42,7 +47,11 @@ const slots = useSlots()
 const emits = defineEmits(['update:modelValue'])
 
 const updateValue = (value: string) => {
-  realValue.value = value
+  realValue.value = formatNumberSeparator(
+    value,
+    props.minPrecision,
+    props.maxPrecision
+  )
   emits('update:modelValue', value)
 }
 
@@ -50,11 +59,19 @@ onMounted(() => {
   realValue.value = ''
 
   if (props.modelValue) {
-    realValue.value = props.modelValue
+    realValue.value = formatNumberSeparator(
+      props.modelValue,
+      props.minPrecision,
+      props.maxPrecision
+    )
   }
 
   if (props.initialValue) {
-    realValue.value = props.initialValue
+    realValue.value = formatNumberSeparator(
+      props.initialValue,
+      props.minPrecision,
+      props.maxPrecision
+    )
   }
 })
 
@@ -62,7 +79,11 @@ watch(
   () => props.modelValue,
   (newVal, oldVal) => {
     if (newVal !== oldVal) {
-      realValue.value = newVal
+      realValue.value = formatNumberSeparator(
+        newVal,
+        props.minPrecision,
+        props.maxPrecision
+      )
     }
   }
 )
@@ -73,23 +94,30 @@ watch(
     class="flex grow flex-col"
   >
     <v-text-field
+      v-model="realValue"
       :label="props.label"
       :variant="props.variant"
-      v-model="realValue"
       :density="props.density"
       :placeholder="props.placeholder"
       :type="props.type"
       :class="classMerge('w-full', props.class)"
       :clearable="props.clearable"
       :disabled="props.disabled"
-      @update:model-value="updateValue"
       hide-details
+      @update:model-value="updateValue"
     ></v-text-field>
-    <div v-if="slots.details && errors.length == 0" class="flex flex-col gap-1">
+    <div
+      v-if="slots.details && errors.length == 0"
+      class="flex flex-col gap-1"
+    >
       <slot name="details" />
     </div>
     <div class="flex flex-col gap-1">
-      <div v-for="error in errors" :key="error" class="text-sm text-red-500">
+      <div
+        v-for="error in errors"
+        :key="error"
+        class="text-sm text-red-500"
+      >
         {{ error }}
       </div>
     </div>

@@ -83,6 +83,7 @@ watch(
       :clearable="clearable"
       @update:model-value="updateValue"
       hide-details
+      :disabled="disabled"
     ></v-textarea>
     <div v-if="slots.details && errors.length == 0" class="flex flex-col gap-1">
       <slot name="details" />

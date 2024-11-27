@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import useLayouts from '~/stores/configs/layouts'
 
 interface IProps {
   modelValue: number | string
@@ -107,10 +106,5 @@ watchEffect(() => {
 </script>
 
 <template>
-  <vue-number
-    v-model="props.modelValue"
-    v-bind="format"
-    @input:model-value="emitValue"
-    :class="`${combineClass}`"
-  />
+  <vue-number v-model="props.modelValue" v-bind="format" @input:model-value="emitValue" :class="`${combineClass}`" />
 </template>

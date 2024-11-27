@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import { classMerge } from '#imports'
+
+type IProps = {
+  class?: string
+}
+
+const props = withDefaults(defineProps<IProps>(), {
+  class: ''
+})
+
 const emits = defineEmits(['click:submit', 'click:clear'])
 const handleClickSubmit = () => {
   emits('click:submit')
@@ -10,7 +20,7 @@ const handleClickClear = () => {
 </script>
 
 <template>
-  <div class="flex flex-row items-center gap-2">
+  <div :class="classMerge('flex flex-row items-center gap-2', props.class)">
     <v-btn
       variant="tonal"
       height="35"
