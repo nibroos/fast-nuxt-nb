@@ -1,34 +1,22 @@
 <template>
-  <VueFinalModal
-    v-model="isOpenParent"
-    :name="props.name"
-    :classes="['flex justify-center items-center']"
+  <VueFinalModal v-model="isOpenParent" :name="props.name" :classes="['flex justify-center items-center']"
     :content-class="[
       'relative flex flex-col border dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900 p-4 max-h-[52rem] overflow-hidden',
       props.customClass,
       size
-    ]"
-    :esc-to-close="props.escToClose"
-    :focus-trap="props.focusTrap"
-    :resize="props.resize"
-    :resize-directions="['r', 'l']"
-  >
+    ]" :esc-to-close="props.escToClose" :focus-trap="props.focusTrap" :resize="props.resize"
+    :resize-directions="['r', 'l']">
     <div class="flex flex-col gap-3">
       <slot name="header">
         <div class="flex flex-row items-center justify-between">
-          <h1
-            class="text-lg font-semibold text-zinc-900"
-            :class="[props.headerTextClass]"
-          >
+          <h1 class="text-lg font-semibold text-zinc-900" :class="[props.headerTextClass]">
             <slot name="label">
               {{ props.label }}
             </slot>
           </h1>
 
-          <div
-            @click="onClickClose"
-            class="cursor-pointer rounded-full p-1 transition-all duration-300 ease-in-out hover:bg-gray-200"
-          >
+          <div @click="onClickClose"
+            class="cursor-pointer rounded-full p-1 transition-all duration-300 ease-in-out hover:bg-gray-200">
             <Icon name="material-symbols:close-rounded" size="25" />
           </div>
         </div>

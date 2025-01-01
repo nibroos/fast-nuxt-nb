@@ -207,58 +207,26 @@ watch(
 
 <template>
   <div :id="dpElementId" class="relative w-full">
-    <VueDatePicker
-      ref="datepicker"
-      v-model="innerValue"
-      text-input
-      auto-apply
-      :placeholder="props.placeholder"
-      :clearable="props.disabled ? false : props.clearable"
-      :month-change-on-scroll="props.monthChangeOnScroll"
-      :model-type="props.displayFormat"
-      :start-date="props.startDate"
-      arrow-navigation
-      :enable-time-picker="props.enableTimePicker"
-      :class="[props.dpClass]"
-      @date-update="closeDatePicker"
-      :disabled="props.disabled"
-      :teleport="true"
-    >
+    <VueDatePicker ref="datepicker" v-model="innerValue" text-input auto-apply :placeholder="props.placeholder"
+      :clearable="props.disabled ? false : props.clearable" :month-change-on-scroll="props.monthChangeOnScroll"
+      :model-type="props.displayFormat" :start-date="props.startDate" arrow-navigation
+      :enable-time-picker="props.enableTimePicker" :class="[props.dpClass]" @date-update="closeDatePicker"
+      :disabled="props.disabled" :teleport="true">
       <template #action-extra>
-        <div
-          @click="selectToday()"
-          title="Select today"
-          class="w-full cursor-pointer border border-gray-300 py-2 text-center transition-all ease-in-out hover:bg-gray-100"
-        >
+        <div @click="selectToday()" title="Select today"
+          class="w-full cursor-pointer border border-gray-300 py-2 text-center transition-all ease-in-out hover:bg-gray-100">
           Today
         </div>
       </template>
       <template #trigger>
-        <v-text-field
-          v-model="innerValue"
-          :label="props.label"
-          :variant="props.variant"
-          :density="props.density"
-          :hide-details="props.hideDetails"
-          :class="props.inputClass"
-          :prepend-inner-icon="props.prependInnerIcon"
-          :append-inner-icon="props.appendInnerIcon"
-          :clearable="props.disabled ? false : props.clearable"
-          :placeholder="props.placeholder"
-          @update:focused="onBlurInner"
-          @click:append-inner="openCloseDP"
-          @click:control="openCloseDP"
-          @click:clear="handleClearable"
-          :disabled="props.disabled"
-        ></v-text-field>
+        <v-text-field v-model="innerValue" :label="props.label" :variant="props.variant" :density="props.density"
+          :hide-details="props.hideDetails" :class="props.inputClass" :prepend-inner-icon="props.prependInnerIcon"
+          :append-inner-icon="props.appendInnerIcon" :clearable="props.disabled ? false : props.clearable"
+          :placeholder="props.placeholder" @update:focused="onBlurInner" @click:append-inner="openCloseDP"
+          @click:control="openCloseDP" @click:clear="handleClearable" :disabled="props.disabled"></v-text-field>
       </template>
     </VueDatePicker>
   </div>
-  <v-overlay
-    v-model="isOpenDP"
-    location-strategy="connected"
-    scroll-strategy="reposition"
-    :scrim="false"
-    contained
-  ></v-overlay>
+  <v-overlay v-model="isOpenDP" location-strategy="connected" scroll-strategy="reposition" :scrim="false"
+    contained></v-overlay>
 </template>

@@ -2,7 +2,7 @@
 import type { VAutocomplete } from 'vuetify/components'
 import type { AutocompleteType } from '~/types/AutocompleteType'
 import qs from 'qs'
-import { property } from 'lodash-es'
+import { property, debounce } from 'lodash-es'
 
 import { useMyFetch } from '~/composables/useMyFetch'
 
@@ -28,9 +28,9 @@ const props = withDefaults(defineProps<AutocompleteType>(), {
   aClass: '',
   uid: 'id',
   initialValue: '',
-  disableInitialLoad: true,
+  disableInitialLoad: false,
   methodApi: 'get',
-  placeholder: (props) => `Select/search ${props.label}`,
+  placeholder: (props) => `Select/search ${props.label}` || 'Select/Search',
   chips: false,
   maxLengthDisplay: 16,
   startAlignDisplay: 'left',
@@ -90,47 +90,53 @@ const convertQuery = (searchValue?: string): string => {
   return qs.stringify(queryString)
 }
 
-watch(innerSearch, async (searchValue: string, oldSearchValue: string) => {
-  if (!props.api) return
-  if (isMenuShow.value) {
-    loadingSearch.value = true
-    convertQuery(searchValue)
+// watch(innerSearch, async (searchValue: string, oldSearchValue: string) => {
+const debouncedSearch = debounce(
+  async (searchValue: string, oldSearchValue: string) => {
+    if (!props.api) return
+    if (isMenuShow.value) {
+      loadingSearch.value = true
+      convertQuery(searchValue)
 
-    let response
-    let apiUrl
+      let response
+      let apiUrl
 
-    if (searchValue !== oldSearchValue) {
+      if (searchValue !== oldSearchValue) {
+        page.value = 1
+      }
+
+      if (props.methodApi === 'post') {
+        queryObject.value.page = page.value
+        response = await useMyFetch()
+          .post(props.api, queryObject.value)
+          .finally(() => {
+            loadingSearch.value = false
+            isInitialLoad.value = false
+          })
+      } else {
+        apiUrl = `${props.api}?${queryString.value}&page=${page.value}`
+        response = await useMyFetch()
+          .get(apiUrl)
+          .finally(() => {
+            loadingSearch.value = false
+            isInitialLoad.value = false
+          })
+      }
+
+      const resData = response.data
+
+      // console.log('resData', resData)
+
+      options.value = <any[]>property(props.itemsProp)(resData)
+      paginationDone.value = !property(props.pageEndProp)(resData)
       page.value = 1
+      loadingSearch.value = false
     }
+  },
+  600
+)
 
-    if (props.methodApi === 'post') {
-      queryObject.value.page = page.value
-      response = await useMyFetch()
-        .post(props.api, queryObject.value)
-        .finally(() => {
-          loadingSearch.value = false
-          isInitialLoad.value = false
-        })
-    } else {
-      apiUrl = `${props.api}?${queryString.value}&page=${page.value}`
-      response = await useMyFetch()
-        .get(apiUrl)
-        .finally(() => {
-          loadingSearch.value = false
-          isInitialLoad.value = false
-        })
-    }
-
-    const resData = response.data
-
-    // console.log('resData', resData)
-
-    options.value = <any[]>property(props.itemsProp)(resData)
-    paginationDone.value = !property(props.pageEndProp)(resData)
-    page.value = 1
-    loadingSearch.value = false
-  }
-})
+watch(innerSearch, debouncedSearch)
 
 watch(
   () => props.query,
@@ -190,7 +196,7 @@ const getList = async () => {
     // try {
     response = await useMyFetch()
       .post(props.api, queryObject.value)
-      .catch((err: any) => {
+      .catch((err) => {
         statusCode = err?.response?.status
         console.log(err, 'Failed to fetch list data')
       })
@@ -204,6 +210,8 @@ const getList = async () => {
   if (statusCode !== 200) {
     loadingData.value = false
     loadingSearch.value = false
+
+    options.value = []
     return
   }
 
@@ -342,7 +350,7 @@ const onFocus = (focusState: boolean) => {
   if (focusState) {
     innerSearch.value = ''
 
-    if (!isInitialLoad.value) {
+    if (!isInitialLoad.value && !props.disableInitialLoad) {
       isInitialLoad.value = true
       useDebouncedRef(getList(), 100)
     }
@@ -441,29 +449,29 @@ watch(
       <span class="whitespace-nowrap">
         <d-shorttext v-if="props.multiple" :text="item.title" :max-length="Number(props.maxLengthDisplay)"
           :class="props.aClass" :start-align="props.startAlignDisplay" />
-        <d-shorttext v-else :text="displayTitle || item.title" :max-length="Number(props.maxLengthDisplay)"
-          :class="props.aClass" :start-align="props.startAlignDisplay" />
+        <d-shorttext v-else :text="displayTitle || getDisplayMultipleKeys(item.raw) || item.title"
+          :max-length="Number(props.maxLengthDisplay)" :class="props.aClass" :start-align="props.startAlignDisplay" />
       </span>
     </template>
 
     <template #no-data>
       <div v-if="!loadingSearch && !isInitialLoad && options.length === 0"
         class="font-weight-bold flex items-center justify-center p-3 text-center">
-        <div>No data available</div>
+        <div>No data available, please try another keyword..</div>
       </div>
       <div v-else-if="loadingSearch || isInitialLoad">
         <v-skeleton-loader type="list-item-two-line"></v-skeleton-loader>
       </div>
     </template>
 
-    <!-- <template v-slot:item="{ props, item }">
-      <v-list-item
-        v-bind="props"
-        :title="getDisplayMultipleKeys(item.raw) || displayTitle || item.title"
-      ></v-list-item>
-    </template> -->
-
-    <!-- <template #item="{ item }" v-if="props.multiple">
+    <template v-slot:item="{ props, item }">
+      <v-list-item v-bind="props" :title="getDisplayMultipleKeys(item.raw) || item.title"></v-list-item>
+    </template>
+    <!-- 
+    <template
+      #item="{ item }"
+      v-if="props.multiple"
+    >
       <d-shorttext
         :text="displayTitle"
         :max-length="Number(props.maxLengthDisplay)"

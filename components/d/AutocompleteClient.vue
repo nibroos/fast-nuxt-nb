@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<AutocompleteClientType>(), {
   isDisplayMultipleKey: false,
   displayMultipleKeys: () => ['id', 'name'],
   displayMultipleSeparator: ' - ',
-  checkDuplicate: false,
+  checkDuplicate: false
 })
 
 const vAComp = ref<VAutocomplete>()

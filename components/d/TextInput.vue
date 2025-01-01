@@ -7,7 +7,7 @@ type Density = VAutocomplete['$props']['density']
 interface IProps {
   disabled?: boolean
   variant?: Variant
-  modelValue?: string | number
+  modelValue?: string | number | null | undefined
   label?: string
   density?: Density
   clearable?: boolean
@@ -68,23 +68,11 @@ watch(
 )
 </script>
 <template>
-  <div
-    :class="{ 'gap-2': slots.details || errors.length > 0 }"
-    class="flex grow flex-col"
-  >
-    <v-text-field
-      :label="props.label"
-      :variant="props.variant"
-      v-model="realValue"
-      :density="props.density"
-      :placeholder="props.placeholder"
-      :type="props.type"
-      :class="classMerge('w-full', props.class)"
-      :clearable="props.clearable"
-      :disabled="props.disabled"
-      @update:model-value="updateValue"
-      hide-details
-    ></v-text-field>
+  <div :class="{ 'gap-2': slots.details || errors.length > 0 }" class="flex grow flex-col">
+    <v-text-field :label="props.label" :variant="props.variant" v-model="realValue" :density="props.density"
+      :placeholder="props.placeholder" :type="props.type" :class="classMerge('w-full', props.class)"
+      :clearable="props.clearable" :disabled="props.disabled" @update:model-value="updateValue"
+      hide-details></v-text-field>
     <div v-if="slots.details && errors.length == 0" class="flex flex-col gap-1">
       <slot name="details" />
     </div>
