@@ -1,6 +1,6 @@
 export interface Pagination<TData> {
   current_page?: number
-  data?: TData
+  data: Record<string, any>[]
   first_page_url?: string
   from?: number
   last_page?: number

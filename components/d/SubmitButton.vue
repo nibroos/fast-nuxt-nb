@@ -25,7 +25,7 @@ const handleClickClear = () => {
       rounded="sm" color="#006C9C" type="submit" @click="handleClickSubmit()">
       Find
     </v-btn>
-    <v-btn variant="tonal" height="35" density="comfortable" class="text-none grow" rounded="sm"
+    <v-btn type="button" variant="tonal" height="35" density="comfortable" class="text-none grow" rounded="sm"
       append-icon="mdi-refresh" @click="handleClickClear()">
       Clear
     </v-btn>

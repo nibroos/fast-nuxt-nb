@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<SelectTableType>(), {
   cta: (props: SelectTableType) => `Select ${props.label}`,
   noIcon: false,
   class: '',
+  btnClass: '',
   textClass: '',
   type: 'button',
   icon: 'mdi-magnify',
@@ -334,11 +335,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex w-full grow">
+  <div :class="classMerge('flex w-full grow', props.class)" :title="selectedText">
     <d-button :type="props.type" :cta="selectedText ? `${props.label}: ${selectedText}` : props.cta"
       :append-icon="props.appendIcon" :no-icon="!!selectedText" :class="classMerge(
         'text-none flex w-full grow items-center justify-center gap-1 whitespace-nowrap border-1.5 border-solid border-zinc-400',
-        props.class
+        props.btnClass
       )
         " :text-class="classMerge('text-sm text-zinc-400', props.textClass)" :icon="!selectedText ? icon : undefined"
       :icon-class="classMerge('text-zinc-400', props.iconClass)" @click="openModal(true)"

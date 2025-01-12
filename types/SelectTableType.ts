@@ -50,6 +50,7 @@ export type SelectTableType = {
   cta?: string
   noIcon?: boolean
   class?: string
+  btnClass?: string
   textClass?: string
   disabled?: boolean
   loading?: boolean | undefined

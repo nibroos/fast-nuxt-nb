@@ -279,6 +279,8 @@ const getSingleData = async (id: any) => {
 
   const resData = response.data
   selectedDetails.value = property(props.mappingDetail)(resData)
+  // console.log('selectedDetails', selectedDetails.value)
+  // console.log('mappingDetail', props.mappingDetail)
 
   if (Array.isArray(selectedDetails.value)) {
     if (props.multiple) {
@@ -286,27 +288,41 @@ const getSingleData = async (id: any) => {
         return item[props.itemTitle]
       })
     } else {
+      // console.log('props.itemValue', id, props.itemValue);
+
       selectedDetails.value = selectedDetails.value.find(
-        (item: any) => item[props.itemValue as string] === id
+        (item: any) => item[props.itemValue as string] == id
       )
       // console.log('selectedDetails', selectedDetails.value)
 
       // selectedDetails.value = selectedDetails.value[0]
     }
   }
+  // console.log('selectedDetails2', selectedDetails.value)
+  // console.log('mappingDetail2', props.mappingDetail)
 
   if (selectedDetails.value) {
     if (props.multiple) {
       displayTitle.value = selectedDetails.value.join(', ')
     } else {
+      // console.log('a selectedDetails', selectedDetails.value)
+
       displayTitle.value = <any>(
         property(props.displaySelectedTitleKey)(selectedDetails.value)
       )
 
       if (!!props.isDisplayMultipleKey) {
+        // console.log('b selectedDetails', selectedDetails.value)
+        // console.log(
+        //   'b property selectedDetails',
+        //   property(props.displaySelectedTitleKey)(selectedDetails.value)
+        // )
+
         displayTitle.value = <string>(
           getDisplayMultipleKeys(selectedDetails.value)
         )
+
+        // console.log('c displayTitle', displayTitle.value)
       }
     }
   }

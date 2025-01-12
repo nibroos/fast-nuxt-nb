@@ -99,7 +99,7 @@ const onSelectOpt = (param?: string) => {
     selected.value = null
   } else {
     selectedDetails.value = props.items.find(
-      (item: any) => item[props.itemValue] === (selected.value ?? '')
+      (item: any) => item[props.itemValue] == (selected.value ?? '')
     )
   }
 
@@ -177,8 +177,9 @@ watch(
   <v-autocomplete v-model="selected" :label="props.label" :items="options" :variant="props.variant"
     :density="props.density" :item-title="props.itemTitle" :item-value="props.itemValue"
     :clearable="props.disabled ? false : props.clearable" :placeholder="props.placeholder" :disabled="props.disabled"
-    :class="props.aClass" :loading="loadingSearch" :chips="props.chips" @update:search="innerSearch = $event"
-    @update:menu="onMenuChange" @update:focused="onFocus" @click:clear="handleClear" hide-details no-filter>
+    :class="classMerge(props.aClass)" :loading="loadingSearch" :chips="props.chips"
+    @update:search="innerSearch = $event" @update:menu="onMenuChange" @update:focused="onFocus"
+    @click:clear="handleClear" hide-details no-filter>
     <template v-slot:selection="{ item }">
       <span class="whitespace-nowrap">
         <!-- {{ item.raw }} -->
