@@ -5,7 +5,6 @@ import { resolve } from 'path'
 export default defineNuxtConfig({
   devtools: { enabled: true },
   spaLoadingTemplate: false,
-  // extends: ['github:YubiRepo/D-ERP-UI', { auth: process.env.GITHUB_TOKEN }],
   app: {
     head: {
       title: process.env.TITLE || 'NUXT APP',
@@ -42,7 +41,6 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
     '@vueuse/nuxt',
-    '@nuxt/fonts',
     '@nuxtjs/tailwindcss',
     '@nuxt/image',
     (_options, nuxt) => {
@@ -68,33 +66,6 @@ export default defineNuxtConfig({
     vue: {
       template: {
         transformAssetUrls
-      }
-    }
-  },
-  fonts: {
-    families: [
-      {
-        name: 'Roboto',
-        global: true,
-        provider: 'google',
-        fallbacks: ['Arial']
-      }
-      // {
-      //   name: 'Inter',
-      //   global: true,
-      //   provider: 'google',
-      //   fallbacks: ['Roboto', 'Arial']
-      // },
-      // { name: 'Public Sans', provider: 'google' }
-      // { name: 'MyCustom', src: '/custom-font.woff2' },
-      // { name: 'CustomGlobal', global: true, src: '/font-global.woff2' },
-      // { name: 'Oswald', fallbacks: ['Times New Roman'] },
-    ],
-    defaults: {
-      weights: [400, 500, 700],
-      styles: ['normal'],
-      fallbacks: {
-        monospace: ['Tahoma']
       }
     }
   },
