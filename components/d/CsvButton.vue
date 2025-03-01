@@ -44,6 +44,7 @@ onMounted(() => {
 <template>
   <div class="flex flex-row items-center gap-2">
     <v-btn
+      type="button"
       variant="tonal"
       height="35"
       density="comfortable"
@@ -51,7 +52,6 @@ onMounted(() => {
       class="text-none grow"
       rounded="md"
       color="#1fb829"
-      type="submit"
       :loading="localLoadingState"
       @click="handleClickSubmit()"
     >

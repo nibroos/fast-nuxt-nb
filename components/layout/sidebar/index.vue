@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useMasterUser } from '~/stores/MasterData/AccountSetting'
 import useLayouts from '~/stores/configs/layouts'
+import { useAuth } from '#imports'
 
 const User = useMasterUser()
 const { data } = storeToRefs(User)
 const { $permission } = useNuxtApp()
+const router = useRouter()
 
 const token = localStorage.getItem('_token')
 const config = useRuntimeConfig()
@@ -22,6 +24,7 @@ const itemShippings = [
     permissions: ['SHIPPING_READ']
   }
 ]
+
 const itemOrders = [
   {
     title: 'Sales Order',
@@ -33,15 +36,27 @@ const itemOrders = [
     title: 'Proforma & OCS',
     icon: 'mdi-cart-outline',
     link: '/orders/proforma',
-    permissions: ['ORDER_CREATE', 'PROFORMA_READ']
+    permissions: ['PROFORMA_READ']
+  },
+  {
+    title: 'Order Status',
+    icon: 'mdi-cart-outline',
+    link: '/orders/sales-order/index-order-status',
+    permissions: ['ORDER_READ']
   }
 ]
 
 const itemSales = [
   {
-    title: 'Sales Invoices',
+    title: 'Sales Invoices Proforma',
     icon: 'mdi-credit-card-outline',
     link: '/sales-invoice',
+    permissions: ['SALES_INVOICE_READ']
+  },
+  {
+    title: 'Sales Invoices OCS',
+    icon: 'mdi-credit-card-outline',
+    link: '/sales-invoice-ocs',
     permissions: ['SALES_INVOICE_READ']
   },
   {
@@ -51,6 +66,7 @@ const itemSales = [
     permissions: ['SALES_ADJUSTMENT_READ']
   }
 ]
+
 const itemPurchase = [
   {
     title: 'Request Order',
@@ -89,6 +105,12 @@ const itemInventory = [
     title: 'Inventory OUT',
     icon: 'mdi-credit-card-outline',
     link: '/inventory/inventory-out',
+    permissions: ['INVENTORY_READ']
+  },
+  {
+    title: 'Inventory Status',
+    icon: 'mdi-credit-card-outline',
+    link: '/inventory/inventory-status',
     permissions: ['INVENTORY_READ']
   },
   {
@@ -162,6 +184,12 @@ const itemProduction = [
     title: 'Production Plan',
     icon: '',
     link: '/production/production-plan',
+    permissions: ['PRODUCTION_READ']
+  },
+  {
+    title: 'Request Plan',
+    icon: '',
+    link: '/request-plan',
     permissions: ['PRODUCTION_READ']
   },
   // {
@@ -248,7 +276,7 @@ const isPermissionOnChildExists = (parentName: string) => {
       childPermissions = itemOrders.map((item) => item.permissions.join())
       return useAuth.permit(childPermissions)
     case 'sales':
-      // itemOrders
+      // itemSales
       childPermissions = itemSales.map((item) => item.permissions.join())
       return useAuth.permit(childPermissions)
     case 'master':
@@ -287,6 +315,17 @@ const handleMouseHover = () => {
   }
 }
 
+const handleClickSampleDiagram = () => {
+  router
+    .push('/sample-diagram')
+    .then(() => {
+      window.location.reload() // Force reload after navigation
+    })
+    .catch((err) => {
+      console.error('Failed to navigate:', err)
+    })
+}
+
 watch(isCloseSidebar, (newValue) => {
   if (!newValue) {
     isExpanded.value = true
@@ -303,53 +342,27 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div
-    @mouseenter="handleMouseHover"
-    @mouseleave="handleMouseHover"
-    class="flex h-full flex-col items-center justify-between"
-  >
+  <div class="flex h-full flex-col items-center justify-between" @mouseenter="handleMouseHover"
+    @mouseleave="handleMouseHover">
     <div class="flex w-full flex-col gap-y-5 py-5">
       <!-- Logo App -->
       <div class="flex w-full justify-center">
-        <img
-          v-if="isExpanded"
-          src="/images/D-new-logo.png"
-          alt="img-login"
-          class="h-full w-40 object-contain"
-        />
-        <img
-          v-else
-          src="/images/D-only-new-logo.png"
-          alt="img-login"
-          class="w-7 object-contain"
-        />
+        <img v-if="isExpanded" src="/images/D-new-logo.png" alt="img-login" class="h-full w-40 object-contain" />
+        <img v-else src="/images/D-only-new-logo.png" alt="img-login" class="w-7 object-contain" />
       </div>
 
       <!-- Menu List -->
       <div class="max-h-[80vh] w-full overflow-y-auto">
-        <v-list
-          v-if="useAuth.permit('REPORT_READ')"
-          color="#fff"
-          density="compact"
-          lines="one"
-        >
-          <v-list-item-title
-            class="mb-2 ml-4 !text-sm"
-            v-if="isPermissionAllChildExists('dashboard') && isExpanded"
-            style="font-size: 12px"
-          >
+        <v-list v-if="useAuth.permit('REPORT_READ')" color="#fff" density="compact" lines="one">
+          <v-list-item-title v-if="isPermissionAllChildExists('dashboard') && isExpanded" class="mb-2 ml-4 !text-sm"
+            style="font-size: 12px">
             DASHBOARD
           </v-list-item-title>
 
-          <v-list-item
-            v-if="
-              $permission.isSuperAdmin(data?.role) ||
-              $permission.canAccess(`/dashboard`, data?.role)
-            "
-            color="#898F99"
-            to="/dashboard"
-            rounded="lg"
-          >
+          <v-list-item v-if="
+            $permission.isSuperAdmin(data?.role) ||
+            $permission.canAccess(`/dashboard`, data?.role)
+          " color="#898F99" to="/dashboard" rounded="lg">
             <template #prepend>
               <v-icon>mdi-view-dashboard-outline</v-icon>
             </template>
@@ -358,25 +371,14 @@ onMounted(async () => {
           </v-list-item>
         </v-list>
         <v-divider></v-divider>
-        <v-list
-          v-if="isPermissionOnChildExists('master')"
-          color="#fff"
-          density="compact"
-        >
-          <v-list-item-title
-            class="mb-2 ml-4 !text-sm"
-            v-if="isPermissionAllChildExists('master') && isExpanded"
-            style="font-size: 12px"
-          >
+        <v-list v-if="isPermissionOnChildExists('master')" color="#fff" density="compact">
+          <v-list-item-title v-if="isPermissionAllChildExists('master') && isExpanded" class="mb-2 ml-4 !text-sm"
+            style="font-size: 12px">
             MASTER
           </v-list-item-title>
 
-          <v-list-item
-            v-if="useAuth.permit('MASTER_DATA_READ')"
-            color="#898F99"
-            to="/master-data/master-color-method"
-            rounded="lg"
-          >
+          <v-list-item v-if="useAuth.permit('MASTER_DATA_READ')" color="#898F99" to="/master-data/master-color-method"
+            rounded="lg">
             <template #prepend>
               <v-icon>mdi-wrench</v-icon>
             </template>
@@ -384,13 +386,9 @@ onMounted(async () => {
             <v-list-item-title>Master Data</v-list-item-title>
           </v-list-item>
         </v-list>
+
         <v-list color="#fff" density="compact">
-          <v-list-item
-            v-if="useAuth.permit('MASTER_STYLE_READ')"
-            color="#898F99"
-            to="/master-style"
-            rounded="lg"
-          >
+          <v-list-item v-if="useAuth.permit('MASTER_STYLE_READ')" color="#898F99" to="/master-style" rounded="lg">
             <template #prepend>
               <v-icon>mdi-square-edit-outline</v-icon>
             </template>
@@ -398,124 +396,78 @@ onMounted(async () => {
             <v-list-item-title>Master Style</v-list-item-title>
           </v-list-item>
         </v-list>
+
+        <v-list color="#fff" density="compact">
+          <v-list-item v-if="useAuth.permit('MASTER_STYLE_READ')" color="#898F99" rounded="lg" to="/sample-diagram">
+            <template #prepend>
+              <v-icon>mdi-chart-pie</v-icon>
+            </template>
+
+            <v-list-item-title>Sample Diagram</v-list-item-title>
+          </v-list-item>
+        </v-list>
         <v-divider></v-divider>
         <!-- list Management -->
         <v-list color="#fff" density="comfortable">
-          <v-list-item-title
-            class="mb-2 ml-4 !text-sm"
-            v-if="isPermissionAllChildExists('management') && isExpanded"
-            style="font-size: 12px"
-          >
+          <v-list-item-title v-if="isPermissionAllChildExists('management') && isExpanded" class="mb-2 ml-4 !text-sm"
+            style="font-size: 12px">
             MANAGEMENT
           </v-list-item-title>
 
-          <!-- List static -->
-          <template v-for="(item, i) in itemOrders" :key="i"></template>
-
-          <v-list-group
-            v-if="isPermissionOnChildExists('orders')"
-            value="Orders"
-          >
+          <v-list-group v-if="isPermissionOnChildExists('orders')" value="Orders">
             <template #activator="{ props }">
-              <v-list-item
-                v-bind="props"
-                prepend-icon="mdi-cart-outline"
-                title="Orders"
-                density="compact"
-                rounded="lg"
-              ></v-list-item>
+              <v-list-item v-bind="props" prepend-icon="mdi-cart-outline" title="Orders" density="compact"
+                rounded="lg"></v-list-item>
             </template>
             <template v-for="(item, i) in itemOrders" :key="i">
-              <v-list-item
-                v-if="useAuth.permit(item.permissions)"
-                :to="item.link"
-                :title="item.title"
-                :value="item"
-                variant="text"
-                rounded="lg"
-                density="compact"
-                color="#898F99"
-              ></v-list-item>
+              <v-list-item v-if="useAuth.permit(item.permissions)" :title="item.title" :to="item.link" variant="text"
+                rounded="lg" density="compact" color="#898F99"></v-list-item>
             </template>
           </v-list-group>
           <v-list-group v-if="isPermissionOnChildExists('sales')" value="Sales">
             <template #activator="{ props }">
-              <v-list-item
-                v-bind="props"
-                prepend-icon="mdi-credit-card-outline"
-                title="Sales"
-                density="compact"
-                rounded="lg"
-              ></v-list-item>
+              <v-list-item v-bind="props" prepend-icon="mdi-credit-card-outline" title="Sales" density="compact"
+                rounded="lg"></v-list-item>
             </template>
             <template v-for="(item, i) in itemSales" :key="i">
-              <v-list-item
-                v-if="useAuth.permit(item.permissions)"
-                :title="item.title"
-                :to="item.link"
-                variant="text"
-                rounded="lg"
-                density="compact"
-                color="#898F99"
-              ></v-list-item>
+              <v-list-item v-if="useAuth.permit(item.permissions)" :title="item.title" :to="item.link" variant="text"
+                rounded="lg" density="compact" color="#898F99"></v-list-item>
             </template>
           </v-list-group>
 
-          <v-list-group
-            v-if="isPermissionOnChildExists('purchase')"
-            value="Purchase"
-          >
+          <v-list-group v-if="isPermissionOnChildExists('purchase')" value="Purchase">
             <template #activator="{ props }">
-              <v-list-item
-                v-bind="props"
-                rounded="lg"
-                prepend-icon="mdi-cart-variant"
-                title="Purchase"
-                density="compact"
-              ></v-list-item>
+              <v-list-item v-bind="props" rounded="lg" prepend-icon="mdi-cart-variant" title="Purchase"
+                density="compact"></v-list-item>
             </template>
 
             <template v-for="(item, i) in itemPurchase" :key="i">
-              <v-list-item
-                v-if="useAuth.permit(item.permissions)"
-                :title="item.title"
-                :to="item.link"
-                variant="text"
-                rounded="lg"
-                density="compact"
-                color="#898F99"
-              ></v-list-item>
+              <v-list-item v-if="useAuth.permit(item.permissions)" :title="item.title" :to="item.link" variant="text"
+                rounded="lg" density="compact" color="#898F99"></v-list-item>
             </template>
           </v-list-group>
 
-          <v-list-group
-            v-if="isPermissionOnChildExists('inventory')"
-            value="Inventory"
-          >
+          <v-list-group v-if="isPermissionOnChildExists('inventory')" value="Inventory">
             <template #activator="{ props }">
-              <v-list-item
-                v-bind="props"
-                rounded="lg"
-                prepend-icon="mdi-warehouse"
-                title="Inventory"
-                density="compact"
-              ></v-list-item>
+              <v-list-item v-bind="props" rounded="lg" prepend-icon="mdi-warehouse" title="Inventory"
+                density="compact"></v-list-item>
             </template>
 
             <template v-for="(item, i) in itemInventory" :key="i">
-              <v-list-item
-                v-if="useAuth.permit(item.permissions)"
-                :title="item.title"
-                :to="item.link"
-                variant="text"
-                rounded="lg"
-                density="compact"
-                color="#898F99"
-              ></v-list-item>
+              <v-list-item v-if="useAuth.permit(item.permissions)" :title="item.title" :to="item.link" variant="text"
+                rounded="lg" density="compact" color="#898F99"></v-list-item>
             </template>
           </v-list-group>
 
-          <v-list-group value="Exim">
+
+          <v-list-item v-if="useAuth.permit('EXIM_READ')" color="#898F99" to="/inventory/exim" rounded="lg">
+            <template #prepend>
+              <v-icon>mdi-file-sign</v-icon>
+            </template>
+
+            <v-list-item-title>EXIM</v-list-item-title>
+          </v-list-item>
+          <!-- <v-list-group value="Exim">
             <template #activator="{ props }">
               <v-list-item
                 v-bind="props"
@@ -526,10 +478,14 @@ onMounted(async () => {
               ></v-list-item>
             </template>
 
-            <template v-for="(item, i) in itemExim" :key="i">
-              <!-- <v-tooltip location="end" :text="item.title">
-                <template v-slot:activator="{ props }"> -->
-              <div :title="item.title" class="">
+            <template
+              v-for="(item, i) in itemExim"
+              :key="i"
+            >
+              <div
+                :title="item.title"
+                class=""
+              >
                 <v-list-item
                   v-if="useAuth.permit(item.permissions)"
                   :title="item.title"
@@ -540,48 +496,25 @@ onMounted(async () => {
                   color="#898F99"
                 ></v-list-item>
               </div>
-              <!-- </template>
-              </v-tooltip> -->
             </template>
-          </v-list-group>
+          </v-list-group> -->
 
-          <v-list-group
-            v-if="isPermissionOnChildExists('production')"
-            value="Production"
-          >
+          <v-list-group v-if="isPermissionOnChildExists('production')" value="Production">
             <template #activator="{ props }">
-              <v-list-item
-                v-bind="props"
-                rounded="lg"
-                prepend-icon="mdi-tune-vertical"
-                title="Production"
-                density="compact"
-              ></v-list-item>
+              <v-list-item v-bind="props" rounded="lg" prepend-icon="mdi-tune-vertical" title="Production"
+                density="compact"></v-list-item>
             </template>
 
             <template v-for="(item, i) in itemProduction" :key="i">
-              <v-list-item
-                v-if="useAuth.permit(item.permissions)"
-                :title="item.title"
-                :to="item.link"
-                variant="text"
-                rounded="lg"
-                density="compact"
-                color="#898F99"
-              ></v-list-item>
+              <v-list-item v-if="useAuth.permit(item.permissions)" :title="item.title" :to="item.link" variant="text"
+                rounded="lg" density="compact" color="#898F99"></v-list-item>
             </template>
           </v-list-group>
 
           <!-- List static -->
           <template v-for="(item, i) in itemShippings" :key="i">
-            <v-list-item
-              v-if="useAuth.permit(item.permissions)"
-              :value="item"
-              color="#898F99"
-              rounded="lg"
-              :to="item.link"
-              :title="item.title"
-            >
+            <v-list-item v-if="useAuth.permit(item.permissions)" :value="item" color="#898F99" rounded="lg"
+              :to="item.link" :title="item.title">
               <template #prepend>
                 <v-icon :icon="item.icon"></v-icon>
               </template>
@@ -593,13 +526,9 @@ onMounted(async () => {
 
     <!-- Profile Account -->
     <div
-      @click="navigateTo('/master-data/account-setting')"
       class="flex h-[77px] w-full cursor-pointer items-center justify-stretch gap-x-5 bg-slate-900 transition-all ease-in-out hover:bg-slate-900/60 lg:px-2"
-    >
-      <v-avatar
-        :image="`${BASE_URL}/storage/app/public/master/users/${data?.photo}`"
-        size="40"
-      ></v-avatar>
+      @click="navigateTo('/master-data/account-setting')">
+      <v-avatar :image="`${BASE_URL}/storage/app/public/master/users/${data?.photo}`" size="40"></v-avatar>
       <div>
         <p class="text-sm font-normal">{{ data?.name }}</p>
         <span class="text-xs font-normal text-slate-300">
@@ -611,7 +540,8 @@ onMounted(async () => {
 </template>
 <style scoped>
 * {
-  -ms-overflow-style: none; /* IE and Edge */
+  -ms-overflow-style: none;
+  /* IE and Edge */
   scrollbar-width: thin;
   scrollbar-color: #898f99 #121c2b;
 }

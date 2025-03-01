@@ -9,7 +9,7 @@ type Density = VAutocomplete['$props']['density']
 interface IProps {
   disabled?: boolean
   variant?: Variant
-  modelValue?: string | number
+  modelValue?: string | number | null
   label?: string
   density?: Density
   clearable?: boolean
@@ -85,11 +85,18 @@ watch(
       hide-details
       :disabled="disabled"
     ></v-textarea>
-    <div v-if="slots.details && errors.length == 0" class="flex flex-col gap-1">
+    <div
+      v-if="slots.details && errors.length == 0"
+      class="flex flex-col gap-1"
+    >
       <slot name="details" />
     </div>
     <div class="flex flex-col gap-1">
-      <div v-for="error in errors" :key="error" class="text-sm text-red-500">
+      <div
+        v-for="error in errors"
+        :key="error"
+        class="text-sm text-red-500"
+      >
         {{ error }}
       </div>
     </div>

@@ -102,12 +102,15 @@ watchEffect(() => {
 
 <template>
   <div class="flex items-center justify-center">
-    <div :class="classMerge(
-      'w-max rounded-full px-2 py-0.5 text-sm',
-      finalClass,
-      props.class
-    )
-      ">
+    <div
+      :class="
+        classMerge(
+          'w-max rounded-full px-2 py-0.5 text-sm',
+          finalClass,
+          props.class
+        )
+      "
+    >
       {{ status }}
     </div>
   </div>

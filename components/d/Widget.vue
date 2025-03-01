@@ -121,14 +121,24 @@ watchEffect(() => {})
     v-if="!props.isLoading"
     :class="
       classMerge(
-        'flex w-full flex-auto items-center justify-between gap-4 border border-zinc-200 p-3',
+        'flex h-max w-full flex-auto items-center justify-between gap-4 overflow-x-auto overflow-y-hidden border border-zinc-200 p-8',
         props.class
       )
     "
   >
-    <div v-for="(base, iBase) in props.data" :key="iBase" class="grow">
-      <div v-if="typeof base === 'object'" class="flex gap-32">
-        <div v-for="(section, iSection) in base" class="flex w-full flex-col">
+    <div
+      v-for="(base, iBase) in props.data"
+      :key="iBase"
+      class="grow"
+    >
+      <div
+        v-if="typeof base === 'object'"
+        class="flex gap-20"
+      >
+        <div
+          v-for="(section, iSection) in base"
+          class="flex w-full flex-col"
+        >
           <div
             v-if="iSection === 'Total'"
             class="flex w-full justify-between gap-4"
@@ -144,11 +154,11 @@ watchEffect(() => {})
             </div>
             <div class="flex grow flex-col gap-1">
               <h3 class="text-base font-bold text-black">{{ iSection }}</h3>
-              <p>
+              <p class="whitespace-nowrap">
                 <span class="font-bold">
                   {{ sumArrayKey(section, 'transactions') }}
                 </span>
-                Transactions
+                <span>Transactions</span>
               </p>
               <div
                 class="flex w-full items-center gap-2"
@@ -180,7 +190,7 @@ watchEffect(() => {})
             </div>
             <div class="flex grow flex-col gap-1">
               <h3 class="text-base font-bold text-black">{{ iSection }}</h3>
-              <p>
+              <p class="whitespace-nowrap">
                 <span class="font-bold">
                   {{ sumArrayKey(section, 'transactions') }}
                 </span>
@@ -216,7 +226,7 @@ watchEffect(() => {})
             </div>
             <div class="flex grow flex-col gap-1">
               <h3 class="text-base font-bold text-black">{{ iSection }}</h3>
-              <p>
+              <p class="whitespace-nowrap">
                 <span class="font-bold">
                   {{ sumArrayKey(section, 'transactions') }}
                 </span>
@@ -252,7 +262,7 @@ watchEffect(() => {})
             </div>
             <div class="flex grow flex-col gap-1">
               <h3 class="text-base font-bold text-black">{{ iSection }}</h3>
-              <p>
+              <p class="whitespace-nowrap">
                 <span class="font-bold">
                   {{ sumArrayKey(section, 'transactions') }}
                 </span>
@@ -288,7 +298,7 @@ watchEffect(() => {})
             </div>
             <div class="flex grow flex-col gap-1">
               <h3 class="text-base font-bold text-black">{{ iSection }}</h3>
-              <p>
+              <p class="whitespace-nowrap">
                 <span class="font-bold">
                   {{ sumArrayKey(section, 'transactions') }}
                 </span>
@@ -324,7 +334,7 @@ watchEffect(() => {})
             </div>
             <div class="flex grow flex-col gap-1">
               <h3 class="text-base font-bold text-black">{{ iSection }}</h3>
-              <p>
+              <p class="whitespace-nowrap">
                 <span class="font-bold">
                   {{ sumArrayKey(section, 'transactions') }}
                 </span>
@@ -360,7 +370,7 @@ watchEffect(() => {})
             </div>
             <div class="flex grow flex-col gap-1">
               <h3 class="text-base font-bold text-black">{{ iSection }}</h3>
-              <p>
+              <p class="whitespace-nowrap">
                 <span class="font-bold">
                   {{ sumArrayKey(section, 'transactions') }}
                 </span>

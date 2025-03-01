@@ -1,6 +1,64 @@
+<template>
+  <div class="flex h-full w-full flex-col gap-4">
+    <!-- Header -->
+    <div class="flex h-fit w-full items-center justify-end">
+      <!-- button Create -->
+      <div class="">
+        <slot name="buttonHeadMasterData" />
+      </div>
+    </div>
+
+    <v-responsive>
+      <v-layout>
+        <!-- ---------------------------------------------- -->
+        <!---Sidebar -->
+        <!-- ---------------------------------------------- -->
+        <div
+          class="mr-3 h-full w-20 overflow-hidden rounded-lg border shadow-lg md:w-fit lg:w-fit"
+        >
+          <!-- <LayoutMasterSidebar /> -->
+
+          <!-- Menu List -->
+          <div class="h-full w-full">
+            <v-list
+              :lines="false"
+              density="default"
+            >
+              <v-list-item
+                v-for="(item, i) in listItem"
+                :key="i"
+                :value="item"
+                :title="item.title"
+                min-width="70"
+                color="#4094D4"
+                :to="item.link"
+                :class="{
+                  'v-list-item v-list-item--active v-list-item--link v-theme--light v-list-item--density-default v-list-item--variant-text active':
+                    isActiveLink(item)
+                }"
+              >
+                <template #prepend>
+                  <v-icon :icon="item.icon"></v-icon>
+                </template>
+              </v-list-item>
+            </v-list>
+          </div>
+        </div>
+
+        <!-- Container -->
+        <v-responsive>
+          <div class="h-fit w-full">
+            <slot />
+          </div>
+          <!-- <v-main> </v-main> -->
+        </v-responsive>
+      </v-layout>
+    </v-responsive>
+  </div>
+</template>
+
 <script setup lang="ts">
 import useLayouts from '~/stores/configs/layouts'
-import { useTopMenu } from '~/stores/MasterData/TopMenu'
 const router = useRouter()
 const id = router.currentRoute.value.params.id
 
@@ -11,8 +69,6 @@ definePageMeta({
 const layoutState = useLayouts()
 const { titlePath, subTitlePath, lastPathSegment, parentTitle, topTitle } =
   storeToRefs(layoutState)
-const topMenuStore = useTopMenu()
-const { isActiveTabIndex } = storeToRefs(topMenuStore)
 
 const configs = ref({
   titlePath: titlePath,
@@ -22,16 +78,9 @@ const configs = ref({
   topTitle: topTitle
 })
 
-// const isActiveLink = (item: any) => {
-//   if (isActiveTabIndex.value === item.number) {
-//     return true
-//   }
-// }
-
-const listItem = ref([
+let listItem = ref([
   {
-    title: 'User',
-    number: 0,
+    title: 'Master User',
     icon: 'mdi-account-circle-outline',
     link: '/master-data/master-user',
     link2: '/master-data/master-user/add-user',
@@ -40,14 +89,11 @@ const listItem = ref([
   },
   {
     title: 'Account Setting',
-    number: 1,
     icon: 'mdi-account-cog-outline',
-    link: '/master-data/account-setting',
-    permissions: ['SUPERADMIN']
+    link: '/master-data/account-setting'
   },
   {
     title: 'Barcode',
-    number: 2,
     icon: 'mdi-barcode',
     link: '/master-data/barcode',
     link2: '/master-data/barcode/create-barcode',
@@ -56,14 +102,12 @@ const listItem = ref([
   },
   {
     title: 'Company Profile',
-    number: 3,
     icon: 'mdi-domain',
     link: '/master-data/company-profile',
     permissions: ['MASTER_DATA_COMPANY_PROFILE_UPDATE']
   },
   {
-    title: 'Customer Type',
-    number: 4,
+    title: 'Master Customer Type',
     icon: 'mdi-layers-outline',
     link: '/master-data/master-customer-type',
     link2: '/master-data/master-customer-type/add-customer-type',
@@ -71,8 +115,7 @@ const listItem = ref([
     permissions: ['MASTER_DATA_READ']
   },
   {
-    title: 'Customer',
-    number: 5,
+    title: 'Master Customer',
     icon: 'mdi-book-account-outline',
     link: '/master-data/master-customer',
     link2: '/master-data/master-customer/create',
@@ -80,8 +123,7 @@ const listItem = ref([
     permissions: ['MASTER_DATA_READ']
   },
   {
-    title: 'Rule',
-    number: 6,
+    title: 'Master Rule',
     icon: 'mdi-format-list-bulleted',
     link: '/master-data/master-rule',
     link2: `/master-data/master-rule/0`,
@@ -92,17 +134,15 @@ const listItem = ref([
     permissions: ['MASTER_DATA_READ']
   },
   {
-    title: 'Item',
-    number: 7,
+    title: 'Master Item',
     icon: 'mdi-treasure-chest-outline',
     link: '/master-data/master-item',
     link2: '/master-data/master-item/create-master-item',
     link3: `/master-data/master-item/edit-master-item/${id}`,
-    permissions: ['ITEM_READ']
+    permissions: ['MASTER_DATA_READ']
   },
   {
-    title: 'Unit',
-    number: 8,
+    title: 'Master Unit',
     icon: 'mdi-bookshelf',
     link: '/master-data/master-unit',
     link2: '/master-data/master-unit/0',
@@ -111,8 +151,7 @@ const listItem = ref([
     permissions: ['MASTER_DATA_READ']
   },
   {
-    title: 'Warehouse',
-    number: 9,
+    title: 'Master Warehouse',
     icon: 'mdi-warehouse',
     link: '/master-data/master-warehouse',
     link2: '/master-data/master-warehouse/add-warehouse',
@@ -120,25 +159,23 @@ const listItem = ref([
     permissions: ['MASTER_DATA_READ']
   },
   {
-    title: 'Line',
-    number: 10,
+    title: 'Master Line',
     icon: 'mdi-align-vertical-distribute',
     link: '/master-data/master-line',
     link2: '/master-data/master-line/create-master-line',
     link3: `/master-data/master-line/edit-master-line/${id}`,
     permissions: ['MASTER_DATA_READ']
   },
-  // {
-  //   title: 'Color',
-  // number: 11,
-  //   icon: 'mdi-palette-outline',
-  //   link: '/master-data/master-color',
-  //   link2: '/master-data/master-color/create-master-color',
-  //   link3: `/master-data/master-color/edit-colors/${id}`
-  // },
   {
-    title: 'Color Method',
-    number: 12,
+    title: 'Master Color',
+    icon: 'mdi-palette-outline',
+    link: '/master-data/master-color',
+    link2: '/master-data/master-color/create-master-color',
+    link3: `/master-data/master-color/edit-colors/${id}`,
+    permissions: ['MASTER_DATA_READ']
+  },
+  {
+    title: 'Master Color Method',
     icon: 'mdi-palette-swatch',
     link: '/master-data/master-color-method',
     link2: '/master-data/master-color-method/0',
@@ -147,8 +184,7 @@ const listItem = ref([
     permissions: ['MASTER_DATA_READ']
   },
   {
-    title: 'Cap',
-    number: 13,
+    title: 'Master Cap',
     icon: 'mdi-sitemap-outline',
     link: '/master-data/master-cap',
     link2: '/master-data/master-cap/0',
@@ -160,7 +196,6 @@ const listItem = ref([
   },
   {
     title: 'Role & Permission',
-    number: 14,
     icon: 'mdi-shield-check-outline',
     link: '/master-data/Role-and-Permisson',
     link2: '/master-data/Role-and-Permisson/create-role-and-permission',
@@ -168,8 +203,7 @@ const listItem = ref([
     permissions: ['MASTER_DATA_ROLE_PERMISSION_READ']
   },
   {
-    title: 'Process',
-    number: 15,
+    title: 'Master Process',
     icon: 'mdi-reload',
     link: '/master-data/master-process',
     link2: '/master-data/master-process/0',
@@ -178,8 +212,7 @@ const listItem = ref([
     permissions: ['MASTER_DATA_READ']
   },
   {
-    title: 'Finishing',
-    number: 16,
+    title: 'Master Finishing',
     icon: 'mdi-clock-check-outline',
     link: '/master-data/master-finishing',
     link2: '/master-data/master-finishing/0',
@@ -189,7 +222,6 @@ const listItem = ref([
   },
   {
     title: 'Customization',
-    number: 17,
     icon: 'mdi-note-edit-outline',
     link: '/master-data/customization',
     link2: '/master-data/customization/0',
@@ -206,6 +238,24 @@ const listItem = ref([
   }
 ])
 
+const isActiveLink = (item: any) => {
+  const currentPath = router.currentRoute.value.path
+
+  return (
+    currentPath === item.link ||
+    currentPath === item.link2 ||
+    currentPath === item.link3 ||
+    currentPath === item.link4 ||
+    currentPath === item.link5 ||
+    currentPath === item.link6 ||
+    currentPath === item.link7 ||
+    currentPath === item.link8 ||
+    currentPath === item.link9 ||
+    currentPath === item.link10 ||
+    currentPath === item.link11
+  )
+}
+
 const filterPermissions = () => {
   let newList: any = []
 
@@ -220,68 +270,12 @@ const filterPermissions = () => {
   listItem.value = newList
 }
 
-// const handleChangePage = (item: any) => {
-//   isActiveTabIndex.value = item.number
-//   navigateTo(item.link)
-// }
-
 watchEffect(() => {
   layoutState.defineTitlePath(configs.value)
   filterPermissions()
 })
-onBeforeUnmount(() => {
-  // console.log("oop", isActiveTabIndex.value);
-}),
-  onMounted(() => {
-    layoutState.defineTitlePath(configs.value)
-  })
+
+onMounted(() => {
+  layoutState.defineTitlePath(configs.value)
+})
 </script>
-
-<template>
-  <div class="absolute z-10 h-screen w-full bg-white">
-    <div
-      class="mb-3 h-max w-full overflow-auto rounded-lg border shadow"
-      v-if="listItem.length > 0"
-    >
-      <v-list
-        shaped
-        nav
-        dense
-        class="flex flex-row justify-between"
-        item-value="number"
-        color="primary"
-        :items="listItem"
-      >
-        <v-list-item
-          v-for="(item, i) in listItem"
-          base-color="black"
-          color="blue"
-          :active="item.number === isActiveTabIndex"
-          :key="item.number"
-          :value="item.number"
-        >
-          <nuxt-link
-            :class="[
-              item.number === isActiveTabIndex ? 'text-blue' : 'text-zinc-500'
-            ]"
-            class="flex flex-col items-center justify-center gap-1 rounded-lg tracking-normal"
-            :to="item.link"
-          >
-            <v-icon
-              :icon="item.icon"
-              size="24"
-            ></v-icon>
-            <div class="text-sm capitalize">{{ item.title }}</div>
-          </nuxt-link>
-        </v-list-item>
-      </v-list>
-    </div>
-
-    <v-responsive>
-      <div class="h-fit w-full">
-        <slot />
-      </div>
-      <!-- <v-main> </v-main> -->
-    </v-responsive>
-  </div>
-</template>

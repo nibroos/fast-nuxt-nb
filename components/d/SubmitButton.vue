@@ -21,12 +21,29 @@ const handleClickClear = () => {
 
 <template>
   <div :class="classMerge('flex flex-row items-center gap-2', props.class)">
-    <v-btn variant="tonal" height="35" density="comfortable" append-icon="mdi-magnify" class="text-none grow"
-      rounded="sm" color="#006C9C" type="submit" @click="handleClickSubmit()">
+    <v-btn
+      variant="tonal"
+      height="35"
+      density="comfortable"
+      append-icon="mdi-magnify"
+      class="text-none grow"
+      rounded="sm"
+      color="#006C9C"
+      type="submit"
+      @click="handleClickSubmit()"
+    >
       Find
     </v-btn>
-    <v-btn type="button" variant="tonal" height="35" density="comfortable" class="text-none grow" rounded="sm"
-      append-icon="mdi-refresh" @click="handleClickClear()">
+    <v-btn
+      type="button"
+      variant="tonal"
+      height="35"
+      density="comfortable"
+      class="text-none grow"
+      rounded="sm"
+      append-icon="mdi-refresh"
+      @click="handleClickClear()"
+    >
       Clear
     </v-btn>
   </div>

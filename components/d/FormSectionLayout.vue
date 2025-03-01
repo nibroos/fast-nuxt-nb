@@ -22,6 +22,7 @@ interface IProps {
       quotaCut?: IButtonConfig
     }
     parentClass?: any
+    titleClass?: string
   }
 }
 
@@ -185,7 +186,7 @@ watchEffect(() => {
     <div
       class="flex flex-row items-center justify-between rounded-lg bg-zinc-100 px-5 py-3"
     >
-      <div class="flex w-max flex-col whitespace-nowrap">
+      <div :class="classMerge('flex w-max flex-col', props.config.titleClass)">
         <h1 class="font-medium text-zinc-700">
           {{ mergedConfig?.title }}
         </h1>
@@ -257,7 +258,10 @@ watchEffect(() => {
     </div>
 
     <div class="flex flex-col gap-5 p-5">
-      <slot name="content" v-if="!mergedConfig.isLoading" />
+      <slot
+        name="content"
+        v-if="!mergedConfig.isLoading"
+      />
       <div v-else>
         <v-skeleton-loader
           class="mx-auto border"

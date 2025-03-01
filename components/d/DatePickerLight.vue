@@ -207,7 +207,7 @@ watch(
 
 <template>
   <div :id="dpElementId" class="relative w-full">
-    <VueDatePicker ref="datepicker" v-model="innerValue" text-input auto-apply :placeholder="props.placeholder"
+    <vue-date-picker ref="datepicker" v-model="innerValue" text-input auto-apply :placeholder="props.placeholder"
       :clearable="props.disabled ? false : props.clearable" :month-change-on-scroll="props.monthChangeOnScroll"
       :model-type="props.displayFormat" :start-date="props.startDate" arrow-navigation
       :enable-time-picker="props.enableTimePicker" :class="[props.dpClass]" @date-update="closeDatePicker"
@@ -225,7 +225,7 @@ watch(
           :placeholder="props.placeholder" @update:focused="onBlurInner" @click:append-inner="openCloseDP"
           @click:control="openCloseDP" @click:clear="handleClearable" :disabled="props.disabled"></v-text-field>
       </template>
-    </VueDatePicker>
+    </vue-date-picker>
   </div>
   <v-overlay v-model="isOpenDP" location-strategy="connected" scroll-strategy="reposition" :scrim="false"
     contained></v-overlay>

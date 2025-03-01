@@ -277,16 +277,17 @@ onBeforeUnmount(() => {
 
         <div class="grid auto-cols-fr grid-flow-col gap-3 whitespace-nowrap"
           :class="countConfigShowButton > 2 ? 'w-2/4' : 'w-1/4'">
+          <slot name="prepend-action" />
           <d-button v-if="mergedConfig.button?.create?.show" :cta="mergedConfig?.button?.create?.cta ?? 'Create New'"
             :class="classMerge(
               'rounded-none bg-[#4094D4] transition-all ease-in-out hover:!bg-[#3882ba]',
               mergedConfig.button?.create?.class ?? ''
             )
               " :text-class="classMerge(
-                'text-white mx-auto !font-bold',
-                mergedConfig.button?.create?.textClass ?? ''
-              )
-                " :no-icon="true" type="submit" @click="handleClickCreate" />
+              'text-white mx-auto !font-bold',
+              mergedConfig.button?.create?.textClass ?? ''
+            )
+              " :no-icon="true" type="button" @click="handleClickCreate" />
 
           <d-button v-if="mergedConfig.button?.save?.show" :cta="mergedConfig?.button?.save?.cta ?? 'Save Change'"
             :class="classMerge(
@@ -298,11 +299,11 @@ onBeforeUnmount(() => {
               mergedConfig.button?.save?.class ?? ''
             )
               " :text-class="classMerge(
-                'text-[#4094D4] mx-auto',
-                mergedConfig.button?.save?.textClass ?? '',
-                `${mergedConfig.mode == 'create' ? '!text-white' : ''}`
-              )
-                " :loading="props.config.button?.save?.loading"
+              'text-[#4094D4] mx-auto',
+              mergedConfig.button?.save?.textClass ?? '',
+              `${mergedConfig.mode == 'create' ? '!text-white' : ''}`
+            )
+              " :loading="props.config.button?.save?.loading"
             :activate-loading="mergedConfig.button?.save?.activateLoading"
             :is-loading-default="mergedConfig.button?.save?.isLoadingDefault" :no-icon="true"
             :disabled-class="mergedConfig.button.save?.disabledClass" type="submit" @click="handleClickSave"
@@ -314,12 +315,12 @@ onBeforeUnmount(() => {
               mergedConfig.button?.duplicate?.class ?? ''
             )
               " :text-class="classMerge(
-                'text-zinc-800 mx-auto',
-                mergedConfig.button?.duplicate?.textClass ?? ''
-              )
-                " :loading="props.config.button?.duplicate?.loading"
+              'text-zinc-800 mx-auto',
+              mergedConfig.button?.duplicate?.textClass ?? ''
+            )
+              " :loading="props.config.button?.duplicate?.loading"
             :activate-loading="mergedConfig.button?.duplicate?.activateLoading" :is-loading-default="mergedConfig.button?.duplicate?.isLoadingDefault
-              " :disabled="mergedConfig.button?.duplicate?.disabled" :no-icon="true" type="submit"
+              " :disabled="mergedConfig.button?.duplicate?.disabled" :no-icon="true" type="button"
             @click="handleClickDuplicate" />
           <d-button v-if="mergedConfig.button?.pdf?.show" :cta="mergedConfig?.button?.pdf?.cta ?? 'Download PDF'"
             :class="classMerge(
@@ -327,12 +328,12 @@ onBeforeUnmount(() => {
               mergedConfig.button?.pdf?.class ?? ''
             )
               " :text-class="classMerge(
-                'text-zinc-800 mx-auto',
-                mergedConfig.button?.pdf?.textClass ?? ''
-              )
-                " :loading="props.config.button?.pdf?.loading"
+              'text-zinc-800 mx-auto',
+              mergedConfig.button?.pdf?.textClass ?? ''
+            )
+              " :loading="props.config.button?.pdf?.loading"
             :activate-loading="mergedConfig.button?.pdf?.activateLoading"
-            :is-loading-default="mergedConfig.button?.pdf?.isLoadingDefault" :no-icon="true" type="submit"
+            :is-loading-default="mergedConfig.button?.pdf?.isLoadingDefault" :no-icon="true" type="button"
             @click="handleClickPdf" @click:loading="emits('click:pdf:loading', $event)" />
           <d-button v-if="mergedConfig.button?.csv?.show" :cta="mergedConfig?.button?.csv?.cta ?? 'Download CSV'"
             :class="classMerge(
@@ -340,12 +341,12 @@ onBeforeUnmount(() => {
               mergedConfig.button?.csv?.class ?? ''
             )
               " :text-class="classMerge(
-                'text-zinc-800 mx-auto',
-                mergedConfig.button?.csv?.textClass ?? ''
-              )
-                " :loading="props.config.button?.csv?.loading"
+              'text-zinc-800 mx-auto',
+              mergedConfig.button?.csv?.textClass ?? ''
+            )
+              " :loading="props.config.button?.csv?.loading"
             :activate-loading="mergedConfig.button?.csv?.activateLoading"
-            :is-loading-default="mergedConfig.button?.csv?.isLoadingDefault" :no-icon="true" type="submit"
+            :is-loading-default="mergedConfig.button?.csv?.isLoadingDefault" :no-icon="true" type="button"
             @click="handleClickCsv" @click:loading="emits('click:csv:loading', $event)" />
           <d-button v-if="mergedConfig.button?.clear?.show" :cta="mergedConfig?.button?.clear?.cta ?? 'Clear'" :class="classMerge(
             'rounded-none bg-zinc-200 transition-all ease-in-out hover:!bg-zinc-300',
@@ -358,7 +359,7 @@ onBeforeUnmount(() => {
               " :loading="props.config.button?.clear?.loading"
             :activate-loading="mergedConfig.button?.clear?.activateLoading"
             :is-loading-default="mergedConfig.button?.clear?.isLoadingDefault" :no-icon="true"
-            :disabled="mergedConfig.button?.clear?.disabled" type="submit" @click="handleClickClear"
+            :disabled="mergedConfig.button?.clear?.disabled" type="button" @click="handleClickClear"
             @click:loading="emits('click:clear:loading', $event)" />
           <d-back v-if="mergedConfig.parentPath || mergedConfig.button?.cancel?.show"
             :cta="mergedConfig?.button?.cancel?.cta ?? 'Cancel'" :parent-path="mergedConfig.parentPath" :class="[
@@ -367,7 +368,8 @@ onBeforeUnmount(() => {
             ]" :text-class="[
               'text-rose-800 mx-auto',
               mergedConfig.button?.cancel?.textClass ?? ''
-            ]" :no-icon="true" type="submit" @click="handleClickCancel" />
+            ]" :no-icon="true" type="button" @click="handleClickCancel" />
+          <slot name="append-action" />
         </div>
       </div>
 
@@ -380,6 +382,7 @@ onBeforeUnmount(() => {
       " :config="config.summary" />
     </div>
     <div class="flex w-full flex-col gap-2 rounded-lg !border !border-zinc-400 p-3">
+      <slot name="above-tabs" />
       <d-tabs v-if="config.tabs?.length ?? 0 > 0" :tabs="config.tabs" :current="config.currentTab"
         @update:current="handleChangeTab" />
       <div :id="randomContentElementId" ref="contentlayout" @resize="updateHeight" :class="classMerge(

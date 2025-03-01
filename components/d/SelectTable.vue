@@ -335,70 +335,134 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div :class="classMerge('flex w-full grow', props.class)" :title="selectedText">
-    <d-button :type="props.type" :cta="selectedText ? `${props.label}: ${selectedText}` : props.cta"
-      :append-icon="props.appendIcon" :no-icon="!!selectedText" :class="classMerge(
-        'text-none flex w-full grow items-center justify-center gap-1 whitespace-nowrap border-1.5 border-solid border-zinc-400',
-        props.btnClass
-      )
-        " :text-class="classMerge('text-sm text-zinc-400', props.textClass)" :icon="!selectedText ? icon : undefined"
-      :icon-class="classMerge('text-zinc-400', props.iconClass)" @click="openModal(true)"
-      :max-length-display="props.maxLengthDisplay" :loading="showMetaModal.loading"></d-button>
+  <div
+    :class="classMerge('flex w-full grow', props.class)"
+    :title="selectedText"
+  >
+    <d-button
+      :type="props.type"
+      :cta="selectedText ? `${props.label}: ${selectedText}` : props.cta"
+      :append-icon="props.appendIcon"
+      :no-icon="!!selectedText"
+      :class="
+        classMerge(
+          'text-none flex w-full grow items-center justify-center gap-1 whitespace-nowrap border-1.5 border-solid border-zinc-400',
+          props.btnClass
+        )
+      "
+      :text-class="classMerge('text-sm text-zinc-400', props.textClass)"
+      :icon="!selectedText ? icon : undefined"
+      :icon-class="classMerge('text-zinc-400', props.iconClass)"
+      @click="openModal(true)"
+      :max-length-display="props.maxLengthDisplay"
+      :loading="showMetaModal.loading"
+    ></d-button>
 
-    <d-button v-if="selectedText" type="button" cta="Clear"
+    <d-button
+      v-if="selectedText"
+      type="button"
+      cta="Clear"
       class="text-none m-0 flex items-center justify-center border-y-1.5 border-r-1.5 border-solid border-zinc-400 py-0"
-      text-class="text-zinc-400" icon="mdi-close" icon-class="text-zinc-400" is-no-text @click="clearSelected" />
+      text-class="text-zinc-400"
+      icon="mdi-close"
+      icon-class="text-zinc-400"
+      is-no-text
+      @click="clearSelected"
+    />
   </div>
   <!-- Modal Add Style -->
-  <modals-final-modal :is-open="showModal" :size="props.modalSize" :label="props.modalTitle"
-    :header-text-class="classMerge('text-lg', props.modalHeaderTextClass)" :custom-class="props.modalCustomClass"
-    @update:is-open="openModal($event)">
+  <modals-final-modal
+    :is-open="showModal"
+    :size="props.modalSize"
+    :label="props.modalTitle"
+    :header-text-class="classMerge('text-lg', props.modalHeaderTextClass)"
+    :custom-class="props.modalCustomClass"
+    @update:is-open="openModal($event)"
+  >
     <template #label>
       <div class="flex items-center gap-2">
         <span class="whitespace-nowrap text-xl">
           {{ props.modalTitle }}
         </span>
-        <span class="rounded-sm bg-slate-200 px-2 py-1 font-normal" v-if="selectedText">
+        <span
+          class="rounded-sm bg-slate-200 px-2 py-1 font-normal"
+          v-if="selectedText"
+        >
           Selected : {{ selectedText }}
         </span>
       </div>
     </template>
     <template #top>
-      <form :class="classMerge(
-        'flex flex-col gap-3',
-        generatedFiltersObj.length <= 3 ? 'flex-row' : 'flex-col'
-      )
-        " @submit.prevent="filterData()">
-        <div v-if="generatedFiltersObj.length > 0" :class="classMerge(
-          'grid grid-cols-5 gap-3',
-          generatedFiltersObj.length <= 3
-            ? `grow grid-cols-${generatedFiltersObj.length}`
-            : 'grid-cols-5'
-        )
-          ">
-          <div v-for="(filter, index) in generatedFiltersObj" :key="index">
-            <d-text-input v-if="filter.type === 'text'" v-model="filters[filter.key]" :label="filter.title" />
-            <d-date-picker-light v-else-if="filter.type === 'date'" v-model="filters[filter.key]"
-              :label="filter.title" />
-            <d-autocomplete v-else-if="filter.type === 'autocomplete'" v-model="filters[filter.key]"
-              :label="filter.title" :api="filter.others?.api" :item-value="filter.others?.itemValue"
-              :item-title="filter.others?.itemTitle" :mapping-detail="filter.others?.mappingDetail"
-              :inner-search-key="filter.others?.innerSearchKey" :items-prop="filter.others?.itemsProp"
-              :page-end-prop="filter.others?.pageEndProp" />
+      <form
+        :class="
+          classMerge(
+            'flex flex-col gap-3',
+            generatedFiltersObj.length <= 3 ? 'flex-row' : 'flex-col'
+          )
+        "
+        @submit.prevent="filterData()"
+      >
+        <div
+          v-if="generatedFiltersObj.length > 0"
+          :class="
+            classMerge(
+              'grid grid-cols-5 gap-3',
+              generatedFiltersObj.length <= 3
+                ? `grow grid-cols-${generatedFiltersObj.length}`
+                : 'grid-cols-5'
+            )
+          "
+        >
+          <div
+            v-for="(filter, index) in generatedFiltersObj"
+            :key="index"
+          >
+            <d-text-input
+              v-if="filter.type === 'text'"
+              v-model="filters[filter.key]"
+              :label="filter.title"
+            />
+            <d-date-picker-light
+              v-else-if="filter.type === 'date'"
+              v-model="filters[filter.key]"
+              :label="filter.title"
+            />
+            <d-autocomplete
+              v-else-if="filter.type === 'autocomplete'"
+              v-model="filters[filter.key]"
+              :label="filter.title"
+              :api="filter.others?.api"
+              :item-value="filter.others?.itemValue"
+              :item-title="filter.others?.itemTitle"
+              :mapping-detail="filter.others?.mappingDetail"
+              :inner-search-key="filter.others?.innerSearchKey"
+              :items-prop="filter.others?.itemsProp"
+              :page-end-prop="filter.others?.pageEndProp"
+            />
           </div>
         </div>
-        <div :class="classMerge(
-          'flex items-center gap-x-3',
-          generatedFiltersObj.length < 3
-            ? 'w-3/5'
-            : generatedFiltersObj.length == 3
-              ? 'w-1/2'
-              : 'w-full'
-        )
-          ">
-          <v-text-field id="global_search_modal" v-model="filters.global" hide-details label="Global Search"
-            placeholder="Search anything related to styles, style name, factory, etc" variant="outlined"
-            density="compact" append-inner-icon="mdi-magnify" />
+        <div
+          :class="
+            classMerge(
+              'flex items-center gap-x-3',
+              generatedFiltersObj.length < 3
+                ? 'w-3/5'
+                : generatedFiltersObj.length == 3
+                  ? 'w-1/2'
+                  : 'w-full'
+            )
+          "
+        >
+          <v-text-field
+            id="global_search_modal"
+            v-model="filters.global"
+            hide-details
+            label="Global Search"
+            placeholder="Search anything related to styles, style name, factory, etc"
+            variant="outlined"
+            density="compact"
+            append-inner-icon="mdi-magnify"
+          />
 
           <d-submit-button @click:submit="filterData" />
         </div>
@@ -406,29 +470,58 @@ onMounted(async () => {
     </template>
 
     <div class="flex h-max w-full flex-col">
-      <v-data-table-server v-model="itemsCheck" :items="metaModal.data ?? []" :headers="headersModal"
-        :items-per-page="filters.per_page" :items-length="metaModal.total ?? 0"
-        :items-per-page-options="useInitials.perPageOptions" :loading="metaModal.loading" density="compact"
+      <v-data-table-server
+        v-model="itemsCheck"
+        :items="metaModal.data ?? []"
+        :headers="headersModal"
+        :items-per-page="filters.per_page"
+        :items-length="metaModal.total ?? 0"
+        :items-per-page-options="useInitials.perPageOptions"
+        :loading="metaModal.loading"
+        density="compact"
         :header-props="{
           class: '!bg-[#F4F6F8] whitespace-nowrap'
-        }" :row-props="{
+        }"
+        :row-props="{
           class: 'cursor-pointer'
-        }" :item-value="props.itemValue" show-current-page show-select :return-object="props.returnObject"
-        :multiple="props.multiple" :select-strategy="selectStrategy" @update:options="fetchDataServerFetch" fixed-header
-        :height="props.height" hover @click:row="onSelectOption"></v-data-table-server>
+        }"
+        :item-value="props.itemValue"
+        show-current-page
+        show-select
+        :return-object="props.returnObject"
+        :multiple="props.multiple"
+        :select-strategy="selectStrategy"
+        @update:options="fetchDataServerFetch"
+        fixed-header
+        :height="props.height"
+        hover
+        @click:row="onSelectOption"
+      ></v-data-table-server>
     </div>
     <template #footer>
       <div class="flex h-max w-full items-center justify-end gap-2">
         <!-- clear -->
 
-        <v-btn variant="tonal" height="35" density="comfortable" class="text-none" rounded="sm"
-          append-icon="mdi-refresh" @click="clearSelected">
+        <v-btn
+          variant="tonal"
+          height="35"
+          density="comfortable"
+          class="text-none"
+          rounded="sm"
+          append-icon="mdi-refresh"
+          @click="clearSelected"
+        >
           Clear
         </v-btn>
-        <button type="button"
+        <button
+          type="button"
           class="flex items-center gap-2 rounded-md bg-[#00B8D9] px-3 py-2 text-[15px] font-bold text-white shadow-md hover:shadow-xl"
-          @click="onSelectItems">
-          <Icon name="material-symbols:save-rounded" size="20" />
+          @click="onSelectItems"
+        >
+          <Icon
+            name="material-symbols:save-rounded"
+            size="20"
+          />
           Select {{ props.label }}
         </button>
       </div>

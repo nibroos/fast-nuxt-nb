@@ -117,8 +117,10 @@ watchEffect(() => {
 })
 </script>
 <template>
-  <form @submit.prevent="handleSubmit(mergedConfig.actions, mergedConfig.type)"
-    :class="['flex flex-col gap-5', mergedConfig?.class ?? '']">
+  <form
+    @submit.prevent="handleSubmit(mergedConfig.actions, mergedConfig.type)"
+    :class="['flex flex-col gap-5', mergedConfig?.class ?? '']"
+  >
     <slot :name="`content`" v-bind="{ actions: mergedConfig.actions }">
       <!-- <div
         v-for="(modelForm, keyModelForm, iModelForm) in filteredModalForms"
@@ -248,21 +250,47 @@ watchEffect(() => {
 
     <slot :name="`footer`" v-bind="{ actions: mergedConfig.actions }">
       <div class="flex w-full items-center gap-3 pt-3">
-        <d-button v-if="!slots[`cancel`]" @click="handleBack(mergedConfig.actions)" :class="[
-          'grow justify-center rounded-lg !border !border-solid !border-rose-700 py-2 !text-rose-700 transition-all ease-in-out hover:!bg-rose-50',
-          mergedConfig.actions?.cancelClass ?? ''
-        ]" :text-class="classMerge(mergedConfig.actions?.cancelTextClass ?? 'text-rose-700 text-lg')
-            " :cta="mergedConfig.actions?.cancelText" type="submit" :no-icon="true"></d-button>
+        <d-button
+          v-if="!slots[`cancel`]"
+          @click="handleBack(mergedConfig.actions)"
+          :class="[
+            'grow justify-center rounded-lg !border !border-solid !border-rose-700 py-2 !text-rose-700 transition-all ease-in-out hover:!bg-rose-50',
+            mergedConfig.actions?.cancelClass ?? ''
+          ]"
+          :text-class="[
+            mergedConfig.actions?.cancelTextClass ?? 'text-rose-700 text-lg'
+          ]"
+          :cta="mergedConfig.actions?.cancelText"
+          type="submit"
+          :no-icon="true"
+        ></d-button>
 
-        <slot v-else :name="`cancel`" v-bind="{ actions: mergedConfig.actions }" class="grow"></slot>
+        <slot
+          v-else
+          :name="`cancel`"
+          v-bind="{ actions: mergedConfig.actions }"
+          class="grow"
+        ></slot>
 
-        <d-button v-if="!slots[`confirm`]" :class="[
-          ' w-2/3 justify-center rounded-lg !bg-[#4094D4] py-2 text-white transition-all ease-in-out hover:!bg-[#3882ba]',
-          mergedConfig.actions?.confirmClass ?? ''
-        ]" :text-class="classMerge(mergedConfig.actions?.confirmTextClass ?? 'text-white text-lg')"
-          :cta="mergedConfig.actions?.confirmText" @click="handleSubmit(mergedConfig.actions, mergedConfig.type)"
-          type="submit" :no-icon="true"></d-button>
-        <slot v-else :name="`confirm`" v-bind="{ actions: mergedConfig.actions }"></slot>
+        <d-button
+          v-if="!slots[`confirm`]"
+          :class="[
+            ' w-2/3 justify-center rounded-lg !bg-[#4094D4] py-2 text-white transition-all ease-in-out hover:!bg-[#3882ba]',
+            mergedConfig.actions?.confirmClass ?? ''
+          ]"
+          :text-class="[
+            mergedConfig.actions?.confirmTextClass ?? 'text-white text-lg'
+          ]"
+          :cta="mergedConfig.actions?.confirmText"
+          @click="handleSubmit(mergedConfig.actions, mergedConfig.type)"
+          type="submit"
+          :no-icon="true"
+        ></d-button>
+        <slot
+          v-else
+          :name="`confirm`"
+          v-bind="{ actions: mergedConfig.actions }"
+        ></slot>
       </div>
     </slot>
   </form>
