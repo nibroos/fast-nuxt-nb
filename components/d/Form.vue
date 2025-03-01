@@ -256,10 +256,8 @@ watchEffect(() => {
           :class="[
             'grow justify-center rounded-lg !border !border-solid !border-rose-700 py-2 !text-rose-700 transition-all ease-in-out hover:!bg-rose-50',
             mergedConfig.actions?.cancelClass ?? ''
-          ]"
-          :text-class="[
-            mergedConfig.actions?.cancelTextClass ?? 'text-rose-700 text-lg'
-          ]"
+          ].join(' ')"
+          :text-class="mergedConfig.actions?.cancelTextClass ?? 'text-rose-700 text-lg'"
           :cta="mergedConfig.actions?.cancelText"
           type="submit"
           :no-icon="true"
@@ -277,10 +275,8 @@ watchEffect(() => {
           :class="[
             ' w-2/3 justify-center rounded-lg !bg-[#4094D4] py-2 text-white transition-all ease-in-out hover:!bg-[#3882ba]',
             mergedConfig.actions?.confirmClass ?? ''
-          ]"
-          :text-class="[
-            mergedConfig.actions?.confirmTextClass ?? 'text-white text-lg'
-          ]"
+          ].join(' ')"
+          :text-class="mergedConfig.actions?.confirmTextClass ?? 'text-white text-lg'"
           :cta="mergedConfig.actions?.confirmText"
           @click="handleSubmit(mergedConfig.actions, mergedConfig.type)"
           type="submit"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface IProps {
   class?: string
-  current?: string | number
+  current?: number
   tabs?: string[]
 }
 const props = withDefaults(defineProps<IProps>(), {
@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<IProps>(), {
   tabs: () => []
 })
 
-const currentTab = ref(props.current)
+const currentTab = ref<unknown>(props.current)
 
 const emits = defineEmits(['update:current'])
 

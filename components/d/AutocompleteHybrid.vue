@@ -31,7 +31,7 @@ const props = withDefaults(defineProps<AutocompleteType>(), {
   initialValue: '',
   disableInitialLoad: true,
   methodApi: 'get',
-  placeholder: (props) => `Select/search ${props.label}` ?? 'Select/Search',
+  placeholder: (props) => `Select/search ${props.label ?? 'Select/Search'}`,
   chips: false,
   maxLengthDisplay: 16,
   startAlignDisplay: 'left',
