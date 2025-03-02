@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import { classMerge } from '#imports'
+import { classMerge } from "#imports";
 
 type IProps = {
-  class?: string
-}
+  class?: string;
+};
 
 const props = withDefaults(defineProps<IProps>(), {
-  class: ''
-})
+  class: "",
+});
 
-const emits = defineEmits(['click:submit', 'click:clear'])
+const emits = defineEmits(["click:submit", "click:clear"]);
 const handleClickSubmit = () => {
-  emits('click:submit')
-}
+  emits("click:submit");
+};
 
 const handleClickClear = () => {
-  emits('click:clear')
-}
+  emits("click:clear");
+};
 </script>
 
 <template>
   <div :class="classMerge('flex flex-row items-center gap-2', props.class)">
-    <v-btn
+    <!-- <v-btn
       variant="tonal"
       height="35"
       density="comfortable"
@@ -33,8 +33,17 @@ const handleClickClear = () => {
       @click="handleClickSubmit()"
     >
       Find
-    </v-btn>
-    <v-btn
+    </v-btn> -->
+    <d-button
+      :cta="'Find'"
+      :class="'!bg-sc hover:!bg-scDarker text-white transition-all ease-in-out border-1.5 p-3 rounded-lg '"
+      :text-class="classMerge('text-white mx-auto')"
+      type="submit"
+      size="xl"
+      @click="handleClickSubmit()"
+      no-icon
+    />
+    <!-- <v-btn
       type="button"
       variant="tonal"
       height="35"
@@ -45,6 +54,15 @@ const handleClickClear = () => {
       @click="handleClickClear()"
     >
       Clear
-    </v-btn>
+    </v-btn> -->
+    <d-button
+      :cta="'Clear'"
+      :class="'dark:!bg-dark2 hover:bg-scLightest dark:hover:!bg-scDarker transition-all ease-in-out !border-2 p-3 rounded-lg !border-solid '"
+      :text-class="classMerge('text-scDarker dark:text-white mx-auto')"
+      type="button"
+      size="xl"
+      @click="handleClickClear()"
+      no-icon
+    />
   </div>
 </template>

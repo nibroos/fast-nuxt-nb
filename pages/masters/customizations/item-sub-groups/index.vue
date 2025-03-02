@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import useLayoutsStore from "~/stores/configs/LayoutsStore";
-import useUserStore from "~/stores/masters/UserStore";
+import useItemSubGroupStore from "~/stores/masters/ItemSubGroupStore";
 
-const { queryModal } = useUserStore();
+const { queryModal } = useItemSubGroupStore();
 const layoutStore = useLayoutsStore();
 const { titlePath, subTitlePath, lastPathSegment, parentTitle, topTitle } =
   storeToRefs(layoutStore);
@@ -13,12 +13,16 @@ definePageMeta({
 });
 
 useHead({
-  title: "Users",
+  title: "Item Sub Groups",
 });
 </script>
 
 <template>
-  <lazy-layout-topmenu :top-menu="topMenuMasterTab">
+  <div class="flex flex-col gap-2">
+    <l-top-menu :top-menu="topMenuMasterTab" parent_link=""> </l-top-menu>
+    <l-top-menu :top-menu="topMenuCustomizationTab" parent_link="">
+    </l-top-menu>
+
     <d-index-layout
       :config="{
         permission: {
@@ -28,15 +32,15 @@ useHead({
       }"
     >
       <d-datatable
-        api="/v1/users/index-user"
-        detail-link="/masters/users"
+        api="/v1/item-sub-groups/index-item-sub-group"
+        detail-link="/masters/item-sub-groups"
         method-api="post"
         detail-method-api="post"
         items-prop="data"
         total-prop="meta.total"
-        label="Master User"
+        label="Master Sub Group"
         class="col-span-2 lg:col-span-1"
-        search-placeholder="Search anything related to users.."
+        search-placeholder="Search anything related to item sub groups.."
         is-quick-select
         no-title
         :fields="[
@@ -48,58 +52,35 @@ useHead({
             sortable: true,
           },
           {
-            title: 'Username',
-            key: 'username',
-            value: 'username',
+            title: 'Group Name',
+            key: 'group_name',
+            value: 'group_name',
             align: 'start',
             sortable: true,
           },
           {
-            title: 'Email',
-            key: 'email',
-            value: 'email',
+            title: 'Description',
+            key: 'description',
+            value: 'description',
             align: 'start',
             sortable: true,
           },
           {
-            title: 'Address',
-            key: 'address',
-            value: 'address',
-            align: 'start',
-            sortable: true,
-          },
-          {
-            title: 'Branch',
-            key: 'branch_name',
-            value: 'branch_name',
+            title: 'Remark',
+            key: 'remark',
+            value: 'remark',
             align: 'start',
             sortable: true,
           },
         ]"
         :filters="[
           {
-            title: 'Name',
-            key: 'name',
-          },
-          {
-            title: 'Username',
-            key: 'username',
-          },
-          {
-            title: 'Email',
-            key: 'email',
-          },
-          {
-            title: 'Address',
-            key: 'address',
-          },
-          {
-            title: 'Roles',
-            key: 'role_id',
+            title: 'Group',
+            key: 'item_group_id',
             type: 'autocomplete',
             others: {
-              api: '/api/v1/roles/index-role',
-              singleApi: '/api/v1/roles/show-role',
+              api: '/api/v1/item-groups/index-item-group',
+              singleApi: '/api/v1/item-groups/show-item-group',
               mappingDetail: 'data',
               itemsProp: 'data',
               pageEndProp: 'last_page',
@@ -109,8 +90,20 @@ useHead({
               innerSearchKey: 'global',
             },
           },
+          {
+            title: 'Name',
+            key: 'name',
+          },
+          {
+            title: 'Description',
+            key: 'description',
+          },
+          {
+            title: 'Remark',
+            key: 'remark',
+          },
         ]"
       />
     </d-index-layout>
-  </lazy-layout-topmenu>
+  </div>
 </template>

@@ -1,33 +1,4 @@
 <script setup lang="ts">
-import { useTheme } from "vuetify";
-
-const theme = useTheme();
-const { setTheme } = useThemeSwitch();
-
-const initialTheme = () => {
-  setTheme();
-
-  const storageTheme = localStorage.getItem("theme");
-  if (
-    storageTheme === "dark" ||
-    (!storageTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-  ) {
-    theme.global.name.value = "dark";
-  }
-};
-
-watch(
-  () => AuthStore().theme,
-  (oldVal, newVal) => {
-    if (oldVal != newVal) {
-      theme.global.name.value = newVal;
-    }
-  }
-);
-
-onMounted(() => {
-  initialTheme();
-});
 </script>
 <template>
   <!-- <div>

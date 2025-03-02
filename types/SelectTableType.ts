@@ -69,6 +69,8 @@ export type SelectTableType = {
   displayMultipleSeparator?: string
   maxLengthDisplay?: number | string
   isQuickSelect?: boolean
+  searchPlaceholder?: string
+  noTitle?: boolean
 
   // Modal
   showModal?: boolean

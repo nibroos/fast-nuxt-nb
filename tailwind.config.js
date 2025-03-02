@@ -33,6 +33,15 @@ module.exports = {
       'xs': { 'max': '400px' },
       // => @media (max-width: 336px) { ... }
     },
+    
+    borderWidth: {
+      DEFAULT: '1px',
+      0: '0px',
+      1.5: '1.5px',
+      2: '2px',
+      4: '4px',
+      8: '8px'
+    },
     extend: {
       colors: {
         brown: {

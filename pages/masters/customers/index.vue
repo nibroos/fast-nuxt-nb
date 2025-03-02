@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import useLayoutsStore from "~/stores/configs/LayoutsStore";
-import useUserStore from "~/stores/masters/UserStore";
+import useCustomerStore from "~/stores/masters/CustomerStore";
 
-const { queryModal } = useUserStore();
+const { queryModal } = useCustomerStore();
 const layoutStore = useLayoutsStore();
 const { titlePath, subTitlePath, lastPathSegment, parentTitle, topTitle } =
   storeToRefs(layoutStore);
@@ -13,7 +13,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Users",
+  title: "Customers",
 });
 </script>
 
@@ -28,15 +28,15 @@ useHead({
       }"
     >
       <d-datatable
-        api="/v1/users/index-user"
-        detail-link="/masters/users"
+        api="/v1/customers/index-customer"
+        detail-link="/masters/customers"
         method-api="post"
         detail-method-api="post"
         items-prop="data"
         total-prop="meta.total"
         label="Master User"
         class="col-span-2 lg:col-span-1"
-        search-placeholder="Search anything related to users.."
+        search-placeholder="Search anything related to customer types.."
         is-quick-select
         no-title
         :fields="[
@@ -48,14 +48,21 @@ useHead({
             sortable: true,
           },
           {
-            title: 'Username',
-            key: 'username',
-            value: 'username',
+            title: 'Code',
+            key: 'code',
+            value: 'code',
             align: 'start',
             sortable: true,
           },
           {
             title: 'Email',
+            key: 'email',
+            value: 'email',
+            align: 'start',
+            sortable: true,
+          },
+          {
+            title: 'Phone',
             key: 'email',
             value: 'email',
             align: 'start',
@@ -68,13 +75,6 @@ useHead({
             align: 'start',
             sortable: true,
           },
-          {
-            title: 'Branch',
-            key: 'branch_name',
-            value: 'branch_name',
-            align: 'start',
-            sortable: true,
-          },
         ]"
         :filters="[
           {
@@ -82,33 +82,37 @@ useHead({
             key: 'name',
           },
           {
-            title: 'Username',
-            key: 'username',
+            title: 'Code',
+            key: 'code',
           },
           {
             title: 'Email',
             key: 'email',
           },
           {
+            title: 'Phone',
+            key: 'email',
+          },
+          {
             title: 'Address',
             key: 'address',
           },
-          {
-            title: 'Roles',
-            key: 'role_id',
-            type: 'autocomplete',
-            others: {
-              api: '/api/v1/roles/index-role',
-              singleApi: '/api/v1/roles/show-role',
-              mappingDetail: 'data',
-              itemsProp: 'data',
-              pageEndProp: 'last_page',
-              itemTitle: 'name',
-              itemValue: 'id',
-              label: 'Roles',
-              innerSearchKey: 'global',
-            },
-          },
+          // {
+          //   title: 'Roles',
+          //   key: 'role_id',
+          //   type: 'autocomplete',
+          //   others: {
+          //     api: '/api/v1/roles/index-role',
+          //     singleApi: '/api/v1/roles/show-role',
+          //     mappingDetail: 'data',
+          //     itemsProp: 'data',
+          //     pageEndProp: 'last_page',
+          //     itemTitle: 'name',
+          //     itemValue: 'id',
+          //     label: 'Roles',
+          //     innerSearchKey: 'global',
+          //   },
+          // },
         ]"
       />
     </d-index-layout>

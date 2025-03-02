@@ -1,6 +1,45 @@
 <script setup lang="ts">
 import useLayouts from "~/stores/configs/LayoutsStore";
-// const drawer = ref(undefined || true);
+
+import { useTheme } from "vuetify";
+import useAuthStore from "@/stores/AuthStore";
+
+const authStore = useAuthStore();
+const { theme: authTheme } = storeToRefs(authStore);
+
+const theme = useTheme();
+const { setTheme } = useThemeSwitch();
+
+const initialTheme = () => {
+  setTheme();
+
+  const storageTheme = localStorage.getItem("theme");
+  if (
+    storageTheme === "dark" ||
+    (!storageTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)
+  ) {
+    theme.global.name.value = "dark";
+  }
+};
+
+// watch(
+//   () => authTheme.value,
+//   (oldVal, newVal) => {
+//     if (oldVal != newVal) {
+//       theme.global.name.value = newVal;
+//     }
+//   }
+// );
+
+watchEffect(() => {
+  if (authTheme.value) {
+    theme.global.name.value = authTheme.value;
+  }
+});
+
+onMounted(() => {
+  initialTheme();
+});
 
 const layoutState = useLayouts();
 const {
@@ -41,7 +80,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="absolute z-10 h-screen w-full text-zinc-900 dark:text-zinc-50">
+  <div class="z-10 h-screen w-full text-zinc-900 dark:text-zinc-50">
     <v-app class="bg-white dark:!bg-dark3">
       <!-- ---------------------------------------------- -->
       <!---Sidebar -->

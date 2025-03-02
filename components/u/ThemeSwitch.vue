@@ -19,7 +19,7 @@ const { toggleTheme } = useThemeSwitch();
 
 const toggleGlobalTheme = (): void => {
   toggleTheme();
-  theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
   AuthStore().theme = theme.global.current.value.dark ? "light" : "dark";
+  theme.global.name.value = AuthStore().theme;
 };
 </script>
