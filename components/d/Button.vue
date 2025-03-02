@@ -1,67 +1,71 @@
 <script setup lang="ts">
-import { classMerge } from '~/utils/strings'
+import { classMerge } from "~/utils/strings";
 // import {normalizeClass}
 interface IProps {
-  cta?: string
-  noIcon?: boolean
-  class?: string
-  textClass?: string
-  type?: 'button' | 'submit'
-  icon?: string
-  iconSize?: number | string
-  iconClass?: string
-  disabled?: boolean
-  loading?: boolean | undefined
-  disabledTextClass?: string
-  disabledClass?: string
-  activateLoading?: boolean
-  isLoadingDefault?: boolean
-  isNoText?: boolean
-  maxLengthDisplay?: number | string
+  cta?: string;
+  noIcon?: boolean;
+  class?: string;
+  textClass?: string;
+  type?: "button" | "submit";
+  icon?: string;
+  iconSize?: number | string;
+  iconClass?: string;
+  disabled?: boolean;
+  loading?: boolean | undefined;
+  disabledTextClass?: string;
+  disabledClass?: string;
+  activateLoading?: boolean;
+  isLoadingDefault?: boolean;
+  isNoText?: boolean;
+  maxLengthDisplay?: number | string;
+  variant?: string;
+  size?: string;
 }
 
 const props = withDefaults(defineProps<IProps>(), {
-  cta: 'Back',
+  cta: "Back",
   noIcon: false,
-  class: '',
-  textClass: 'text-black',
-  type: 'button',
-  icon: 'mdi-keyboard-backspace',
+  class: "",
+  textClass: "text-black",
+  type: "button",
+  icon: "mdi-keyboard-backspace",
   iconSize: 25,
-  iconClass: '',
+  iconClass: "",
   disabled: false,
   loading: false,
-  disabledTextClass: '',
-  disabledClass: '',
+  disabledTextClass: "",
+  disabledClass: "",
   activateLoading: false,
   isLoadingDefault: true,
   isNoText: false,
-  maxLengthDisplay: 30
-})
+  maxLengthDisplay: 30,
+  variant: "flat",
+  size: "small",
+});
 
 const mergedConfig = computed(() => {
-  return props
-})
+  return props;
+});
 
-const emits = defineEmits(['click', 'click:loading'])
+const emits = defineEmits(["click", "click:loading"]);
 
-const localLoadingState = ref<boolean | undefined>(false)
-const localDisabled = ref<boolean>(props.disabled)
-const localDisabledTextClass = ref<string>(props.disabledTextClass)
+const localLoadingState = ref<boolean | undefined>(false);
+const localDisabled = ref<boolean>(props.disabled);
+const localDisabledTextClass = ref<string>(props.disabledTextClass);
 const handleClick = () => {
-  if (localDisabled.value) return
-  emits('click')
-  emits('click:loading', true)
+  if (localDisabled.value) return;
+  emits("click");
+  emits("click:loading", true);
 
   if (!!props.activateLoading) {
-    localLoadingState.value = true
-    localDisabled.value = true
+    localLoadingState.value = true;
+    localDisabled.value = true;
 
     if (props.isLoadingDefault) {
       setTimeout(() => {
-        localLoadingState.value = false
-        localDisabled.value = false
-      }, 2000)
+        localLoadingState.value = false;
+        localDisabled.value = false;
+      }, 2000);
     }
   }
 
@@ -71,19 +75,19 @@ const handleClick = () => {
   // console.log('localLoadingState.value', localLoadingState.value)
   // console.log('localDisabled.value', localDisabled.value)
   // }
-}
+};
 
 watch(
   () => mergedConfig.value.loading,
   (newVal, oldVal) => {
-    localLoadingState.value = newVal
+    localLoadingState.value = newVal;
     // if (newVal !== oldVal && typeof newVal === 'boolean') {
     //   localDisabled.value = newVal
     // }
     // console.log('oldVal', oldVal, 'newVal mergedConfig', newVal)
   },
   { deep: true, immediate: true }
-)
+);
 
 // watch(
 //   () => props.loading,
@@ -114,31 +118,39 @@ watch(
   () => props.disabled,
   (newVal, oldVal) => {
     if (newVal !== oldVal) {
-      localDisabled.value = newVal
+      localDisabled.value = newVal;
     }
   }
-)
+);
 
 watchEffect(() => {
-  localLoadingState.value = mergedConfig.value.loading
-})
+  localLoadingState.value = mergedConfig.value.loading;
+});
 
-onMounted(() => {})
+onMounted(() => {});
 </script>
 
 <template>
-  <button
+  <v-btn
     v-if="type == 'submit'"
     :class="
       classMerge(
         'flex cursor-pointer items-center p-3 transition-all ease-in-out hover:bg-zinc-100 sm:gap-x-1',
         props.class,
-        `${localDisabled && !!disabledClass ? disabledClass : localDisabled ? 'cursor-not-allowed bg-zinc-400 hover:!bg-zinc-400' : ''}`
+        `${
+          localDisabled && !!disabledClass
+            ? disabledClass
+            : localDisabled
+            ? 'cursor-not-allowed bg-zinc-400 hover:!bg-zinc-400'
+            : ''
+        }`
       )
     "
     @click="handleClick"
     :type="type"
     :disabled="localDisabled"
+    :variant="props.variant"
+    :size="props.size"
   >
     <v-icon
       :icon="props.icon"
@@ -151,9 +163,13 @@ onMounted(() => {})
       v-if="!props.isNoText"
       :class="
         classMerge(
-          'flex items-center justify-center font-medium transition-all ease-in-out',
+          'flex items-center justify-center font-medium capitalize transition-all ease-in-out',
           props.textClass,
-          `${localDisabled && !!localDisabledTextClass ? (localDisabledTextClass ?? 'text-zinc-400') : ''}`,
+          `${
+            localDisabled && !!localDisabledTextClass
+              ? localDisabledTextClass ?? 'text-zinc-400'
+              : ''
+          }`,
           `${localLoadingState ? 'flex-row gap-3' : ''}`
         )
       "
@@ -167,8 +183,8 @@ onMounted(() => {})
         {{ props.cta }}
       </span>
     </span>
-  </button>
-  <button
+  </v-btn>
+  <v-btn
     v-else
     :class="
       classMerge(
@@ -181,6 +197,8 @@ onMounted(() => {})
     :type="type"
     :disabled="localDisabled"
     :title="props.cta"
+    :variant="props.variant"
+    :size="props.size"
   >
     <v-icon
       :icon="props.icon"
@@ -192,9 +210,13 @@ onMounted(() => {})
       v-if="!props.isNoText"
       :class="
         classMerge(
-          'flex items-center justify-center font-medium transition-all ease-in-out',
+          'flex items-center justify-center font-medium capitalize transition-all ease-in-out',
           props.textClass,
-          `${localDisabled && !!localDisabledTextClass ? (localDisabledTextClass ?? 'text-zinc-400') : ''}`,
+          `${
+            localDisabled && !!localDisabledTextClass
+              ? localDisabledTextClass ?? 'text-zinc-400'
+              : ''
+          }`,
           `${localLoadingState ? 'flex-row gap-3' : ''}`
         )
       "
@@ -211,5 +233,5 @@ onMounted(() => {})
         />
       </slot>
     </span>
-  </button>
+  </v-btn>
 </template>

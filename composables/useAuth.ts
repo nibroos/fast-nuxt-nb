@@ -1,6 +1,5 @@
-// import { loginStore } from '~/stores/loginStore'
 import DateFnsAdapter from '@date-io/date-fns'
-import { useMasterUser } from '~/stores/MasterData/AccountSetting'
+import type { AuthUserType } from '~/types/AuthType'
 
 const { getDiff, isAfter } = new DateFnsAdapter()
 const route = useRoute()
@@ -48,10 +47,13 @@ const checkAuth = () => {
   return data
 }
 
-const permit = (permissions: string | any[]) => {
-  let abilities: any[] = loginStore().abilities
-  let isSuperAdmin = useMasterUser().data?.role
-  if (isSuperAdmin == 'SUPERADMIN') {
+const permit = (permissions: string | any[]): boolean => {
+  let authStore = JSON.parse(localStorage.getItem('AuthStore') || '{}') as { authUser: AuthUserType }
+  if (!authStore) return false
+
+  let abilities: string[] = authStore?.authUser?.data?.permissions || []
+  let isSuperAdmin = authStore?.authUser?.data?.roles?.find((role) => role === 'superadmin')
+  if (isSuperAdmin === 'superadmin') {
     return true
   }
 

@@ -14,27 +14,27 @@
 </template>
 
 <script setup lang="ts">
-import useLayouts from '~/stores/configs/layouts'
+import useLayouts from "~/stores/configs/LayoutsStore";
 
-const layoutState = useLayouts()
+const layoutState = useLayouts();
 const { titlePath, subTitlePath, lastPathSegment, parentTitle, topTitle } =
-  storeToRefs(layoutState)
+  storeToRefs(layoutState);
 
 const configs = ref({
   titlePath: titlePath,
   subTitlePath: subTitlePath,
   lastPathSegment: lastPathSegment,
-  parentTitle: 'Master',
-  topTitle: topTitle
-})
+  parentTitle: "Master",
+  topTitle: topTitle,
+});
 
 watchEffect(() => {
-  layoutState.defineTitlePath(configs.value)
-})
+  layoutState.defineTitlePath(configs.value);
+});
 
 onMounted(() => {
-  layoutState.defineTitlePath(configs.value)
-})
+  layoutState.defineTitlePath(configs.value);
+});
 // const router = useRoute();
 // const routePath = router.path;
 // const pathArray = routePath.split("/");

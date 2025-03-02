@@ -1,157 +1,157 @@
 <script setup lang="ts">
-import type { PermissionType } from '~/types/PermissionType'
+import type { PermissionType } from "~/types/PermissionType";
 interface IButtonConfig {
-  show?: boolean
-  cta?: string
-  path?: string
+  show?: boolean;
+  cta?: string;
+  path?: string;
 }
 
 interface IProps {
   config?: {
-    title?: string
+    title?: string;
     button?: {
-      create?: IButtonConfig
-    }
-    tabs?: string[]
-    currentTab?: string | number
-    divHeightOverflowLimit?: number
-    permission?: PermissionType
-    contentClass?: string
-  }
+      create?: IButtonConfig;
+    };
+    tabs?: string[];
+    currentTab?: string | number;
+    divHeightOverflowLimit?: number;
+    permission?: PermissionType;
+    contentClass?: string;
+  };
 }
 
 const defaultProps: IProps = {
   config: {
-    title: '', //Purchase Order Information
+    title: "", //Purchase Order Information
     button: {
       create: {
         show: false,
-        cta: 'Create New',
-        path: '' // /purchase/purchase-order/create
-      }
+        cta: "Create New",
+        path: "", // /purchase/purchase-order/create
+      },
     },
     tabs: [],
-    currentTab: '',
+    currentTab: "",
     divHeightOverflowLimit: 300,
     permission: {
       name: [],
-      action: 'warn', // redirect, hide, warn
-      isActive: false
+      action: "warn", // redirect, hide, warn
+      isActive: false,
     },
-    contentClass: ''
-  }
-}
+    contentClass: "",
+  },
+};
 
-const { config } = defineProps<IProps>()
+const { config } = defineProps<IProps>();
 
-const emits = defineEmits(['click:create', 'update:currentTab'])
+const emits = defineEmits(["click:create", "update:currentTab"]);
 
-const router = useRouter()
+const router = useRouter();
 
-const divHeightInRem = ref(0)
-const contentlayout: any = ref(null)
-const randomContentElementId = ref<string>(`index-${randomId()}`)
+const divHeightInRem = ref(0);
+const contentlayout: any = ref(null);
+const randomContentElementId = ref<string>(`index-${randomId()}`);
 
 const updateHeight = () => {
-  const div: any = document.getElementById(`${randomContentElementId.value}`)
+  const div: any = document.getElementById(`${randomContentElementId.value}`);
 
-  if (!div) return
+  if (!div) return;
 
   setTimeout(() => {
-    divHeightInRem.value = div.scrollHeight
-  }, 100)
-}
+    divHeightInRem.value = div.scrollHeight;
+  }, 100);
+};
 
 const isScrollable = computed(() => {
   return (
     divHeightInRem.value > Number(mergedConfig.value?.divHeightOverflowLimit)
-  )
-})
+  );
+});
 
 const handleClickCreate = () => {
-  const path = config?.button?.create?.path || '/'
-  router.push(path)
-  emits('click:create')
-}
+  const path = config?.button?.create?.path || "/";
+  router.push(path);
+  emits("click:create");
+};
 
 const handleChangeTab = (tab: string) => {
-  mergedConfig.value.currentTab = tab
-  emits('update:currentTab', tab)
-}
+  mergedConfig.value.currentTab = tab;
+  emits("update:currentTab", tab);
+};
 
 // merge props with default props
 function deepMerge(target: any, source: any) {
-  if (typeof target !== 'object' || typeof source !== 'object') return source
+  if (typeof target !== "object" || typeof source !== "object") return source;
 
   Object.keys(source).forEach((key) => {
-    const targetValue = target[key]
-    const sourceValue = source[key]
+    const targetValue = target[key];
+    const sourceValue = source[key];
 
     if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
-      target[key] = [...targetValue, ...sourceValue]
+      target[key] = [...targetValue, ...sourceValue];
     } else if (
-      typeof targetValue === 'object' &&
-      typeof sourceValue === 'object'
+      typeof targetValue === "object" &&
+      typeof sourceValue === "object"
     ) {
-      target[key] = deepMerge(Object.assign({}, targetValue), sourceValue)
+      target[key] = deepMerge(Object.assign({}, targetValue), sourceValue);
     } else {
-      target[key] = sourceValue
+      target[key] = sourceValue;
     }
-  })
+  });
 
-  return target
+  return target;
 }
 
-const mergedConfig = computed(() => deepMerge(defaultProps.config, config))
+const mergedConfig = computed(() => deepMerge(defaultProps.config, config));
 
-let isAllowed = ref(false)
-const route = useRoute()
+let isAllowed = ref(false);
+const route = useRoute();
 
-const slots = useSlots()
+const slots = useSlots();
 
 const handlePermission = async () => {
   if (!mergedConfig.value.permission.isActive) {
-    isAllowed.value = true
-    return
+    isAllowed.value = true;
+    return;
   }
 
-  isAllowed.value = useAuth.permit(mergedConfig.value.permission.name)
+  isAllowed.value = useAuth.permit(mergedConfig.value.permission.name);
 
   await useAuth.handlePermission(
     mergedConfig.value.permission.name,
     mergedConfig.value.permission.action
-  )
-}
+  );
+};
 
 watch(
   () => contentlayout.value,
   (newValue, oldValue) => {
-    updateHeight()
+    updateHeight();
   },
   { deep: true, immediate: true }
-)
+);
 
 watch(
   () => mergedConfig.value.permission,
   (newValue, oldValue) => {
     if (newValue != oldValue) {
-      handlePermission()
+      handlePermission();
     }
   },
   { deep: true, immediate: true }
-)
+);
 
 onMounted(() => {
-  document.body.style.overflowY = 'hidden'
+  document.body.style.overflowY = "hidden";
 
-  updateHeight()
+  updateHeight();
 
-  handlePermission()
+  handlePermission();
 
-  window.addEventListener('resize', updateHeight)
-})
+  window.addEventListener("resize", updateHeight);
+});
 
-watchEffect(() => {})
+watchEffect(() => {});
 </script>
 
 <template>
@@ -160,24 +160,18 @@ watchEffect(() => {})
     class="flex h-[90vh] flex-col gap-4 overflow-hidden"
     @click="updateHeight"
   >
-    <slot
-      v-if="slots.top"
-      name="top"
-    />
+    <slot v-if="slots.top" name="top" />
 
     <div class="flex h-[90vh] w-full flex-col rounded-lg">
       <d-tabs
         v-if="config?.tabs?.length ?? 0 > 0"
         :tabs="config?.tabs"
-        :current="config?.currentTab"
-        :class="'rounded-t-lg border-x border-t border-zinc-300'"
+        :current="config?.currentTab as number"
+        :class="'rounded-t-lg border-x border-t border-dark2'"
         @update:current="handleChangeTab"
       />
 
-      <div
-        v-if="slots.filter"
-        class="border-x border-t border-zinc-300"
-      >
+      <div v-if="slots.filter" class="border-x border-t border-dark2">
         <slot name="filter" />
       </div>
 
@@ -185,8 +179,8 @@ watchEffect(() => {})
         :id="randomContentElementId"
         ref="contentlayout"
         :class="[
-          'max-h-[80vh] !overflow-y-auto  rounded-b-lg !border !border-zinc-300',
-          mergedConfig.contentClass
+          'max-h-[80vh] !overflow-y-auto  rounded-b-lg !border !border-dark2',
+          mergedConfig.contentClass,
         ]"
         @resize="updateHeight"
       >
@@ -195,10 +189,7 @@ watchEffect(() => {})
       </div>
     </div>
 
-    <slot
-      v-if="slots.bottom"
-      name="bottom"
-    />
+    <slot v-if="slots.bottom" name="bottom" />
   </div>
 
   <div v-else>

@@ -1,4 +1,4 @@
-const router = useRoute()
+const route = useRoute()
 
 const useLayoutsStore = defineStore({
   id: 'layoutsStore',
@@ -8,12 +8,17 @@ const useLayoutsStore = defineStore({
       subTitlePath: '',
       lastPathSegment: '',
       parentTitle: '',
-      topTitle: ''
+      topTitle: '',
+      currentRouteName: '',
+      lastFullPath: '',
+      isCloseSidebar: true,
+      lastVisitedRoute: '',
+      lastVisitedMasterRoute: '',
     }
   },
   actions: {
     defineTitlePath(config?: any) {
-      let routePath = router.path
+      let routePath = route.path
       let pathArray = routePath.split('/')
       let titlePath = pathArray[1]
       let subTitlePath = pathArray[3]
@@ -29,6 +34,7 @@ const useLayoutsStore = defineStore({
       this.lastPathSegment = config?.lastPathSegment ?? lastPathSegment
       this.parentTitle = config?.parentTitle ?? ''
       this.topTitle = config?.topTitle ?? titlePath
+      this.currentRouteName = route.name?.toString() ?? ''
     },
     hasHistory(): boolean {
       return window.history.length > 2

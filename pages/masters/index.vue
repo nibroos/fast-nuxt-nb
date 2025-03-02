@@ -14,5 +14,16 @@ definePageMeta({
 </script>
 
 <template>
-  <div>Welkam Nibros</div>
+  <lazy-layout-topmenu>
+    <d-index-layout
+      :config="{
+        permission: {
+          isActive: true,
+          name: ['r_ms', 'superadmin'],
+        },
+      }"
+    >
+      abc
+    </d-index-layout>
+  </lazy-layout-topmenu>
 </template>

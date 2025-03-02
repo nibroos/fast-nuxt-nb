@@ -13,7 +13,7 @@ const alertSuccess = (message?: string | null, title?: string | null) => {
       container: '',
       actions: 'flex gap-3 w-full',
       confirmButton:
-        '!bg-[#4094D4] transition-all ease-in-out hover:!bg-[#3882ba] text-white grow'
+        '!bg-[#977669] transition-all ease-in-out hover:!bg-[#846358] text-white grow'
     }
   })
 }
@@ -29,7 +29,14 @@ const alertLoading = () => {
   })
 }
 
-const alertLoading2 = (options = {}) => {
+type LoadingOptions = {
+  title?: string;
+  html?: string;
+  icon?: 'warning' | 'error' | 'success' | 'info' | 'question';
+  allowOutsideClick?: boolean;
+}
+
+const alertLoading2 = (options: LoadingOptions = {}) => {
   Swal.fire({
     title: options.title || 'Loading',
     html: options.html || 'Please Wait',
@@ -71,7 +78,7 @@ const showPopupConfirmation = async (
       actions: opt?.customClass?.actions || 'flex gap-3 w-full',
       confirmButton:
         opt?.customClass?.confirmButton ||
-        '!bg-[#4094D4] transition-all ease-in-out hover:!bg-[#3882ba] text-white grow',
+        '!bg-[#977669] transition-all ease-in-out hover:!bg-[#846358] text-white grow',
       cancelButton:
         opt?.customClass?.cancelButton ||
         '!border !border-solid !text-rose-700 !border-rose-700 transition-all ease-in-out !bg-white hover:!bg-rose-50 grow'
@@ -112,7 +119,7 @@ const alertError = (message?: string | null, opt?: any) => {
       container: '',
       actions: 'flex gap-3 w-full',
       confirmButton:
-        '!bg-[#4094D4] transition-all ease-in-out hover:!bg-[#3882ba] text-white grow'
+        '!bg-[#977669] transition-all ease-in-out hover:!bg-[#846358] text-white grow'
     }
   })
 }

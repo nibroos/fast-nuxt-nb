@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import useLayouts from '~/stores/configs/layouts'
-import { useTopMenu } from '~/stores/MasterData/TopMenu'
-const router = useRouter()
-const id = router.currentRoute.value.params.id
+import useLayouts from "~/stores/configs/LayoutsStore";
+import { useTopMenu } from "~/stores/masters/TopMenuStore";
+const router = useRouter();
+const id = router.currentRoute.value.params.id;
 
 definePageMeta({
-  layout: 'main-layout'
-})
+  layout: "auth",
+});
 
-const layoutState = useLayouts()
+const layoutState = useLayouts();
 const { titlePath, subTitlePath, lastPathSegment, parentTitle, topTitle } =
-  storeToRefs(layoutState)
-const topMenuStore = useTopMenu()
-const { isActiveTabIndex } = storeToRefs(topMenuStore)
+  storeToRefs(layoutState);
+const topMenuStore = useTopMenu();
+const { isActiveTabIndex } = storeToRefs(topMenuStore);
 
 const configs = ref({
   titlePath: titlePath,
   subTitlePath: subTitlePath,
   lastPathSegment: lastPathSegment,
-  parentTitle: 'Master',
-  topTitle: topTitle
-})
+  parentTitle: "Master",
+  topTitle: topTitle,
+});
 
 // const isActiveLink = (item: any) => {
 //   if (isActiveTabIndex.value === item.number) {
@@ -30,195 +30,195 @@ const configs = ref({
 
 const listItem = ref([
   {
-    title: 'User',
+    title: "User",
     number: 0,
-    icon: 'mdi-account-circle-outline',
-    link: '/master-data/master-user',
-    link2: '/master-data/master-user/add-user',
-    link3: `/master-data/master-user/edit/${id}`,
-    permissions: ['MASTER_DATA_USER_READ']
+    icon: "mdi-account-circle-outline",
+    link: "/masters/users",
+    link2: "/masters/users/add-user",
+    link3: `/masters/users/edit/${id}`,
+    permissions: ["MASTER_DATA_USER_READ"],
   },
+  // {
+  //   title: "Account Setting",
+  //   number: 1,
+  //   icon: "mdi-account-cog-outline",
+  //   link: "/masters/account-setting",
+  //   permissions: ["SUPERADMIN"],
+  // },
+  // {
+  //   title: "Barcodes",
+  //   number: 2,
+  //   icon: "mdi-barcode",
+  //   link: "/masters/barcodes",
+  //   link2: "/masters/barcodes/create-barcodes",
+  //   link3: `/masters/barcodes/${id}`,
+  //   permissions: ["r_ms"],
+  // },
   {
-    title: 'Account Setting',
-    number: 1,
-    icon: 'mdi-account-cog-outline',
-    link: '/master-data/account-setting',
-    permissions: ['SUPERADMIN']
-  },
-  {
-    title: 'Barcode',
-    number: 2,
-    icon: 'mdi-barcode',
-    link: '/master-data/barcode',
-    link2: '/master-data/barcode/create-barcode',
-    link3: `/master-data/barcode/${id}`,
-    permissions: ['MASTER_DATA_READ']
-  },
-  {
-    title: 'Company Profile',
+    title: "Company Profile",
     number: 3,
-    icon: 'mdi-domain',
-    link: '/master-data/company-profile',
-    permissions: ['MASTER_DATA_COMPANY_PROFILE_UPDATE']
+    icon: "mdi-domain",
+    link: "/masters/company-profile",
+    permissions: ["r_branches"],
   },
   {
-    title: 'Customer Type',
+    title: "Customer Type",
     number: 4,
-    icon: 'mdi-layers-outline',
-    link: '/master-data/master-customer-type',
-    link2: '/master-data/master-customer-type/add-customer-type',
-    link3: `/master-data/master-customer-type/edit-customer-type/${id}`,
-    permissions: ['MASTER_DATA_READ']
+    icon: "mdi-layers-outline",
+    link: "/masters/master-customer-type",
+    link2: "/masters/master-customer-type/add-customer-type",
+    link3: `/masters/master-customer-type/edit-customer-type/${id}`,
+    permissions: ["r_ms"],
   },
   {
-    title: 'Customer',
+    title: "Customer",
     number: 5,
-    icon: 'mdi-book-account-outline',
-    link: '/master-data/master-customer',
-    link2: '/master-data/master-customer/create',
-    link3: `/master-data/master-customer/edit-master-customer/${id}`,
-    permissions: ['MASTER_DATA_READ']
+    icon: "mdi-book-account-outline",
+    link: "/masters/master-customer",
+    link2: "/masters/master-customer/create",
+    link3: `/masters/master-customer/edit-master-customer/${id}`,
+    permissions: ["r_ms"],
   },
+  // {
+  //   title: "Rule",
+  //   number: 6,
+  //   icon: "mdi-format-list-bulleted",
+  //   link: "/masters/master-rule",
+  //   link2: `/masters/master-rule/0`,
+  //   link3: `/masters/master-rule/1`,
+  //   link4: `/masters/master-rule/2`,
+  //   link5: `/masters/master-rule/edit-rule/${id}`,
+  //   link6: `/masters/master-rule/edit-deduction/${id}`,
+  //   permissions: ["r_ms"],
+  // },
   {
-    title: 'Rule',
-    number: 6,
-    icon: 'mdi-format-list-bulleted',
-    link: '/master-data/master-rule',
-    link2: `/master-data/master-rule/0`,
-    link3: `/master-data/master-rule/1`,
-    link4: `/master-data/master-rule/2`,
-    link5: `/master-data/master-rule/edit-rule/${id}`,
-    link6: `/master-data/master-rule/edit-deduction/${id}`,
-    permissions: ['MASTER_DATA_READ']
-  },
-  {
-    title: 'Item',
+    title: "Item",
     number: 7,
-    icon: 'mdi-treasure-chest-outline',
-    link: '/master-data/master-item',
-    link2: '/master-data/master-item/create-master-item',
-    link3: `/master-data/master-item/edit-master-item/${id}`,
-    permissions: ['ITEM_READ']
+    icon: "mdi-treasure-chest-outline",
+    link: "/masters/master-item",
+    link2: "/masters/master-item/create-master-item",
+    link3: `/masters/master-item/edit-master-item/${id}`,
+    permissions: ["r_items"],
   },
   {
-    title: 'Unit',
+    title: "Unit",
     number: 8,
-    icon: 'mdi-bookshelf',
-    link: '/master-data/master-unit',
-    link2: '/master-data/master-unit/0',
-    link3: `/master-data/master-unit/edit-unit/${id}`,
-    link4: `/master-data/master-unit/edit-conversion/${id}`,
-    permissions: ['MASTER_DATA_READ']
+    icon: "mdi-bookshelf",
+    link: "/masters/master-unit",
+    link2: "/masters/master-unit/0",
+    link3: `/masters/master-unit/edit-unit/${id}`,
+    link4: `/masters/master-unit/edit-conversion/${id}`,
+    permissions: ["r_ms"],
   },
   {
-    title: 'Warehouse',
+    title: "Warehouse",
     number: 9,
-    icon: 'mdi-warehouse',
-    link: '/master-data/master-warehouse',
-    link2: '/master-data/master-warehouse/add-warehouse',
-    link3: `/master-data/master-warehouse/edit/${id}`,
-    permissions: ['MASTER_DATA_READ']
+    icon: "mdi-warehouse",
+    link: "/masters/master-warehouse",
+    link2: "/masters/master-warehouse/add-warehouse",
+    link3: `/masters/master-warehouse/edit/${id}`,
+    permissions: ["r_ms"],
   },
-  {
-    title: 'Line',
-    number: 10,
-    icon: 'mdi-align-vertical-distribute',
-    link: '/master-data/master-line',
-    link2: '/master-data/master-line/create-master-line',
-    link3: `/master-data/master-line/edit-master-line/${id}`,
-    permissions: ['MASTER_DATA_READ']
-  },
+  // {
+  //   title: "Line",
+  //   number: 10,
+  //   icon: "mdi-align-vertical-distribute",
+  //   link: "/masters/master-line",
+  //   link2: "/masters/master-line/create-master-line",
+  //   link3: `/masters/master-line/edit-master-line/${id}`,
+  //   permissions: ["r_ms"],
+  // },
   // {
   //   title: 'Color',
   // number: 11,
   //   icon: 'mdi-palette-outline',
-  //   link: '/master-data/master-color',
-  //   link2: '/master-data/master-color/create-master-color',
-  //   link3: `/master-data/master-color/edit-colors/${id}`
+  //   link: '/masters/master-color',
+  //   link2: '/masters/master-color/create-master-color',
+  //   link3: `/masters/master-color/edit-colors/${id}`
+  // },
+  // {
+  //   title: "Color Method",
+  //   number: 12,
+  //   icon: "mdi-palette-swatch",
+  //   link: "/masters/master-color-method",
+  //   link2: "/masters/master-color-method/0",
+  //   link3: `/masters/master-color-method/edit-color-method/${id}`,
+  //   link4: `/masters/master-color-method/edit-color-process/${id}`,
+  //   permissions: ["r_ms"],
+  // },
+  // {
+  //   title: "Cap",
+  //   number: 13,
+  //   icon: "mdi-sitemap-outline",
+  //   link: "/masters/master-cap",
+  //   link2: "/masters/master-cap/0",
+  //   link3: `/masters/master-cap/edit-cap-type/${id}`,
+  //   link4: `/masters/master-cap/edit-cap-size/${id}`,
+  //   link5: `/masters/master-cap/edit-cap-color/${id}`,
+  //   link6: `/masters/master-cap/edit-cap-process/${id}`,
+  //   permissions: ["r_ms"],
   // },
   {
-    title: 'Color Method',
-    number: 12,
-    icon: 'mdi-palette-swatch',
-    link: '/master-data/master-color-method',
-    link2: '/master-data/master-color-method/0',
-    link3: `/master-data/master-color-method/edit-color-method/${id}`,
-    link4: `/master-data/master-color-method/edit-color-process/${id}`,
-    permissions: ['MASTER_DATA_READ']
-  },
-  {
-    title: 'Cap',
-    number: 13,
-    icon: 'mdi-sitemap-outline',
-    link: '/master-data/master-cap',
-    link2: '/master-data/master-cap/0',
-    link3: `/master-data/master-cap/edit-cap-type/${id}`,
-    link4: `/master-data/master-cap/edit-cap-size/${id}`,
-    link5: `/master-data/master-cap/edit-cap-color/${id}`,
-    link6: `/master-data/master-cap/edit-cap-process/${id}`,
-    permissions: ['MASTER_DATA_READ']
-  },
-  {
-    title: 'Role & Permission',
+    title: "Role & Permission",
     number: 14,
-    icon: 'mdi-shield-check-outline',
-    link: '/master-data/Role-and-Permisson',
-    link2: '/master-data/Role-and-Permisson/create-role-and-permission',
-    link3: `/master-data/Role-and-Permisson/edit/${id}`,
-    permissions: ['MASTER_DATA_ROLE_PERMISSION_READ']
+    icon: "mdi-shield-check-outline",
+    link: "/masters/Role-and-Permisson",
+    link2: "/masters/Role-and-Permisson/create-role-and-permission",
+    link3: `/masters/Role-and-Permisson/edit/${id}`,
+    permissions: ["MASTER_DATA_ROLE_PERMISSION_READ"],
   },
+  // {
+  //   title: "Process",
+  //   number: 15,
+  //   icon: "mdi-reload",
+  //   link: "/masters/master-process",
+  //   link2: "/masters/master-process/0",
+  //   link3: `/masters/master-process/edit-master-process-cutting-type/${id}`,
+  //   link4: `/masters/master-process/edit-master-process-collection/${id}`,
+  //   permissions: ["r_ms"],
+  // },
+  // {
+  //   title: "Finishing",
+  //   number: 16,
+  //   icon: "mdi-clock-check-outline",
+  //   link: "/masters/master-finishing",
+  //   link2: "/masters/master-finishing/0",
+  //   link3: `/masters/master-finishing/edit-finishing-type/${id}`,
+  //   link4: `/masters/master-finishing/edit-packing-method/${id}`,
+  //   permissions: ["r_ms"],
+  // },
   {
-    title: 'Process',
-    number: 15,
-    icon: 'mdi-reload',
-    link: '/master-data/master-process',
-    link2: '/master-data/master-process/0',
-    link3: `/master-data/master-process/edit-master-process-cutting-type/${id}`,
-    link4: `/master-data/master-process/edit-master-process-collection/${id}`,
-    permissions: ['MASTER_DATA_READ']
-  },
-  {
-    title: 'Finishing',
-    number: 16,
-    icon: 'mdi-clock-check-outline',
-    link: '/master-data/master-finishing',
-    link2: '/master-data/master-finishing/0',
-    link3: `/master-data/master-finishing/edit-finishing-type/${id}`,
-    link4: `/master-data/master-finishing/edit-packing-method/${id}`,
-    permissions: ['MASTER_DATA_READ']
-  },
-  {
-    title: 'Customization',
+    title: "Customization",
     number: 17,
-    icon: 'mdi-note-edit-outline',
-    link: '/master-data/customization',
-    link2: '/master-data/customization/0',
-    link3: `/master-data/customization/edit-pph23/${id}`,
-    link4: `/master-data/customization/edit-io-type/${id}`,
-    link5: `/master-data/customization/edit-shipping-term/${id}`,
-    link6: `/master-data/customization/edit-term-of-payment/${id}`,
-    link7: `/master-data/customization/edit-purchase-type/${id}`,
-    link8: `/master-data/customization/edit-order-type/${id}`,
-    link9: `/master-data/customization/edit-group/${id}`,
-    link10: `/master-data/customization/edit-sub-group/${id}`,
-    link11: `/master-data/customization/edit-production-type/${id}`,
-    permissions: ['MASTER_DATA_READ']
-  }
-])
+    icon: "mdi-note-edit-outline",
+    link: "/masters/customization",
+    link2: "/masters/customization/0",
+    link3: `/masters/customization/edit-pph23/${id}`,
+    link4: `/masters/customization/edit-io-type/${id}`,
+    link5: `/masters/customization/edit-shipping-term/${id}`,
+    link6: `/masters/customization/edit-term-of-payment/${id}`,
+    link7: `/masters/customization/edit-purchase-type/${id}`,
+    link8: `/masters/customization/edit-order-type/${id}`,
+    link9: `/masters/customization/edit-group/${id}`,
+    link10: `/masters/customization/edit-sub-group/${id}`,
+    link11: `/masters/customization/edit-production-type/${id}`,
+    permissions: ["r_ms"],
+  },
+]);
 
 const filterPermissions = () => {
-  let newList: any = []
+  let newList: any = [];
 
   listItem.value.forEach((item: any, index: any) => {
     if (item.permissions) {
       if (useAuth.permit(item.permissions)) {
-        newList.push(item)
+        newList.push(item);
       }
     }
-  })
+  });
 
-  listItem.value = newList
-}
+  listItem.value = newList;
+};
 
 // const handleChangePage = (item: any) => {
 //   isActiveTabIndex.value = item.number
@@ -226,51 +226,54 @@ const filterPermissions = () => {
 // }
 
 watchEffect(() => {
-  layoutState.defineTitlePath(configs.value)
-  filterPermissions()
-})
+  layoutState.defineTitlePath(configs.value);
+  filterPermissions();
+});
 onBeforeUnmount(() => {
   // console.log("oop", isActiveTabIndex.value);
 }),
   onMounted(() => {
-    layoutState.defineTitlePath(configs.value)
-  })
+    layoutState.defineTitlePath(configs.value);
+  });
 </script>
 
 <template>
-  <div class="absolute z-10 h-screen w-full bg-white">
+  <div class="absolute z-10 h-screen w-full bg-white dark:!bg-dark3">
     <div
-      class="mb-3 h-max w-full overflow-auto rounded-lg border shadow"
+      class="mb-3 h-max w-full overflow-auto rounded-lg border"
       v-if="listItem.length > 0"
     >
       <v-list
-        shaped
         nav
-        dense
-        class="flex flex-row justify-between"
+        density="compact"
+        class="flex flex-row p-0 dark:!bg-dark3"
         item-value="number"
-        color="primary"
+        color="brown"
         :items="listItem"
       >
         <v-list-item
           v-for="(item, i) in listItem"
-          base-color="black"
-          color="blue"
+          :class="
+            classMerge(
+              item.number === isActiveTabIndex
+                ? 'dark:!bg-dark2 hover:bg-scLightest dark:hover:bg-scDarker3 ease-in-out transition-all'
+                : 'hover:!bg-primaryDarkest dark:hover:!bg-scDarker3 ease-in-out transition-all'
+            )
+          "
           :active="item.number === isActiveTabIndex"
           :key="item.number"
           :value="item.number"
         >
           <nuxt-link
             :class="[
-              item.number === isActiveTabIndex ? 'text-blue' : 'text-zinc-500'
+              item.number === isActiveTabIndex
+                ? 'text-scDarker dark:text-scLighter'
+                : 'text-zinc-500 dark:text-zinc-400',
             ]"
-            class="flex flex-col items-center justify-center gap-1 rounded-lg tracking-normal"
+            class="flex items-center justify-center gap-1 rounded-lg tracking-normal"
             :to="item.link"
           >
-            <v-icon
-              :icon="item.icon"
-              size="24"
-            ></v-icon>
+            <v-icon :icon="item.icon" size="24"></v-icon>
             <div class="text-sm capitalize">{{ item.title }}</div>
           </nuxt-link>
         </v-list-item>

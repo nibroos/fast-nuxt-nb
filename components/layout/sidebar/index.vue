@@ -1,368 +1,377 @@
 <script setup lang="ts">
-import { useMasterUser } from '~/stores/MasterData/AccountSetting'
-import useLayouts from '~/stores/configs/layouts'
-import { useAuth } from '#imports'
+// import { useMasterUser } from "~/stores/MasterData/AccountSetting";
+import useLayoutsStore from "~/stores/configs/LayoutsStore";
+import { useAuth } from "#imports";
+import type { AuthUserDataType } from "~/types/AuthType";
 
-const User = useMasterUser()
-const { data } = storeToRefs(User)
-const { $permission } = useNuxtApp()
-const router = useRouter()
+// const User = useMasterUser();
+// const { data } = storeToRefs(User);
+const router = useRouter();
 
-const token = localStorage.getItem('_token')
-const config = useRuntimeConfig()
-const BASE_URL = config.public.BASE_URL_IMAGE
-const layoutState = useLayouts()
-const { isCloseSidebar } = storeToRefs(layoutState)
-loginStore().getAbilities()
-loginStore().getCompanyProfile()
+const data: AuthUserDataType =
+  AuthStore().authUser.data ?? ({} as AuthUserDataType);
+
+const token = localStorage.getItem("_token");
+const config = useRuntimeConfig();
+const BASE_URL = config.public.BASE_URL_IMAGE;
+const layoutState = useLayoutsStore();
+const { isCloseSidebar } = storeToRefs(layoutState);
+// AuthStore().getAbilities()
+// AuthStore().getCompanyProfile();
 
 const itemShippings = [
   {
-    title: 'Shipping Order',
-    icon: 'mdi-truck-delivery-outline',
-    link: '/shipping-order',
-    permissions: ['SHIPPING_READ']
-  }
-]
+    title: "Shipping Order",
+    icon: "mdi-truck-delivery-outline",
+    link: "/shipping-order",
+    permissions: ["SHIPPING_READ"],
+  },
+];
 
 const itemOrders = [
   {
-    title: 'Sales Order',
-    icon: 'mdi-cart-outline',
-    link: '/orders/sales-order',
-    permissions: ['ORDER_READ']
+    title: "Sales Order",
+    icon: "mdi-cart-outline",
+    link: "/orders/sales-order",
+    permissions: ["r_sos"],
   },
   {
-    title: 'Proforma & OCS',
-    icon: 'mdi-cart-outline',
-    link: '/orders/proforma',
-    permissions: ['PROFORMA_READ']
+    title: "Quotations",
+    icon: "mdi-cart-outline",
+    link: "/orders/quotations",
+    permissions: ["r_sos"],
   },
-  {
-    title: 'Order Status',
-    icon: 'mdi-cart-outline',
-    link: '/orders/sales-order/index-order-status',
-    permissions: ['ORDER_READ']
-  }
-]
+];
 
 const itemSales = [
   {
-    title: 'Sales Invoices Proforma',
-    icon: 'mdi-credit-card-outline',
-    link: '/sales-invoice',
-    permissions: ['SALES_INVOICE_READ']
+    title: "Invoice DP",
+    icon: "mdi-credit-card-outline",
+    link: "/invoice-dp",
+    permissions: ["r_sos"],
   },
   {
-    title: 'Sales Invoices OCS',
-    icon: 'mdi-credit-card-outline',
-    link: '/sales-invoice-ocs',
-    permissions: ['SALES_INVOICE_READ']
+    title: "Sales Invoices",
+    icon: "mdi-credit-card-outline",
+    link: "/sales-invoices",
+    permissions: ["r_sos"],
   },
   {
-    title: 'Sales Adjustment',
-    icon: 'mdi-printer-pos-sync-outline',
-    link: '/sales-adjustment',
-    permissions: ['SALES_ADJUSTMENT_READ']
-  }
-]
+    title: "Sales Adjustment",
+    icon: "mdi-printer-pos-sync-outline",
+    link: "/sales-adjustment",
+    permissions: ["r_sos"],
+  },
+];
 
 const itemPurchase = [
   {
-    title: 'Request Order',
-    icon: 'mdi-credit-card-outline',
-    link: '/purchase/request-order',
-    permissions: ['PURCHASE_READ']
+    title: "Request Order",
+    icon: "mdi-credit-card-outline",
+    link: "/purchase/request-order",
+    permissions: ["r_pos"],
   },
   {
-    title: 'Purchase Order',
-    icon: 'mdi-credit-card-outline',
-    link: '/purchase/purchase-order',
-    permissions: ['PURCHASE_READ']
+    title: "Purchase Order",
+    icon: "mdi-credit-card-outline",
+    link: "/purchase/purchase-order",
+    permissions: ["r_pos"],
   },
   {
-    title: 'Purchase Invoice',
-    icon: 'mdi-credit-card-outline',
-    link: '/purchase/purchase-invoice',
-    permissions: ['PURCHASE_INVOICE_READ']
+    title: "Purchase Invoice",
+    icon: "mdi-credit-card-outline",
+    link: "/purchase/purchase-invoice",
+    permissions: ["r_pos"],
   },
   {
-    title: 'Purchase Adjustment',
-    icon: 'mdi-credit-card-outline',
-    link: '/purchase/purchase-adjustment',
-    permissions: ['PURCHASE_ADJUSTMENT_READ']
-  }
-]
+    title: "Purchase Adjustment",
+    icon: "mdi-credit-card-outline",
+    link: "/purchase/purchase-adjustment",
+    permissions: ["r_pos"],
+  },
+];
 
 const itemInventory = [
   {
-    title: 'Inventory IN',
-    icon: 'mdi-credit-card-outline',
-    link: '/inventory/inventory-in',
-    permissions: ['INVENTORY_READ']
+    title: "Inventory IN",
+    icon: "mdi-credit-card-outline",
+    link: "/inventory/inventory-in",
+    permissions: ["r_invs"],
   },
   {
-    title: 'Inventory OUT',
-    icon: 'mdi-credit-card-outline',
-    link: '/inventory/inventory-out',
-    permissions: ['INVENTORY_READ']
+    title: "Inventory OUT",
+    icon: "mdi-credit-card-outline",
+    link: "/inventory/inventory-out",
+    permissions: ["r_invs"],
   },
   {
-    title: 'Inventory Status',
-    icon: 'mdi-credit-card-outline',
-    link: '/inventory/inventory-status',
-    permissions: ['INVENTORY_READ']
+    title: "Inventory Status",
+    icon: "mdi-credit-card-outline",
+    link: "/inventory/inventory-status",
+    permissions: ["r_invs"],
   },
   {
-    title: 'Card Stock',
-    icon: '',
-    link: '/inventory/stock',
-    permissions: ['INVENTORY_READ']
+    title: "Card Stock",
+    icon: "",
+    link: "/inventory/stock",
+    permissions: ["r_invs"],
   },
   {
-    title: 'BC Tracking',
-    icon: '',
-    link: '/inventory/bc-tracking',
-    permissions: ['INVENTORY_READ']
+    title: "BC Tracking",
+    icon: "",
+    link: "/inventory/bc-tracking",
+    permissions: ["r_invs"],
   },
   {
-    title: 'Pabean Document',
-    icon: 'mdi-file-sign',
-    link: '/inventory/pabean-document',
-    permissions: ['INVENTORY_READ']
-  }
-]
+    title: "Pabean Document",
+    icon: "mdi-file-sign",
+    link: "/inventory/pabean-document",
+    permissions: ["r_invs"],
+  },
+];
 
 const itemExim = [
   {
-    title: 'Lp. Pemasukan Barang',
-    icon: 'mdi-credit-card-outline',
-    link: '/inventory/exim/bc1',
-    permissions: ['INVENTORY_READ']
+    title: "Lp. Pemasukan Barang",
+    icon: "mdi-credit-card-outline",
+    link: "/inventory/exim/bc1",
+    permissions: ["r_invs"],
   },
   {
-    title: 'Lp. Pengeluaran Barang',
-    icon: 'mdi-credit-card-outline',
-    link: '/inventory/exim/bc2',
-    permissions: ['INVENTORY_READ']
+    title: "Lp. Pengeluaran Barang",
+    icon: "mdi-credit-card-outline",
+    link: "/inventory/exim/bc2",
+    permissions: ["r_invs"],
   },
   {
-    title: 'Lp. Posisi Barang',
-    icon: 'mdi-credit-card-outline',
-    link: '/inventory/exim/bc3',
-    permissions: ['INVENTORY_READ']
+    title: "Lp. Posisi Barang",
+    icon: "mdi-credit-card-outline",
+    link: "/inventory/exim/bc3",
+    permissions: ["r_invs"],
   },
   {
-    title: 'Lp. Pertanggungjawaban Mutasi Barang',
-    icon: 'mdi-credit-card-outline',
-    link: '/inventory/exim/bc4',
-    permissions: ['INVENTORY_READ']
+    title: "Lp. Pertanggungjawaban Mutasi Barang",
+    icon: "mdi-credit-card-outline",
+    link: "/inventory/exim/bc4",
+    permissions: ["r_invs"],
   },
   {
-    title: 'Lp. Pertanggungjawaban Mutasi Barang Jadi',
-    icon: 'mdi-credit-card-outline',
-    link: '/inventory/exim/bc5',
-    permissions: ['INVENTORY_READ']
+    title: "Lp. Pertanggungjawaban Mutasi Barang Jadi",
+    icon: "mdi-credit-card-outline",
+    link: "/inventory/exim/bc5",
+    permissions: ["r_invs"],
   },
   {
-    title: 'Lp. Pertanggungjawaban Mutasi Barang dan Sisa Scrap',
-    icon: 'mdi-credit-card-outline',
-    link: '/inventory/exim/bc6',
-    permissions: ['INVENTORY_READ']
+    title: "Lp. Pertanggungjawaban Mutasi Barang dan Sisa Scrap",
+    icon: "mdi-credit-card-outline",
+    link: "/inventory/exim/bc6",
+    permissions: ["r_invs"],
   },
   {
     title:
-      'Lp. Pertanggungjawaban Mutasi Mesin dan Peralatan Perkantoran Kawasan Berikat',
-    icon: 'mdi-credit-card-outline',
-    link: '/inventory/exim/bc7',
-    permissions: ['INVENTORY_READ']
-  }
-]
+      "Lp. Pertanggungjawaban Mutasi Mesin dan Peralatan Perkantoran Kawasan Berikat",
+    icon: "mdi-credit-card-outline",
+    link: "/inventory/exim/bc7",
+    permissions: ["r_invs"],
+  },
+];
 
 const itemProduction = [
   {
-    title: 'Production Plan',
-    icon: '',
-    link: '/production/production-plan',
-    permissions: ['PRODUCTION_READ']
+    title: "Production Plan",
+    icon: "",
+    link: "/production/production-plan",
+    permissions: ["r_prod"],
   },
   {
-    title: 'Request Plan',
-    icon: '',
-    link: '/request-plan',
-    permissions: ['PRODUCTION_READ']
+    title: "Request Plan",
+    icon: "",
+    link: "/request-plan",
+    permissions: ["r_prod"],
   },
   // {
   //   title: "Work Order",
   //   icon: "",
   //   link: "/#",
-  // permissions: ['PRODUCTION_READ']
+  // permissions: ['r_prod']
   // },
   {
-    title: 'Work In Progress',
-    icon: '',
-    link: '/production/work-in-progress',
-    permissions: ['PRODUCTION_READ']
-  }
-]
+    title: "Work In Progress",
+    icon: "",
+    link: "/production/work-in-progress",
+    permissions: ["r_prod"],
+  },
+];
 
 const itemMaster = [
   {
-    title: 'Master User',
-    icon: 'mdi-account-outline',
-    link: '/master-data/master-color-method',
-    permissions: ['MASTER_DATA_READ']
+    title: "Master User",
+    icon: "mdi-account-outline",
+    link: "/masters/master-user",
+    permissions: ["r_ms"],
   },
-  {
-    title: 'Master Style',
-    icon: 'mdi-square-edit-outline',
-    link: '/master-style',
-    permissions: ['MASTER_STYLE_READ']
-  }
-]
+];
 
 const itemDashboard = [
   {
-    title: 'Dashboard',
-    icon: 'mdi-view-dashboard-outline',
-    link: '/dashboard',
-    permissions: ['REPORT_READ']
-  }
-]
+    title: "Dashboard",
+    icon: "mdi-view-dashboard-outline",
+    link: "/dashboard",
+    permissions: ["r"],
+  },
+];
 
 const isPermissionAllChildExists = (parentName: string) => {
-  let joinPermissions = []
+  let joinPermissions = [];
 
-  let dashboard = ['dashboard']
+  let dashboard = ["dashboard"];
   let management = [
-    'orders',
-    'sales',
-    'purchase',
-    'inventory',
-    'production',
-    'shipping'
-  ]
-  let master = ['master', 'style']
+    "orders",
+    "sales",
+    "purchase",
+    "inventory",
+    "production",
+    "shipping",
+  ];
+  let master = ["master", "style"];
 
   switch (parentName) {
-    case 'management':
+    case "management":
       // get all permissions from management
       joinPermissions = itemOrders
         .concat(itemSales)
         .concat(itemPurchase)
         .concat(itemInventory)
         .concat(itemProduction)
-        .map((item) => item.permissions.join())
-      return useAuth.permit(joinPermissions)
-    case 'master':
+        .map((item) => item.permissions.join());
+      return useAuth.permit(joinPermissions);
+    case "master":
       // get all permissions from master
-      joinPermissions = itemMaster.map((item) => item.permissions.join())
-      return useAuth.permit(joinPermissions)
-    case 'dashboard':
+      joinPermissions = itemMaster.map((item) => item.permissions.join());
+      return useAuth.permit(joinPermissions);
+    case "dashboard":
       // get all permissions from dashboard
-      joinPermissions = itemDashboard.map((item) => item.permissions.join())
-      return useAuth.permit(joinPermissions)
+      joinPermissions = itemDashboard.map((item) => item.permissions.join());
+      return useAuth.permit(joinPermissions);
     default:
-      return false
+      return false;
   }
-}
+};
 
-const isPermissionOnChildExists = (parentName: string) => {
-  let childPermissions = []
+const isPermissionOnChildExists = (parentName: string): boolean => {
+  let childPermissions = [];
 
   switch (parentName) {
-    case 'orders':
+    case "sos":
       // itemOrders
-      childPermissions = itemOrders.map((item) => item.permissions.join())
-      return useAuth.permit(childPermissions)
-    case 'sales':
+      childPermissions = itemOrders.map((item) => item.permissions.join());
+      return useAuth.permit(childPermissions);
+    case "sos":
       // itemSales
-      childPermissions = itemSales.map((item) => item.permissions.join())
-      return useAuth.permit(childPermissions)
-    case 'master':
+      childPermissions = itemSales.map((item) => item.permissions.join());
+      return useAuth.permit(childPermissions);
+    case "ms":
       // itemPurchase
-      childPermissions = itemMaster.map((item) => item.permissions.join())
-      return useAuth.permit(childPermissions)
-    case 'purchase':
+      childPermissions = itemMaster.map((item) => item.permissions.join());
+      return useAuth.permit(childPermissions);
+    case "pos":
       // itemPurchase
-      childPermissions = itemPurchase.map((item) => item.permissions.join())
-      return useAuth.permit(childPermissions)
-    case 'inventory':
+      childPermissions = itemPurchase.map((item) => item.permissions.join());
+      return useAuth.permit(childPermissions);
+    case "invs":
       // itemInventory
-      childPermissions = itemInventory.map((item) => item.permissions.join())
-      return useAuth.permit(childPermissions)
-    case 'production':
+      childPermissions = itemInventory.map((item) => item.permissions.join());
+      return useAuth.permit(childPermissions);
+    case "prod":
       // itemProduction
-      childPermissions = itemProduction.map((item) => item.permissions.join())
-      return useAuth.permit(childPermissions)
+      childPermissions = itemProduction.map((item) => item.permissions.join());
+      return useAuth.permit(childPermissions);
     default:
-      return false
+      return false;
   }
-}
+};
 
-const isExpanded = ref(false)
+const isExpanded = ref(false);
 
 const handleExpanded = (value: boolean) => {
-  isExpanded.value = value
-}
+  isExpanded.value = value;
+};
 const handleMouseHover = () => {
   if (isCloseSidebar.value == true) {
     if (!isExpanded.value) {
-      useDebouncedRef(handleExpanded(true), 1000)
+      useDebouncedRef(handleExpanded(true), 1000);
     } else {
-      useDebouncedRef(handleExpanded(false), 1000)
+      useDebouncedRef(handleExpanded(false), 1000);
     }
   }
-}
+};
 
 const handleClickSampleDiagram = () => {
   router
-    .push('/sample-diagram')
+    .push("/sample-diagram")
     .then(() => {
-      window.location.reload() // Force reload after navigation
+      window.location.reload(); // Force reload after navigation
     })
     .catch((err) => {
-      console.error('Failed to navigate:', err)
-    })
-}
+      console.error("Failed to navigate:", err);
+    });
+};
 
 watch(isCloseSidebar, (newValue) => {
   if (!newValue) {
-    isExpanded.value = true
+    isExpanded.value = true;
   } else {
-    isExpanded.value = false
+    isExpanded.value = false;
   }
-})
+});
 
 onMounted(async () => {
   if (token) {
-    await Promise.all([User.getDataUser(), loginStore().getAbilities()])
+    await Promise.all([AuthStore().getAbilities()]);
   }
-})
+});
 </script>
 
 <template>
-  <div class="flex h-full flex-col items-center justify-between" @mouseenter="handleMouseHover"
-    @mouseleave="handleMouseHover">
+  <div
+    class="flex h-full flex-col items-center justify-between bg-scDarker3 dark:bg-dark2"
+    @mouseenter="handleMouseHover"
+    @mouseleave="handleMouseHover"
+  >
     <div class="flex w-full flex-col gap-y-5 py-5">
       <!-- Logo App -->
       <div class="flex w-full justify-center">
-        <img v-if="isExpanded" src="/images/D-new-logo.png" alt="img-login" class="h-full w-40 object-contain" />
-        <img v-else src="/images/D-only-new-logo.png" alt="img-login" class="w-7 object-contain" />
+        <!-- <img
+          v-if="isExpanded"
+          src="/images/D-new-logo.png"
+          alt="img-login"
+          class="h-full w-40 object-contain"
+        />
+        <img
+          v-else
+          src="/images/D-only-new-logo.png"
+          alt="img-login"
+          class="w-7 object-contain"
+        /> -->
       </div>
 
       <!-- Menu List -->
       <div class="max-h-[80vh] w-full overflow-y-auto">
-        <v-list v-if="useAuth.permit('REPORT_READ')" color="#fff" density="compact" lines="one">
-          <v-list-item-title v-if="isPermissionAllChildExists('dashboard') && isExpanded" class="mb-2 ml-4 !text-sm"
-            style="font-size: 12px">
+        <v-list
+          v-if="useAuth.permit('r')"
+          color="#fff"
+          density="compact"
+          lines="one"
+        >
+          <v-list-item-title
+            v-if="isPermissionAllChildExists('r') && isExpanded"
+            class="mb-2 ml-4 !text-sm"
+            style="font-size: 12px"
+          >
             DASHBOARD
           </v-list-item-title>
 
-          <v-list-item v-if="
-            $permission.isSuperAdmin(data?.role) ||
-            $permission.canAccess(`/dashboard`, data?.role)
-          " color="#898F99" to="/dashboard" rounded="lg">
+          <v-list-item class="!text-primary" to="/dashboard" rounded="lg">
             <template #prepend>
               <v-icon>mdi-view-dashboard-outline</v-icon>
             </template>
@@ -371,14 +380,26 @@ onMounted(async () => {
           </v-list-item>
         </v-list>
         <v-divider></v-divider>
-        <v-list v-if="isPermissionOnChildExists('master')" color="#fff" density="compact">
-          <v-list-item-title v-if="isPermissionAllChildExists('master') && isExpanded" class="mb-2 ml-4 !text-sm"
-            style="font-size: 12px">
+        <v-list
+          v-if="isPermissionOnChildExists('ms')"
+          color="#fff"
+          density="compact"
+        >
+          <v-list-item-title
+            v-if="isPermissionAllChildExists('ms') && isExpanded"
+            class="mb-2 ml-4 !text-sm"
+            style="font-size: 12px"
+          >
             MASTER
           </v-list-item-title>
 
-          <v-list-item v-if="useAuth.permit('MASTER_DATA_READ')" color="#898F99" to="/master-data/master-color-method"
-            rounded="lg">
+          <v-list-item
+            v-if="useAuth.permit('r_ms')"
+            color="#898F99"
+            to="/masters/users"
+            rounded="lg"
+            class="!text-primary"
+          >
             <template #prepend>
               <v-icon>mdi-wrench</v-icon>
             </template>
@@ -387,80 +408,122 @@ onMounted(async () => {
           </v-list-item>
         </v-list>
 
-        <v-list color="#fff" density="compact">
-          <v-list-item v-if="useAuth.permit('MASTER_STYLE_READ')" color="#898F99" to="/master-style" rounded="lg">
-            <template #prepend>
-              <v-icon>mdi-square-edit-outline</v-icon>
-            </template>
-
-            <v-list-item-title>Master Style</v-list-item-title>
-          </v-list-item>
-        </v-list>
-
-        <v-list color="#fff" density="compact">
-          <v-list-item v-if="useAuth.permit('MASTER_STYLE_READ')" color="#898F99" rounded="lg" to="/sample-diagram">
-            <template #prepend>
-              <v-icon>mdi-chart-pie</v-icon>
-            </template>
-
-            <v-list-item-title>Sample Diagram</v-list-item-title>
-          </v-list-item>
-        </v-list>
         <v-divider></v-divider>
         <!-- list Management -->
         <v-list color="#fff" density="comfortable">
-          <v-list-item-title v-if="isPermissionAllChildExists('management') && isExpanded" class="mb-2 ml-4 !text-sm"
-            style="font-size: 12px">
+          <v-list-item-title
+            v-if="isPermissionAllChildExists('management') && isExpanded"
+            class="mb-2 ml-4 !text-sm"
+            style="font-size: 12px"
+          >
             MANAGEMENT
           </v-list-item-title>
 
-          <v-list-group v-if="isPermissionOnChildExists('orders')" value="Orders">
+          <v-list-group v-if="isPermissionOnChildExists('sos')" value="Orders">
             <template #activator="{ props }">
-              <v-list-item v-bind="props" prepend-icon="mdi-cart-outline" title="Orders" density="compact"
-                rounded="lg"></v-list-item>
+              <v-list-item
+                v-bind="props"
+                prepend-icon="mdi-cart-outline"
+                title="Orders"
+                density="compact"
+                rounded="lg"
+              ></v-list-item>
             </template>
             <template v-for="(item, i) in itemOrders" :key="i">
-              <v-list-item v-if="useAuth.permit(item.permissions)" :title="item.title" :to="item.link" variant="text"
-                rounded="lg" density="compact" color="#898F99"></v-list-item>
+              <v-list-item
+                v-if="useAuth.permit(item.permissions)"
+                :title="item.title"
+                :to="item.link"
+                variant="text"
+                rounded="lg"
+                density="compact"
+                color="#898F99"
+              ></v-list-item>
             </template>
           </v-list-group>
-          <v-list-group v-if="isPermissionOnChildExists('sales')" value="Sales">
+          <v-list-group v-if="isPermissionOnChildExists('sos')" value="Sales">
             <template #activator="{ props }">
-              <v-list-item v-bind="props" prepend-icon="mdi-credit-card-outline" title="Sales" density="compact"
-                rounded="lg"></v-list-item>
+              <v-list-item
+                v-bind="props"
+                prepend-icon="mdi-credit-card-outline"
+                title="Sales"
+                density="compact"
+                rounded="lg"
+              ></v-list-item>
             </template>
             <template v-for="(item, i) in itemSales" :key="i">
-              <v-list-item v-if="useAuth.permit(item.permissions)" :title="item.title" :to="item.link" variant="text"
-                rounded="lg" density="compact" color="#898F99"></v-list-item>
+              <v-list-item
+                v-if="useAuth.permit(item.permissions)"
+                :title="item.title"
+                :to="item.link"
+                variant="text"
+                rounded="lg"
+                density="compact"
+                color="#898F99"
+              ></v-list-item>
             </template>
           </v-list-group>
 
-          <v-list-group v-if="isPermissionOnChildExists('purchase')" value="Purchase">
+          <v-list-group
+            v-if="isPermissionOnChildExists('pos')"
+            value="Purchase"
+          >
             <template #activator="{ props }">
-              <v-list-item v-bind="props" rounded="lg" prepend-icon="mdi-cart-variant" title="Purchase"
-                density="compact"></v-list-item>
+              <v-list-item
+                v-bind="props"
+                rounded="lg"
+                prepend-icon="mdi-cart-variant"
+                title="Purchase"
+                density="compact"
+              ></v-list-item>
             </template>
 
             <template v-for="(item, i) in itemPurchase" :key="i">
-              <v-list-item v-if="useAuth.permit(item.permissions)" :title="item.title" :to="item.link" variant="text"
-                rounded="lg" density="compact" color="#898F99"></v-list-item>
+              <v-list-item
+                v-if="useAuth.permit(item.permissions)"
+                :title="item.title"
+                :to="item.link"
+                variant="text"
+                rounded="lg"
+                density="compact"
+                color="#898F99"
+              ></v-list-item>
             </template>
           </v-list-group>
 
-          <v-list-group v-if="isPermissionOnChildExists('inventory')" value="Inventory">
+          <v-list-group
+            v-if="isPermissionOnChildExists('invs')"
+            value="Inventory"
+          >
             <template #activator="{ props }">
-              <v-list-item v-bind="props" rounded="lg" prepend-icon="mdi-warehouse" title="Inventory"
-                density="compact"></v-list-item>
+              <v-list-item
+                v-bind="props"
+                rounded="lg"
+                prepend-icon="mdi-warehouse"
+                title="Inventory"
+                density="compact"
+              ></v-list-item>
             </template>
 
             <template v-for="(item, i) in itemInventory" :key="i">
-              <v-list-item v-if="useAuth.permit(item.permissions)" :title="item.title" :to="item.link" variant="text"
-                rounded="lg" density="compact" color="#898F99"></v-list-item>
+              <v-list-item
+                v-if="useAuth.permit(item.permissions)"
+                :title="item.title"
+                :to="item.link"
+                variant="text"
+                rounded="lg"
+                density="compact"
+                color="#898F99"
+              ></v-list-item>
             </template>
           </v-list-group>
 
-
-          <v-list-item v-if="useAuth.permit('EXIM_READ')" color="#898F99" to="/inventory/exim" rounded="lg">
+          <v-list-item
+            v-if="useAuth.permit('EXIM_READ')"
+            color="#898F99"
+            to="/inventory/exim"
+            rounded="lg"
+          >
             <template #prepend>
               <v-icon>mdi-file-sign</v-icon>
             </template>
@@ -499,40 +562,65 @@ onMounted(async () => {
             </template>
           </v-list-group> -->
 
-          <v-list-group v-if="isPermissionOnChildExists('production')" value="Production">
+          <!-- <v-list-group
+            v-if="isPermissionOnChildExists('production')"
+            value="Production"
+          >
             <template #activator="{ props }">
-              <v-list-item v-bind="props" rounded="lg" prepend-icon="mdi-tune-vertical" title="Production"
-                density="compact"></v-list-item>
+              <v-list-item
+                v-bind="props"
+                rounded="lg"
+                prepend-icon="mdi-tune-vertical"
+                title="Production"
+                density="compact"
+              ></v-list-item>
             </template>
 
             <template v-for="(item, i) in itemProduction" :key="i">
-              <v-list-item v-if="useAuth.permit(item.permissions)" :title="item.title" :to="item.link" variant="text"
-                rounded="lg" density="compact" color="#898F99"></v-list-item>
+              <v-list-item
+                v-if="useAuth.permit(item.permissions)"
+                :title="item.title"
+                :to="item.link"
+                variant="text"
+                rounded="lg"
+                density="compact"
+                color="#898F99"
+              ></v-list-item>
             </template>
-          </v-list-group>
+          </v-list-group> -->
 
           <!-- List static -->
-          <template v-for="(item, i) in itemShippings" :key="i">
-            <v-list-item v-if="useAuth.permit(item.permissions)" :value="item" color="#898F99" rounded="lg"
-              :to="item.link" :title="item.title">
+          <!-- <template v-for="(item, i) in itemShippings" :key="i">
+            <v-list-item
+              v-if="useAuth.permit(item.permissions)"
+              :value="item"
+              color="#898F99"
+              rounded="lg"
+              :to="item.link"
+              :title="item.title"
+            >
               <template #prepend>
                 <v-icon :icon="item.icon"></v-icon>
               </template>
             </v-list-item>
-          </template>
+          </template> -->
         </v-list>
       </div>
     </div>
 
     <!-- Profile Account -->
     <div
-      class="flex h-[77px] w-full cursor-pointer items-center justify-stretch gap-x-5 bg-slate-900 transition-all ease-in-out hover:bg-slate-900/60 lg:px-2"
-      @click="navigateTo('/master-data/account-setting')">
-      <v-avatar :image="`${BASE_URL}/storage/app/public/master/users/${data?.photo}`" size="40"></v-avatar>
+      class="flex h-[77px] w-full cursor-pointer items-center justify-stretch gap-x-5 bg-sc dark:bg-dark1 transition-all ease-in-out hover:bg-scDarker hover:dark:bg-dark1/80 lg:px-2"
+      @click="navigateTo('/profile')"
+    >
+      <v-avatar
+        :image="`${BASE_URL}/storage/app/public/master/users/${data?.avatar_url}`"
+        size="40"
+      ></v-avatar>
       <div>
         <p class="text-sm font-normal">{{ data?.name }}</p>
-        <span class="text-xs font-normal text-slate-300">
-          {{ data?.role }}
+        <span class="text-xs font-normal text-primaryDarker">
+          {{ data?.roles[0] }}
         </span>
       </div>
     </div>

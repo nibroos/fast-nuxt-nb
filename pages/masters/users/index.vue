@@ -11,8 +11,23 @@ definePageMeta({
   layout: "auth",
   middleware: ["auth"],
 });
+
+useHead({
+  title: "Users",
+});
 </script>
 
 <template>
-  <div>Welkam Nibros</div>
+  <lazy-layout-topmenu>
+    <d-index-layout
+      :config="{
+        permission: {
+          isActive: true,
+          name: ['r_ms', 'superadmin'],
+        },
+      }"
+    >
+      abcd
+    </d-index-layout>
+  </lazy-layout-topmenu>
 </template>
