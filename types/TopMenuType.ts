@@ -4,7 +4,7 @@ export type TopMenuPropType = {
 }
 
 export type TopMenuType = {
-  number: number
+  number: string
   title: string
   icon?: string
   link: string

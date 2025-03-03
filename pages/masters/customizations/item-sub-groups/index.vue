@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import useLayoutsStore from "~/stores/configs/LayoutsStore";
 import useItemSubGroupStore from "~/stores/masters/ItemSubGroupStore";
+import type {
+  FieldSelectableType,
+  FilterSelectableType,
+} from "~/types/SelectTableType";
 
 const { queryModal } = useItemSubGroupStore();
 const layoutStore = useLayoutsStore();
@@ -15,12 +19,95 @@ definePageMeta({
 useHead({
   title: "Item Sub Groups",
 });
+
+const fieldsConfig = ref<FieldSelectableType[]>([
+  {
+    title: "Name",
+    key: "name",
+    value: "name",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Group Name",
+    key: "group_name",
+    value: "group_name",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Description",
+    key: "description",
+    value: "description",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Remark",
+    key: "remark",
+    value: "remark",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Status",
+    key: "status",
+    value: "status",
+    align: "start",
+    sortable: true,
+  },
+]);
+
+const filtersConfig = ref<FilterSelectableType[]>([
+  {
+    title: "Group",
+    key: "parent_ids",
+    type: "autocomplete",
+    others: {
+      methodApi: "post",
+      api: "/v1/item-groups/index-item-group",
+      singleApi: "/v1/item-groups/show-item-group",
+      mappingDetail: "data",
+      itemsProp: "data",
+      pageEndProp: "last_page",
+      itemTitle: "name",
+      itemValue: "id",
+      label: "Roles",
+      innerSearchKey: "global",
+      multiple: true,
+      returnObject: false,
+      itemColor: "brown-lighten-2",
+    },
+  },
+  {
+    title: "Name",
+    key: "name",
+  },
+  {
+    title: "Description",
+    key: "description",
+  },
+  {
+    title: "Remark",
+    key: "remark",
+  },
+]);
+
+const parentLink = ref("");
+const getParentLink = (link: string) => {
+  parentLink.value = link;
+};
 </script>
 
 <template>
   <div class="flex flex-col gap-2">
-    <l-top-menu :top-menu="topMenuMasterTab" parent_link=""> </l-top-menu>
-    <l-top-menu :top-menu="topMenuCustomizationTab" parent_link="">
+    <l-top-menu :top-menu="topMenuMasterTab" :parent_link="parentLink">
+    </l-top-menu>
+    <l-top-menu
+      :top-menu="topMenuCustomizationTab"
+      parent_link=""
+      @update:parent-link="getParentLink"
+    >
     </l-top-menu>
 
     <d-index-layout
@@ -43,67 +130,24 @@ useHead({
         search-placeholder="Search anything related to item sub groups.."
         is-quick-select
         no-title
-        :fields="[
-          {
-            title: 'Name',
-            key: 'name',
-            value: 'name',
-            align: 'start',
-            sortable: true,
-          },
-          {
-            title: 'Group Name',
-            key: 'group_name',
-            value: 'group_name',
-            align: 'start',
-            sortable: true,
-          },
-          {
-            title: 'Description',
-            key: 'description',
-            value: 'description',
-            align: 'start',
-            sortable: true,
-          },
-          {
-            title: 'Remark',
-            key: 'remark',
-            value: 'remark',
-            align: 'start',
-            sortable: true,
-          },
-        ]"
-        :filters="[
-          {
-            title: 'Group',
-            key: 'item_group_id',
-            type: 'autocomplete',
-            others: {
-              api: '/api/v1/item-groups/index-item-group',
-              singleApi: '/api/v1/item-groups/show-item-group',
-              mappingDetail: 'data',
-              itemsProp: 'data',
-              pageEndProp: 'last_page',
-              itemTitle: 'name',
-              itemValue: 'id',
-              label: 'Roles',
-              innerSearchKey: 'global',
-            },
-          },
-          {
-            title: 'Name',
-            key: 'name',
-          },
-          {
-            title: 'Description',
-            key: 'description',
-          },
-          {
-            title: 'Remark',
-            key: 'remark',
-          },
-        ]"
-      />
+        :fields="fieldsConfig"
+        :filters="filtersConfig"
+        :query-modal="queryModal.qListIndex"
+        :create-option="{
+          link: '/masters/item-sub-groups/create',
+          show: true,
+          cta: '+ Create',
+        }"
+        @update:filters="
+          (filters) => {
+            queryModal.qListIndex = filters;
+          }
+        "
+      >
+        <template #item.status="{ item }">
+          <d-active-status :value="item.status" />
+        </template>
+      </d-datatable>
     </d-index-layout>
   </div>
 </template>

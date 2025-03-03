@@ -40,6 +40,8 @@ export type AutocompleteType = {
   isDisplayMultipleKey?: boolean
   displayMultipleKeys?: string[]
   displayMultipleSeparator?: string
+  returnObject?: boolean
+  itemColor?: string
 }
 
 export type AutocompleteClientType = {

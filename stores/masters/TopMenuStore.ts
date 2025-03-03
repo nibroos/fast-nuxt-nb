@@ -1,6 +1,6 @@
 export const useTopMenu = defineStore('topMenuStore', {
   state: () => ({
-    isActiveTabIndex: 0
+    isActiveTabIndex: 'customizations'
   }),
   actions: {},
   persist: [

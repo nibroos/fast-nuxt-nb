@@ -5,6 +5,8 @@ import type { TopMenuPropType, TopMenuType } from "~/types/TopMenuType";
 const router = useRouter();
 const id = router.currentRoute.value.params.id;
 
+const emit = defineEmits(["update:parentLink"]);
+
 const props = withDefaults(defineProps<TopMenuPropType>(), {
   topMenu: () => [] as TopMenuType[],
   parentLink: () => "" as string,
@@ -54,7 +56,7 @@ const filterPermissions = () => {
   listItem.value = newList;
 };
 
-const handleChangeActiveTab = (value: number, link: string) => {
+const handleChangeActiveTab = (value: string, link: string) => {
   isActiveTabIndex.value = value;
   navigateTo(link);
 };
@@ -70,19 +72,33 @@ const isActive = (item: TopMenuType): boolean => {
     return true;
   }
 
+  if (props.parent_link == item.link) {
+    return true;
+  }
+
   return false;
+};
+
+const currentActiveTab = ref<Record<string, any>>({});
+
+const getCurrentActiveTab = () => {
+  listItem.value.forEach((item: any) => {
+    if (isActive(item)) {
+      currentActiveTab.value = item;
+      emit("update:parentLink", item.parent_link);
+    }
+  });
 };
 
 watchEffect(() => {
   layoutState.defineTitlePath(configs.value);
   filterPermissions();
 });
-onBeforeUnmount(() => {
-  // console.log("oop", isActiveTabIndex.value);
-}),
-  onMounted(() => {
-    layoutState.defineTitlePath(configs.value);
-  });
+
+onMounted(() => {
+  getCurrentActiveTab();
+  layoutState.defineTitlePath(configs.value);
+});
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 export const topMenuMasterTab = [
   {
     title: "User",
-    number: 0,
+    number: 'users',
     icon: "mdi-account-circle-outline",
     link: "/masters/users",
     link2: "/masters/users/create",
@@ -9,14 +9,14 @@ export const topMenuMasterTab = [
   },
   {
     title: "Company Profile",
-    number: 1,
+    number: 'company-profiles',
     icon: "mdi-domain",
     link: "/masters/company-profiles",
     permissions: ["r_roles"],
   },
   {
     title: "Customer Type",
-    number: 2,
+    number: 'customer-types',
     icon: "mdi-layers-outline",
     link: "/masters/customer-types",
     link2: "/masters/customer-types/create",
@@ -24,7 +24,7 @@ export const topMenuMasterTab = [
   },
   {
     title: "Customer",
-    number: 3,
+    number: 'customers',
     icon: "mdi-book-account-outline",
     link: "/masters/customers",
     link2: "/masters/customers/create",
@@ -32,7 +32,7 @@ export const topMenuMasterTab = [
   },
   {
     title: "Item",
-    number: 4,
+    number: 'items',
     icon: "mdi-treasure-chest-outline",
     link: "/masters/items",
     link2: "/masters/items/create-item",
@@ -40,7 +40,7 @@ export const topMenuMasterTab = [
   },
   {
     title: "Unit",
-    number: 5,
+    number: 'units',
     icon: "mdi-bookshelf",
     link: "/masters/units",
     link2: "/masters/units/create",
@@ -48,7 +48,7 @@ export const topMenuMasterTab = [
   },
   {
     title: "Warehouse",
-    number: 6,
+    number: 'warehouses',
     icon: "mdi-warehouse",
     link: "/masters/warehouses",
     link2: "/masters/warehouses/create-warehouse",
@@ -56,17 +56,17 @@ export const topMenuMasterTab = [
   },
   {
     title: "Role & Permission",
-    number: 7,
+    number: 'roles',
     icon: "mdi-shield-check-outline",
-    link: "/masters/Role-and-Permissons",
-    link2: "/masters/Role-and-Permisson/create-role-and-permission",
+    link: "/masters/roles",
+    link2: "/masters/roles/create-role-permission",
     permissions: ["r_roles"],
   },
   {
     title: "Customization",
-    number: 8,
+    number: 'customizations',
     icon: "mdi-note-edit-outline",
-    link: "/masters/customizations/item-groups",
+    link: "/masters/customizations",
     permissions: ["r_ms"],
   },
 ]
@@ -74,7 +74,7 @@ export const topMenuMasterTab = [
 export const topMenuCustomizationTab = [
   {
     title: "Item Group",
-    number: 9,
+    number: 'item-groups',
     icon: "mdi-account-circle-outline",
     parent_link: "/masters/customizations",
     link: "/masters/customizations/item-groups",
@@ -83,7 +83,7 @@ export const topMenuCustomizationTab = [
   },
   {
     title: "Item Sub Group",
-    number: 10,
+    number: 'item-sub-groups',
     icon: "mdi-domain",
     parent_link: "/masters/customizations",
     link: "/masters/customizations/item-sub-groups",
@@ -92,7 +92,7 @@ export const topMenuCustomizationTab = [
   },
   {
     title: "Currency",
-    number: 11,
+    number: 'currencies',
     icon: "mdi-layers-outline",
     parent_link: "/masters/customizations",
     link: "/masters/customizations/currencies",
@@ -101,7 +101,7 @@ export const topMenuCustomizationTab = [
   },
   {
     title: "VAT",
-    number: 12,
+    number: 'vats',
     icon: "mdi-book-account-outline",
     parent_link: "/masters/customizations",
     link: "/masters/customizations/vats",
@@ -109,8 +109,26 @@ export const topMenuCustomizationTab = [
     permissions: ["r_ms"],
   },
   {
+    title: "PPH23",
+    number: 'pph23s',
+    icon: "mdi-book-account-outline",
+    parent_link: "/masters/customizations",
+    link: "/masters/customizations/pph23s",
+    link2: "/masters/customizations/pph23s/create",
+    permissions: ["r_ms"],
+  },
+  {
+    title: "Order Type",
+    number: 'order-types',
+    icon: "mdi-book-account-outline",
+    parent_link: "/masters/customizations",
+    link: "/masters/customizations/order-types",
+    link2: "/masters/customizations/order-types/create",
+    permissions: ["r_ms"],
+  },
+  {
     title: "Payment Term",
-    number: 13,
+    number: 'payment-terms',
     icon: "mdi-treasure-chest-outline",
     parent_link: "/masters/customizations",
     link: "/masters/customizations/payment-terms",
@@ -119,7 +137,7 @@ export const topMenuCustomizationTab = [
   },
   {
     title: "Payment Method",
-    number: 14,
+    number: 'payment-methods',
     icon: "mdi-bookshelf",
     parent_link: "/masters/customizations",
     link: "/masters/customizations/payment-methods",
@@ -128,7 +146,7 @@ export const topMenuCustomizationTab = [
   },
   {
     title: "Shipping Term",
-    number: 15,
+    number: 'shipping-terms',
     icon: "mdi-warehouse",
     parent_link: "/masters/customizations",
     link: "/masters/customizations/shipping-terms",
@@ -137,7 +155,7 @@ export const topMenuCustomizationTab = [
   },
   {
     title: "Shipping Method",
-    number: 16,
+    number: 'shipping-methods',
     icon: "mdi-shield-check-outline",
     parent_link: "/masters/customizations",
     link: "/masters/customizations/shipping-methods",

@@ -57,7 +57,7 @@ const handleClickClear = () => {
     </v-btn> -->
     <d-button
       :cta="'Clear'"
-      :class="'dark:!bg-dark2 hover:bg-scLightest dark:hover:!bg-scDarker transition-all ease-in-out !border-2 p-3 rounded-lg !border-solid '"
+      :class="'dark:!bg-dark2 hover:bg-scLightest dark:hover:!bg-dark1 transition-all ease-in-out !border-2 p-3 rounded-lg !border-solid '"
       :text-class="classMerge('text-scDarker dark:text-white mx-auto')"
       type="button"
       size="xl"

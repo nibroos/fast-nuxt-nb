@@ -10,6 +10,8 @@ import type {
 } from "~/types/SelectTableType";
 import { type Pagination } from "~/interfaces/LaravelPaginationInterface";
 
+const slots = useSlots() as Record<string, any>;
+
 const props = withDefaults(defineProps<SelectTableType>(), {
   modelValue: null,
   label: "Item",
@@ -40,6 +42,13 @@ const props = withDefaults(defineProps<SelectTableType>(), {
   isQuickSelect: false,
   searchPlaceholder: "Search anything related..",
   noTitle: false,
+  createOption: () => ({
+    link: "",
+    show: false,
+    icon: "mdi-plus",
+    title: "Create",
+  }),
+  queryModal: () => ({}),
 
   // Modal
   showModal: false,
@@ -104,7 +113,7 @@ const generateFiltersObj = () => {
   });
 };
 
-const emits = defineEmits(["openModal", "update:modelValue"]);
+const emits = defineEmits(["openModal", "update:modelValue", "update:filters"]);
 
 let headersModal = ref(props.fields);
 let api = ref<string>(props.api);
@@ -122,13 +131,7 @@ const openModal = (event: boolean) => {
   emits("openModal", showModal.value);
 };
 
-const filters = ref<Record<string, any>>({
-  page: 1,
-  per_page: 100,
-  global: "",
-  order_column: "id",
-  order_direction: "asc",
-});
+const filters = ref<Record<string, any>>(props.queryModal);
 
 const metaModal = ref<Pagination<any[]>>({
   data: [],
@@ -162,6 +165,8 @@ const filterData = async () => {
   let apiUrl;
 
   if (props.methodApi == "post") {
+    console.log("filters.value2", filters.value);
+
     apiUrl = `${api.value}`;
     response = await useMyFetch()
       .post(apiUrl, filters.value)
@@ -204,6 +209,9 @@ const fetchDataServerFetch = async (options: {
   if (options.sortBy.length > 0) {
     filters.value.order_column = options.sortBy[0].key;
     filters.value.order_direction = options.sortBy[0].order;
+  } else {
+    filters.value.order_column = "";
+    filters.value.order_direction = "";
   }
 
   await filterData();
@@ -345,8 +353,23 @@ watch(showModal, async (newVal) => {
   }
 });
 
+// emit when filters change
+watch(
+  () => filters.value,
+  debounce((newValue: any) => {
+    emits("update:filters", newValue);
+  }, 1000),
+  { deep: true }
+);
+
 onMounted(async () => {
-  // await filterData()
+  filters.value = {
+    ...filters.value,
+    ...props.queryModal,
+  };
+
+  console.log("filters.val", filters.value);
+
   await Promise.all([filterData(), fetchSingle(props.modelValue)]);
 
   generateFiltersObj();
@@ -369,7 +392,7 @@ onMounted(async () => {
     <form
       :class="
         classMerge(
-          'flex flex-col gap-3 p-3',
+          'flex flex-col gap-2 p-3',
           generatedFiltersObj.length <= 3 ? 'flex-row' : 'flex-col'
         )
       "
@@ -379,7 +402,7 @@ onMounted(async () => {
         v-if="generatedFiltersObj.length > 0"
         :class="
           classMerge(
-            'grid grid-cols-5 gap-3 items-center',
+            'grid grid-cols-5 gap-2 items-center',
             generatedFiltersObj.length <= 3
               ? `grow grid-cols-${generatedFiltersObj.length}`
               : 'grid-cols-5'
@@ -408,13 +431,18 @@ onMounted(async () => {
             :inner-search-key="filter.others?.innerSearchKey"
             :items-prop="filter.others?.itemsProp"
             :page-end-prop="filter.others?.pageEndProp"
+            :method-api="filter.others?.methodApi"
+            :single-api="filter.others?.singleApi"
+            :multiple="filter.others?.multiple"
+            :return-object="filter.others?.returnObject"
+            :item-color="filter.others?.itemColor"
           />
         </div>
       </div>
       <div
         :class="
           classMerge(
-            'flex items-center gap-x-3',
+            'flex items-center gap-x-2',
             generatedFiltersObj.length < 3
               ? 'w-3/5'
               : generatedFiltersObj.length == 3
@@ -438,6 +466,24 @@ onMounted(async () => {
           @click:submit="filterData"
           @click:clear="clearFilters"
         />
+
+        <nuxt-link
+          v-if="!!props.createOption.show"
+          :class="
+            classMerge(
+              'flex items-center border-scDarker text-scDarker dark:text-primary dark:hover:bg-scDarker dark:bg-scDarker3 dark:border-scDarker font-bold justify-center gap-1 rounded-lg tracking-normal bg-primaryDarker hover:bg-primaryDarkest border-1.5 p-3 transition-all ease-in-out',
+              props.createOption.class
+            )
+          "
+          :to="props.createOption.link"
+        >
+          <v-icon
+            v-if="!!props.createOption.icon"
+            :icon="props.createOption.icon"
+            size="24"
+          />
+          <div class="text-sm capitalize">{{ props.createOption.cta }}</div>
+        </nuxt-link>
       </div>
     </form>
 
@@ -466,7 +512,27 @@ onMounted(async () => {
         :height="props.height"
         hover
         @click:row="onSelectOption"
-      />
+      >
+        <template #no-data> No data available </template>
+
+        <template
+          v-for="(field, index) in headersModal"
+          :key="index"
+          v-slot:[`item.${field.value}`]="{ item, index }"
+        >
+          <slot :name="`item.${field.key}`" :item="item" :index="index">
+            <span v-if="metaModal.data[index] && field.value">{{
+              metaModal.data[index][field.value]
+            }}</span>
+          </slot>
+        </template>
+
+        <template #footer.prepend>
+          <div class="flex grow items-center">
+            <span class="text-sm"> Show/Hide Filter & Column </span>
+          </div>
+        </template>
+      </v-data-table-server>
     </div>
   </div>
 </template>

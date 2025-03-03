@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import useLayoutsStore from "~/stores/configs/LayoutsStore";
-import useCustomerStore from "~/stores/masters/CustomerStore";
+import useItemGroupStore from "~/stores/masters/ItemGroupStore";
 import type {
   FieldSelectableType,
   FilterSelectableType,
 } from "~/types/SelectTableType";
 
-const { queryModal } = useCustomerStore();
+const { queryModal } = useItemGroupStore();
 const layoutStore = useLayoutsStore();
 const { titlePath, subTitlePath, lastPathSegment, parentTitle, topTitle } =
   storeToRefs(layoutStore);
@@ -17,17 +17,10 @@ definePageMeta({
 });
 
 useHead({
-  title: "Customers",
+  title: "Currency",
 });
 
 const fieldsConfig = ref<FieldSelectableType[]>([
-  {
-    title: "Customer Type",
-    key: "customer_type_name",
-    value: "customer_type_name",
-    align: "start",
-    sortable: true,
-  },
   {
     title: "Name",
     key: "name",
@@ -36,30 +29,30 @@ const fieldsConfig = ref<FieldSelectableType[]>([
     sortable: true,
   },
   {
-    title: "Code",
-    key: "code",
-    value: "code",
+    title: "Description",
+    key: "description",
+    value: "description",
     align: "start",
     sortable: true,
   },
   {
-    title: "Email",
-    key: "email",
-    value: "email",
+    title: "Exchange Rate",
+    key: "num",
+    value: "num",
+    align: "end",
+    sortable: true,
+  },
+  {
+    title: "Remark",
+    key: "remark",
+    value: "remark",
     align: "start",
     sortable: true,
   },
   {
-    title: "Phone",
-    key: "email",
-    value: "email",
-    align: "start",
-    sortable: true,
-  },
-  {
-    title: "Address",
-    key: "address",
-    value: "address",
+    title: "Status",
+    key: "status",
+    value: "status",
     align: "start",
     sortable: true,
   },
@@ -67,43 +60,36 @@ const fieldsConfig = ref<FieldSelectableType[]>([
 
 const filtersConfig = ref<FilterSelectableType[]>([
   {
-    title: "Customer Type",
-    key: "customer_type_id",
-    type: "autocomplete",
-    others: {
-      methodApi: "post",
-      api: "/v1/customer-types/index-customer-type",
-      singleApi: "/v1/customer-types/show-customer-type",
-      mappingDetail: "data",
-      itemsProp: "data",
-      pageEndProp: "last_page",
-      itemTitle: "name",
-      itemValue: "id",
-      label: "Customer Type",
-      innerSearchKey: "global",
-    },
-  },
-  {
     title: "Name",
     key: "name",
   },
   {
-    title: "Code",
-    key: "code",
+    title: "Description",
+    key: "description",
   },
   {
-    title: "Email",
-    key: "email",
-  },
-  {
-    title: "Phone",
-    key: "phone",
+    title: "Remark",
+    key: "remark",
   },
 ]);
+
+const parentLink = ref("");
+const getParentLink = (link: string) => {
+  parentLink.value = link;
+};
 </script>
 
 <template>
-  <lazy-layout-topmenu :top-menu="topMenuMasterTab">
+  <div class="flex flex-col gap-2">
+    <l-top-menu :top-menu="topMenuMasterTab" :parent_link="parentLink">
+    </l-top-menu>
+    <l-top-menu
+      :top-menu="topMenuCustomizationTab"
+      parent_link=""
+      @update:parent-link="getParentLink"
+    >
+    </l-top-menu>
+
     <d-index-layout
       :config="{
         permission: {
@@ -113,22 +99,22 @@ const filtersConfig = ref<FilterSelectableType[]>([
       }"
     >
       <d-datatable
-        api="/v1/customers/index-customer"
-        detail-link="/masters/customers"
+        api="/v1/currencies/index-currency"
+        detail-link="/masters/currencies"
         method-api="post"
         detail-method-api="post"
         items-prop="data"
         total-prop="meta.total"
-        label="Master User"
+        label="Master Currency"
         class="col-span-2 lg:col-span-1"
-        search-placeholder="Search anything related to customer types.."
+        search-placeholder="Search anything related to currencies.."
         is-quick-select
         no-title
         :fields="fieldsConfig"
         :filters="filtersConfig"
         :query-modal="queryModal.qListIndex"
         :create-option="{
-          link: '/masters/customers/create',
+          link: '/masters/currencies/create',
           show: true,
           cta: '+ Create',
         }"
@@ -138,10 +124,13 @@ const filtersConfig = ref<FilterSelectableType[]>([
           }
         "
       >
+        <template #item.num="{ item }">
+          <d-num-layout :value="item.num" />
+        </template>
         <template #item.status="{ item }">
           <d-active-status :value="item.status" />
         </template>
       </d-datatable>
     </d-index-layout>
-  </lazy-layout-topmenu>
+  </div>
 </template>

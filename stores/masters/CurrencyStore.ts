@@ -2,14 +2,13 @@ import { useAlert } from '~/composables/useAlert'
 import { useMyFetch } from '~/composables/useMyFetch'
 import type { Meta, Pagination, PaginationMeta } from '~/interfaces/LaravelPaginationInterface'
 
-const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
+const useCurrencyStore = defineStore('CurrencyStore', {
   state: () => ({
 
     queryModal: {
       qListIndex: {
         page: 1,
         per_page: 10,
-        parent_ids: [],
         global: '',
         order_column: 'name',
         order_direction: 'desc'
@@ -25,7 +24,7 @@ const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
   }),
 
   actions: {
-    async indexItemSubGroup() {
+    async indexCurrency() {
       if (this.metaModal.index.loading) return
       this.metaModal.index.loading = true
 
@@ -49,4 +48,4 @@ const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
   ]
 })
 
-export default useItemSubGroupStore
+export default useCurrencyStore

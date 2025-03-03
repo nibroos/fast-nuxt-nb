@@ -71,6 +71,8 @@ export type SelectTableType = {
   isQuickSelect?: boolean
   searchPlaceholder?: string
   noTitle?: boolean
+  queryModal?: Record<string, any>
+  createOption?: CreateOptionSelectableType
 
   // Modal
   showModal?: boolean
@@ -109,3 +111,12 @@ export type FilterSelectableType = {
   cellClass?: string[]
   show?: boolean
 } & MethodAttributeSelectableType
+
+export type CreateOptionSelectableType = {
+  cta?: string
+  link?: string
+  icon?: string
+  class?: string
+  cellClass?: string[]
+  show?: boolean
+}

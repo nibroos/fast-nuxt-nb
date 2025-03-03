@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import useLayoutsStore from "~/stores/configs/LayoutsStore";
-import useCustomerStore from "~/stores/masters/CustomerStore";
+import useUnitStore from "~/stores/masters/UnitStore";
 import type {
   FieldSelectableType,
   FilterSelectableType,
 } from "~/types/SelectTableType";
 
-const { queryModal } = useCustomerStore();
+const { queryModal } = useUnitStore();
 const layoutStore = useLayoutsStore();
 const { titlePath, subTitlePath, lastPathSegment, parentTitle, topTitle } =
   storeToRefs(layoutStore);
@@ -17,17 +17,10 @@ definePageMeta({
 });
 
 useHead({
-  title: "Customers",
+  title: "Units",
 });
 
 const fieldsConfig = ref<FieldSelectableType[]>([
-  {
-    title: "Customer Type",
-    key: "customer_type_name",
-    value: "customer_type_name",
-    align: "start",
-    sortable: true,
-  },
   {
     title: "Name",
     key: "name",
@@ -36,30 +29,23 @@ const fieldsConfig = ref<FieldSelectableType[]>([
     sortable: true,
   },
   {
-    title: "Code",
-    key: "code",
-    value: "code",
+    title: "Description",
+    key: "description",
+    value: "description",
     align: "start",
     sortable: true,
   },
   {
-    title: "Email",
-    key: "email",
-    value: "email",
+    title: "Remark",
+    key: "remark",
+    value: "remark",
     align: "start",
     sortable: true,
   },
   {
-    title: "Phone",
-    key: "email",
-    value: "email",
-    align: "start",
-    sortable: true,
-  },
-  {
-    title: "Address",
-    key: "address",
-    value: "address",
+    title: "Status",
+    key: "status",
+    value: "status",
     align: "start",
     sortable: true,
   },
@@ -67,37 +53,16 @@ const fieldsConfig = ref<FieldSelectableType[]>([
 
 const filtersConfig = ref<FilterSelectableType[]>([
   {
-    title: "Customer Type",
-    key: "customer_type_id",
-    type: "autocomplete",
-    others: {
-      methodApi: "post",
-      api: "/v1/customer-types/index-customer-type",
-      singleApi: "/v1/customer-types/show-customer-type",
-      mappingDetail: "data",
-      itemsProp: "data",
-      pageEndProp: "last_page",
-      itemTitle: "name",
-      itemValue: "id",
-      label: "Customer Type",
-      innerSearchKey: "global",
-    },
-  },
-  {
     title: "Name",
     key: "name",
   },
   {
-    title: "Code",
-    key: "code",
+    title: "Description",
+    key: "description",
   },
   {
-    title: "Email",
-    key: "email",
-  },
-  {
-    title: "Phone",
-    key: "phone",
+    title: "Remark",
+    key: "remark",
   },
 ]);
 </script>
@@ -113,22 +78,22 @@ const filtersConfig = ref<FilterSelectableType[]>([
       }"
     >
       <d-datatable
-        api="/v1/customers/index-customer"
-        detail-link="/masters/customers"
+        api="/v1/units/index-unit"
+        detail-link="/masters/units"
         method-api="post"
         detail-method-api="post"
         items-prop="data"
         total-prop="meta.total"
         label="Master User"
         class="col-span-2 lg:col-span-1"
-        search-placeholder="Search anything related to customer types.."
+        search-placeholder="Search anything related to units.."
         is-quick-select
         no-title
         :fields="fieldsConfig"
         :filters="filtersConfig"
         :query-modal="queryModal.qListIndex"
         :create-option="{
-          link: '/masters/customers/create',
+          link: '/masters/units/create',
           show: true,
           cta: '+ Create',
         }"
