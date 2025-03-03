@@ -1,13 +1,13 @@
 <template>
   <div
-    class="min-h-screen flex flex-row justify-center items-center bg-zinc-50 dark:bg-zinc-900"
+    class="min-h-screen flex flex-row p-8 sm:p-0 justify-center items-center bg-zinc-50 dark:bg-zinc-900"
   >
     <div
-      class="max-h-screen flex flex-row w-1/4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-700 shadow-sm overflow-hidden rounded-xl"
+      class="max-h-screen flex flex-row w-2/5 lg:w-1/2 md:w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-700 shadow-sm overflow-hidden rounded-xl"
     >
       <div
         v-auto-animate
-        class="flex items-center p-10 py-auto w-full bg-zinc-50 dark:bg-zinc-800"
+        class="flex items-center p-10 lg:p-6 py-auto w-full bg-zinc-50 dark:bg-zinc-800"
       >
         <form
           @submit.prevent="authStore.loginAuth()"

@@ -56,7 +56,7 @@ module.exports = {
           800: '#846358',
           900: '#43302b',
         },
-        primary: '#fdf8f6',
+        primary1: '#fdf8f6',
         primaryDarker: '#f5f2eb',
         primaryDarkest: '#f2e8e5',
         scLightest: '#eaddd7',

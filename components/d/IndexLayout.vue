@@ -51,6 +51,7 @@ const router = useRouter();
 const divHeightInRem = ref(0);
 const contentlayout: any = ref(null);
 const randomContentElementId = ref<string>(`index-${randomId()}`);
+const dynamicMaxHeightClass = ref("");
 
 const updateHeight = () => {
   const div: any = document.getElementById(`${randomContentElementId.value}`);
@@ -179,7 +180,7 @@ watchEffect(() => {});
         :id="randomContentElementId"
         ref="contentlayout"
         :class="[
-          'max-h-[80vh] !overflow-y-auto  rounded-b-lg !border !border-dark2',
+          'max-h-[80vh] [@media(max-height:752px)]:max-h-[70vh] sm:text-slate-50 !overflow-y-auto  rounded-b-lg !border !border-dark2',
           mergedConfig.contentClass,
         ]"
         @resize="updateHeight"
@@ -188,7 +189,6 @@ watchEffect(() => {});
         <slot />
       </div>
     </div>
-
     <slot v-if="slots.bottom" name="bottom" />
   </div>
 

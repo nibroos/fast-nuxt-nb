@@ -371,7 +371,7 @@ onMounted(async () => {
             DASHBOARD
           </v-list-item-title>
 
-          <v-list-item class="!text-primary" to="/dashboard" rounded="lg">
+          <v-list-item class="!text-primary1" to="/dashboard" rounded="lg">
             <template #prepend>
               <v-icon>mdi-view-dashboard-outline</v-icon>
             </template>
@@ -398,7 +398,7 @@ onMounted(async () => {
             color="#898F99"
             to="/masters/users"
             rounded="lg"
-            class="!text-primary"
+            class="!text-primary1"
           >
             <template #prepend>
               <v-icon>mdi-wrench</v-icon>

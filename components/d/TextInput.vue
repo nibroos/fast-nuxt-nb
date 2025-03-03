@@ -1,75 +1,82 @@
 <script setup lang="ts">
-import type { VAutocomplete } from 'vuetify/components'
+import type { VAutocomplete } from "vuetify/components";
 
-type Variant = VAutocomplete['$props']['variant']
-type Density = VAutocomplete['$props']['density']
+type Variant = VAutocomplete["$props"]["variant"];
+type Density = VAutocomplete["$props"]["density"];
 
 interface IProps {
-  disabled?: boolean
-  variant?: Variant
-  modelValue?: string | number | null | undefined
-  label?: string
-  density?: Density
-  clearable?: boolean
-  placeholder?: string
-  type?: string
-  class?: string
-  errors?: any[]
-  replaceDetailsWithError?: boolean
-  initialValue?: string
-  readonly?: boolean
+  disabled?: boolean;
+  variant?: Variant;
+  modelValue?: string | number | null | undefined;
+  label?: string;
+  density?: Density;
+  clearable?: boolean;
+  placeholder?: string;
+  type?: string;
+  parentClass?: string;
+  class?: string;
+  errors?: any[];
+  replaceDetailsWithError?: boolean;
+  initialValue?: string;
+  readonly?: boolean;
 }
 const props = withDefaults(defineProps<IProps>(), {
   disabled: false,
   readonly: false,
-  variant: 'outlined',
-  modelValue: '',
-  label: '',
-  density: 'compact',
+  variant: "outlined",
+  modelValue: "",
+  label: "",
+  density: "compact",
   clearable: true,
   placeholder: (props) => `Enter ${props.label} data`,
-  type: 'text',
-  class: '',
+  type: "text",
+  parentClass: "",
+  class: "",
   errors: () => [],
   replaceDetailsWithError: false,
-  initialValue: ''
-})
+  initialValue: "",
+});
 
-const realValue = ref(props.modelValue)
+const realValue = ref(props.modelValue);
 
-const slots = useSlots()
+const slots = useSlots();
 
-const emits = defineEmits(['update:modelValue'])
+const emits = defineEmits(["update:modelValue"]);
 
 const updateValue = (value: string) => {
-  realValue.value = value
-  emits('update:modelValue', value)
-}
+  realValue.value = value;
+  emits("update:modelValue", value);
+};
 
 onMounted(() => {
-  realValue.value = ''
+  realValue.value = "";
 
   if (props.modelValue) {
-    realValue.value = props.modelValue
+    realValue.value = props.modelValue;
   }
 
   if (props.initialValue) {
-    realValue.value = props.initialValue
+    realValue.value = props.initialValue;
   }
-})
+});
 
 watch(
   () => props.modelValue,
   (newVal, oldVal) => {
     if (newVal !== oldVal) {
-      realValue.value = newVal
+      realValue.value = newVal;
     }
   }
-)
+);
 </script>
 <template>
   <div
-    :class="{ 'gap-2': slots.details || errors.length > 0 }"
+    :class="
+      classMerge(
+        slots.details || errors.length > 0 ? 'gap-2' : '',
+        props.parentClass
+      )
+    "
     class="flex grow flex-col"
   >
     <v-text-field
@@ -79,24 +86,17 @@ watch(
       :density="props.density"
       :placeholder="props.placeholder"
       :type="props.type"
-      :class="classMerge('w-full', props.class)"
+      :class="classMerge('w-full text-dark1 dark:text-primary1', props.class)"
       :clearable="props.clearable"
       :disabled="props.disabled"
       @update:model-value="updateValue"
       hide-details
     ></v-text-field>
-    <div
-      v-if="slots.details && errors.length == 0"
-      class="flex flex-col gap-1"
-    >
+    <div v-if="slots.details && errors.length == 0" class="flex flex-col gap-1">
       <slot name="details" />
     </div>
     <div class="flex flex-col gap-1">
-      <div
-        v-for="error in errors"
-        :key="error"
-        class="text-sm text-red-500"
-      >
+      <div v-for="error in errors" :key="error" class="text-sm text-red-500">
         {{ error }}
       </div>
     </div>

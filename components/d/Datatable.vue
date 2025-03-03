@@ -332,6 +332,14 @@ const onSelectOption = (event: any, row: any) => {
   }
 };
 
+const showHideColumn = (event: any) => {
+  console.log("showHideColumn", event);
+};
+
+const showHideFilter = (event: any) => {
+  console.log("showHideFilter", event);
+};
+
 watch(
   () => itemsCheck.value,
   (newValue: any, oldValue: any) => {
@@ -382,7 +390,7 @@ onMounted(async () => {
 
 <template>
   <!-- Modal Add Style -->
-  <div class="flex flex-col dark:bg-dark1 dark:text-primary">
+  <div class="flex flex-col dark:bg-dark1 dark:text-primary1">
     <div v-if="!props.noTitle" class="flex items-center gap-2">
       <span class="whitespace-nowrap text-xl">
         {{ props.modalTitle }}
@@ -390,20 +398,15 @@ onMounted(async () => {
     </div>
 
     <form
-      :class="
-        classMerge(
-          'flex flex-col gap-2 p-3',
-          generatedFiltersObj.length <= 3 ? 'flex-row' : 'flex-col'
-        )
-      "
+      :class="classMerge('flex flex-col gap-2 p-3')"
       @submit.prevent="filterData()"
     >
       <div
         v-if="generatedFiltersObj.length > 0"
         :class="
           classMerge(
-            'grid grid-cols-5 gap-2 items-center',
-            generatedFiltersObj.length <= 3
+            'grid grid-cols-5 gap-2 items-center sm:grid-cols-1 md:grid-cols-2',
+            generatedFiltersObj.length <= 2
               ? `grow grid-cols-${generatedFiltersObj.length}`
               : 'grid-cols-5'
           )
@@ -438,52 +441,63 @@ onMounted(async () => {
             :item-color="filter.others?.itemColor"
           />
         </div>
-      </div>
-      <div
-        :class="
-          classMerge(
-            'flex items-center gap-x-2',
-            generatedFiltersObj.length < 3
-              ? 'w-3/5'
-              : generatedFiltersObj.length == 3
-              ? 'w-1/2'
-              : 'w-full'
-          )
-        "
-      >
-        <v-text-field
+
+        <d-text-input
           id="global_search_modal"
           v-model="filters.global"
-          hide-details
           label="Global Search"
           :placeholder="props.searchPlaceholder"
-          variant="outlined"
-          density="compact"
           append-inner-icon="mdi-magnify"
+          parent-class=""
         />
-
+      </div>
+      <div :class="classMerge('grid grid-cols-6 items-center gap-2 w-full')">
         <d-submit-button
           @click:submit="filterData"
           @click:clear="clearFilters"
-        />
-
-        <nuxt-link
-          v-if="!!props.createOption.show"
-          :class="
-            classMerge(
-              'flex items-center border-scDarker text-scDarker dark:text-primary dark:hover:bg-scDarker dark:bg-scDarker3 dark:border-scDarker font-bold justify-center gap-1 rounded-lg tracking-normal bg-primaryDarker hover:bg-primaryDarkest border-1.5 p-3 transition-all ease-in-out',
-              props.createOption.class
-            )
-          "
-          :to="props.createOption.link"
+          class="col-span-3 md:col-span-full"
         >
-          <v-icon
-            v-if="!!props.createOption.icon"
-            :icon="props.createOption.icon"
-            size="24"
-          />
-          <div class="text-sm capitalize">{{ props.createOption.cta }}</div>
-        </nuxt-link>
+          <template #append>
+            <nuxt-link
+              v-if="!!props.createOption.show"
+              :class="
+                classMerge(
+                  'flex items-center border-scDarker text-scDarker dark:text-primary1 dark:hover:bg-scDarker dark:bg-scDarker3 dark:border-scDarker font-bold justify-center gap-1 rounded-lg tracking-normal bg-primaryDarker hover:bg-primaryDarkest border-1.5 p-2 transition-all ease-in-out',
+                  props.createOption.class
+                )
+              "
+              :to="props.createOption.link"
+            >
+              <v-icon
+                v-if="!!props.createOption.icon"
+                :icon="props.createOption.icon"
+                size="24"
+              />
+              <div class="text-sm capitalize">{{ props.createOption.cta }}</div>
+            </nuxt-link>
+
+            <d-button
+              @click="showHideFilter"
+              icon="mdi-filter-cog"
+              is-no-text
+              class="p-2 dark:bg-transparent rounded-full ease-in-out transition-all hover:bg-scDarker3 dark:hover:bg-zinc-600 !bg-sc"
+              text-class="text-zinc-100 dark:text-primary1"
+              icon-class="text-zinc-100 dark:text-primary1"
+              rounded="xl"
+              size=""
+            ></d-button>
+            <d-button
+              @click="showHideColumn"
+              icon="mdi-eye-off"
+              is-no-text
+              class="p-2 dark:bg-transparent rounded-full ease-in-out transition-all hover:bg-scDarker3 dark:hover:bg-zinc-600 !bg-sc"
+              text-class="text-zinc-100 dark:text-primary1"
+              icon-class="text-zinc-100 dark:text-primary1"
+              rounded="xl"
+              size=""
+            ></d-button>
+          </template>
+        </d-submit-button>
       </div>
     </form>
 
@@ -529,7 +543,7 @@ onMounted(async () => {
 
         <template #footer.prepend>
           <div class="flex grow items-center">
-            <span class="text-sm"> Show/Hide Filter & Column </span>
+            <!-- <span class="text-sm"> Show/Hide Filter & Column </span> -->
           </div>
         </template>
       </v-data-table-server>

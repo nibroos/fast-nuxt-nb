@@ -3,10 +3,14 @@ import { classMerge } from "#imports";
 
 type IProps = {
   class?: string;
+  submitClass?: string;
+  clearClass?: string;
 };
 
 const props = withDefaults(defineProps<IProps>(), {
   class: "",
+  submitClass: "",
+  clearClass: "",
 });
 
 const emits = defineEmits(["click:submit", "click:clear"]);
@@ -20,7 +24,11 @@ const handleClickClear = () => {
 </script>
 
 <template>
-  <div :class="classMerge('flex flex-row items-center gap-2', props.class)">
+  <div
+    :class="
+      classMerge('flex flex-row ms:flex-col items-stretch gap-2', props.class)
+    "
+  >
     <!-- <v-btn
       variant="tonal"
       height="35"
@@ -34,35 +42,38 @@ const handleClickClear = () => {
     >
       Find
     </v-btn> -->
-    <d-button
-      :cta="'Find'"
-      :class="'!bg-sc hover:!bg-scDarker text-white transition-all ease-in-out border-1.5 p-3 rounded-lg '"
-      :text-class="classMerge('text-white mx-auto')"
-      type="submit"
-      size="xl"
-      @click="handleClickSubmit()"
-      no-icon
-    />
-    <!-- <v-btn
-      type="button"
-      variant="tonal"
-      height="35"
-      density="comfortable"
-      class="text-none grow"
-      rounded="sm"
-      append-icon="mdi-refresh"
-      @click="handleClickClear()"
-    >
-      Clear
-    </v-btn> -->
-    <d-button
-      :cta="'Clear'"
-      :class="'dark:!bg-dark2 hover:bg-scLightest dark:hover:!bg-dark1 transition-all ease-in-out !border-2 p-3 rounded-lg !border-solid '"
-      :text-class="classMerge('text-scDarker dark:text-white mx-auto')"
-      type="button"
-      size="xl"
-      @click="handleClickClear()"
-      no-icon
-    />
+    <div class="flex gap-2 items-stretch">
+      <d-button
+        :cta="'Find'"
+        :class="
+          classMerge(
+            '!bg-sc hover:!bg-scDarker text-white grow text-sm transition-all ease-in-out border-1.5 p-2 rounded-lg ',
+            props.submitClass
+          )
+        "
+        :text-class="classMerge('text-white mx-auto')"
+        type="submit"
+        size="xl"
+        @click="handleClickSubmit()"
+        icon="mdi-magnify"
+      />
+      <d-button
+        :cta="'Clear'"
+        :class="
+          classMerge(
+            'dark:!bg-dark2 hover:bg-scLightest !gap-6 grow dark:hover:!bg-dark1 w-1/4 text-sm transition-all ease-in-out !border-2 p-2 rounded-lg !border-solid !border-sc dark:!border-dark2 ',
+            props.clearClass
+          )
+        "
+        :text-class="classMerge('text-scDarker dark:text-white mx-auto')"
+        icon-class="text-scDarker dark:text-white"
+        type="button"
+        size="xl"
+        @click="handleClickClear()"
+        no-icon
+      />
+    </div>
+
+    <slot name="append" />
   </div>
 </template>

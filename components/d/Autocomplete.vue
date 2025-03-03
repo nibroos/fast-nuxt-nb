@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<AutocompleteType>(), {
   query: (): any => ({} as any),
   innerSearchKey: "search",
   clearable: true,
-  aClass: "",
+  aClass: "text-dark1",
   uid: "id",
   initialValue: "",
   disableInitialLoad: false,
@@ -481,7 +481,7 @@ watch(
     :clearable="props.disabled ? false : props.clearable"
     @click:clear="handleClear"
     :disabled="props.disabled"
-    :class="props.aClass"
+    :class="classMerge('text-dark1 dark:text-primary1', props.aClass)"
     :multiple="props.multiple"
     :return-object="props.returnObject"
     :hide-details="props.hideDetails"
