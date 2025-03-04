@@ -114,7 +114,7 @@ const getParentLink = (link: string) => {
         :filters="filtersConfig"
         :query-modal="queryModal.qListIndex"
         :create-option="{
-          link: '/masters/currencies/create',
+          link: '/masters/customizations/currencies/create',
           show: true,
           cta: '+ Create',
         }"

@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<AutocompleteType>(), {
   label: undefined,
   itemTitle: "title",
   itemValue: "value",
-  hideDetails: true,
+  hideDetails: "auto",
   density: "compact",
   itemsProp: "data",
   pageEndProp: "next_page_url",
@@ -45,6 +45,7 @@ const props = withDefaults(defineProps<AutocompleteType>(), {
   checkDuplicate: false,
   returnObject: false,
   itemColor: "brown",
+  errors: () => [],
 });
 
 const fetch = useMyFetch();
@@ -459,85 +460,89 @@ watch(
 </script>
 
 <template>
-  <v-autocomplete
-    ref="vAComp"
-    v-model="selected"
-    :items="options"
-    :item-title="props.itemTitle"
-    :item-value="props.itemValue"
-    :variant="props.variant"
-    :label="props.label"
-    :placeholder="props.placeholder"
-    :density="props.density"
-    :chips="props.chips"
-    :list-props="{ slim: true }"
-    no-filter
-    :loading="loadingSearch"
-    @update:search="innerSearch = $event"
-    @update:menu="onMenuChange"
-    :focused="isFocused"
-    @update:focused="onFocus"
-    :readonly="isReadOnly"
-    :clearable="props.disabled ? false : props.clearable"
-    @click:clear="handleClear"
-    :disabled="props.disabled"
-    :class="classMerge('text-dark1 dark:text-primary1', props.aClass)"
-    :multiple="props.multiple"
-    :return-object="props.returnObject"
-    :hide-details="props.hideDetails"
-    :item-color="props.itemColor"
-  >
-    <template v-slot:append-item>
-      <div
-        v-if="!paginationDone && !!api && options.length > 0"
-        v-intersect="onIntersect"
-        class="pa-4 teal--text"
-      >
-        Loading more items ...
-      </div>
-    </template>
-    <template v-slot:selection="{ item, index }">
-      <span class="whitespace-nowrap">
-        <div v-if="props.multiple">
+  <div class="flex flex-col gap-2">
+    <v-autocomplete
+      ref="vAComp"
+      v-model="selected"
+      :items="options"
+      :item-title="props.itemTitle"
+      :item-value="props.itemValue"
+      :variant="props.variant"
+      :label="props.label"
+      :placeholder="props.placeholder"
+      :density="props.density"
+      :chips="props.chips"
+      :list-props="{ slim: true }"
+      no-filter
+      :loading="loadingSearch"
+      @update:search="innerSearch = $event"
+      @update:menu="onMenuChange"
+      :focused="isFocused"
+      @update:focused="onFocus"
+      :readonly="isReadOnly"
+      :clearable="props.disabled ? false : props.clearable"
+      @click:clear="handleClear"
+      :disabled="props.disabled"
+      :class="classMerge('text-dark1 dark:text-primary1', props.aClass)"
+      :multiple="props.multiple"
+      :return-object="props.returnObject"
+      :hide-details="props.hideDetails"
+      :item-color="props.itemColor"
+    >
+      <template v-slot:append-item>
+        <div
+          v-if="!paginationDone && !!api && options.length > 0"
+          v-intersect="onIntersect"
+          class="pa-4 teal--text"
+        >
+          Loading more items ...
+        </div>
+      </template>
+      <template v-slot:selection="{ item, index }">
+        <span class="whitespace-nowrap">
+          <div v-if="props.multiple">
+            <d-shorttext
+              :text="item.title"
+              :max-length="Number(props.maxLengthDisplay)"
+              :class="props.aClass"
+              :start-align="props.startAlignDisplay"
+            />
+            <span v-if="selected.length > 1 && selected.length - 1 !== index">
+              ,
+            </span>
+          </div>
           <d-shorttext
-            :text="item.title"
+            v-else
+            :text="
+              displayTitle || getDisplayMultipleKeys(item.raw) || item.title
+            "
             :max-length="Number(props.maxLengthDisplay)"
             :class="props.aClass"
             :start-align="props.startAlignDisplay"
           />
-          <span v-if="selected.length > 1 && selected.length - 1 !== index">
-            ,
-          </span>
+        </span>
+      </template>
+
+      <template #no-data>
+        <div
+          v-if="!loadingSearch && !isInitialLoad && options.length === 0"
+          class="font-weight-bold flex items-center justify-center p-3 text-center"
+        >
+          <div>No data available, please try another keyword..</div>
         </div>
-        <d-shorttext
-          v-else
-          :text="displayTitle || getDisplayMultipleKeys(item.raw) || item.title"
-          :max-length="Number(props.maxLengthDisplay)"
-          :class="props.aClass"
-          :start-align="props.startAlignDisplay"
-        />
-      </span>
-    </template>
+        <div v-else-if="loadingSearch || isInitialLoad">
+          <v-skeleton-loader type="list-item-two-line"></v-skeleton-loader>
+        </div>
+      </template>
 
-    <template #no-data>
-      <div
-        v-if="!loadingSearch && !isInitialLoad && options.length === 0"
-        class="font-weight-bold flex items-center justify-center p-3 text-center"
-      >
-        <div>No data available, please try another keyword..</div>
-      </div>
-      <div v-else-if="loadingSearch || isInitialLoad">
-        <v-skeleton-loader type="list-item-two-line"></v-skeleton-loader>
-      </div>
-    </template>
+      <template v-slot:item="{ props, item }">
+        <v-list-item
+          v-bind="props"
+          :title="getDisplayMultipleKeys(item.raw) || item.title"
+        ></v-list-item>
+      </template>
 
-    <template v-slot:item="{ props, item }">
-      <v-list-item
-        v-bind="props"
-        :title="getDisplayMultipleKeys(item.raw) || item.title"
-      ></v-list-item>
-    </template>
-    <!-- 
+      <!-- 
     <template
       #item="{ item }"
       v-if="props.multiple"
@@ -549,5 +554,16 @@ watch(
         :start-align="props.startAlignDisplay"
       />
     </template> -->
-  </v-autocomplete>
+    </v-autocomplete>
+    <div v-if="props.errors.length > 0 && !!props.errors[0]">
+      <div
+        class="flex flex-col gap-1 text-rose-500 text-sm text-left justify-start"
+      >
+        <slot name="errors" />
+        <div v-for="error in props.errors" :key="error" class="text-sm">
+          {{ error }}
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

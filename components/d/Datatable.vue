@@ -42,6 +42,8 @@ const props = withDefaults(defineProps<SelectTableType>(), {
   isQuickSelect: false,
   searchPlaceholder: "Search anything related..",
   noTitle: false,
+  isEdit: true,
+  editLink: "",
   createOption: () => ({
     link: "",
     show: false,
@@ -340,6 +342,12 @@ const showHideFilter = (event: any) => {
   console.log("showHideFilter", event);
 };
 
+const onDoubleClick = async (event: any, row: any) => {
+  console.log(`$props.editLink/${row.item.id}`);
+
+  navigateTo(`${props.editLink}/${row.item.id}`);
+};
+
 watch(
   () => itemsCheck.value,
   (newValue: any, oldValue: any) => {
@@ -451,51 +459,64 @@ onMounted(async () => {
           parent-class=""
         />
       </div>
-      <div :class="classMerge('grid grid-cols-6 items-center gap-2 w-full')">
+      <div :class="classMerge('grid grid-cols-7 items-center gap-2 w-full')">
         <d-submit-button
           @click:submit="filterData"
           @click:clear="clearFilters"
-          class="col-span-3 md:col-span-full"
+          class="col-span-4 md:col-span-full"
         >
           <template #append>
-            <nuxt-link
-              v-if="!!props.createOption.show"
-              :class="
-                classMerge(
-                  'flex items-center border-scDarker text-scDarker dark:text-primary1 dark:hover:bg-scDarker dark:bg-scDarker3 dark:border-scDarker font-bold justify-center gap-1 rounded-lg tracking-normal bg-primaryDarker hover:bg-primaryDarkest border-1.5 p-2 transition-all ease-in-out',
-                  props.createOption.class
-                )
-              "
-              :to="props.createOption.link"
+            <div
+              class="grid grid-cols-3 gap-2 items-center w-full col-span-3 sm:col-span-6"
             >
-              <v-icon
-                v-if="!!props.createOption.icon"
-                :icon="props.createOption.icon"
-                size="24"
-              />
-              <div class="text-sm capitalize">{{ props.createOption.cta }}</div>
-            </nuxt-link>
+              <nuxt-link
+                v-if="!!props.createOption.show"
+                :class="
+                  classMerge(
+                    'flex items-center grow whitespace-nowrap border-scDarker text-scDarker dark:text-primary1 dark:hover:bg-scDarker dark:bg-scDarker3 dark:border-scDarker font-bold justify-center gap-1 rounded-lg tracking-normal bg-primaryDarker hover:bg-primaryDarkest border-1.5 p-2 transition-all ease-in-out',
+                    props.createOption.class
+                  )
+                "
+                :to="props.createOption.link"
+                :title="props.createOption.title ?? props.createOption.cta"
+              >
+                <v-icon
+                  v-if="!!props.createOption.icon"
+                  :icon="props.createOption.icon"
+                  size="24"
+                />
+                <div class="text-sm capitalize">
+                  {{ props.createOption.cta }}
+                </div>
+              </nuxt-link>
 
-            <d-button
-              @click="showHideFilter"
-              icon="mdi-filter-cog"
-              is-no-text
-              class="p-2 dark:bg-transparent rounded-full ease-in-out transition-all hover:bg-scDarker3 dark:hover:bg-zinc-600 !bg-sc"
-              text-class="text-zinc-100 dark:text-primary1"
-              icon-class="text-zinc-100 dark:text-primary1"
-              rounded="xl"
-              size=""
-            ></d-button>
-            <d-button
-              @click="showHideColumn"
-              icon="mdi-eye-off"
-              is-no-text
-              class="p-2 dark:bg-transparent rounded-full ease-in-out transition-all hover:bg-scDarker3 dark:hover:bg-zinc-600 !bg-sc"
-              text-class="text-zinc-100 dark:text-primary1"
-              icon-class="text-zinc-100 dark:text-primary1"
-              rounded="xl"
-              size=""
-            ></d-button>
+              <div class="flex items-center gap-2">
+                <d-button
+                  @click="showHideFilter"
+                  icon="mdi-filter-cog"
+                  is-no-text
+                  class="p-1.5 dark:bg-transparent rounded-full ease-in-out transition-all hover:bg-scDarker3 dark:hover:bg-zinc-600 !bg-sc"
+                  text-class="text-zinc-100 dark:text-primary1"
+                  icon-class="text-zinc-100 dark:text-primary1"
+                  rounded="xl"
+                  size=""
+                  cta="custom filter"
+                  icon-size="18"
+                ></d-button>
+                <d-button
+                  @click="showHideColumn"
+                  icon="mdi-eye-off"
+                  is-no-text
+                  class="p-1.5 dark:bg-transparent rounded-full ease-in-out transition-all hover:bg-scDarker3 dark:hover:bg-zinc-600 !bg-sc"
+                  text-class="text-zinc-100 dark:text-primary1"
+                  icon-class="text-zinc-100 dark:text-primary1"
+                  rounded="xl"
+                  size=""
+                  cta="show/hide column"
+                  icon-size="18"
+                ></d-button>
+              </div>
+            </div>
           </template>
         </d-submit-button>
       </div>
@@ -526,6 +547,7 @@ onMounted(async () => {
         :height="props.height"
         hover
         @click:row="onSelectOption"
+        @dblclick:row="onDoubleClick"
       >
         <template #no-data> No data available </template>
 

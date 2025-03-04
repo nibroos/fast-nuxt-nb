@@ -121,7 +121,7 @@ const getParentLink = (link: string) => {
         :filters="filtersConfig"
         :query-modal="queryModal.qListIndex"
         :create-option="{
-          link: '/masters/vats/create',
+          link: '/masters/customizations/vats/create',
           show: true,
           cta: '+ Create',
         }"

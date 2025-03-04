@@ -34,7 +34,8 @@
     "vue-currency-input": "^3.1.0",
     "vue-final-modal": "^3.4.11",
     "vue-router": "^4.3.0",
-    "vue-sweetalert2": "^5.0.5"
+    "vue-sweetalert2": "^5.0.5",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.11.4",

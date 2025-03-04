@@ -12,7 +12,7 @@ export type AutocompleteType = {
   label?: string
   itemTitle?: string
   itemValue?: SelectItemKey
-  hideDetails?: boolean
+  hideDetails?: any
   density?: Density
   itemsProp?: string
   pageEndProp?: string
@@ -42,6 +42,7 @@ export type AutocompleteType = {
   displayMultipleSeparator?: string
   returnObject?: boolean
   itemColor?: string
+  errors?: string[]
 }
 
 export type AutocompleteClientType = {

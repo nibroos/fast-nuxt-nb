@@ -72,6 +72,8 @@ export type SelectTableType = {
   searchPlaceholder?: string
   noTitle?: boolean
   queryModal?: Record<string, any>
+  isEdit?: boolean
+  editLink?: string
   createOption?: CreateOptionSelectableType
 
   // Modal
@@ -113,6 +115,7 @@ export type FilterSelectableType = {
 } & MethodAttributeSelectableType
 
 export type CreateOptionSelectableType = {
+  title?: string
   cta?: string
   link?: string
   icon?: string

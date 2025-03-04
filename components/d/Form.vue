@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { VAutocomplete } from 'vuetify/components'
+import type { VAutocomplete } from "vuetify/components";
 import type {
   Field,
   GeneratedFields,
@@ -7,61 +7,61 @@ import type {
   GeneratedMethodsType,
   MethodAttributeType,
   ModelFormType,
-  ModelFormInputType
-} from '~/types/DatatableClientType'
+  ModelFormInputType,
+} from "~/types/DatatableClientType";
 
-import type { FormType, FormTypeOptionsType } from '~/types/FormType'
+import type { FormType, FormTypeOptionsType } from "~/types/FormType";
 
-type Density = VAutocomplete['$props']['density']
+type Density = VAutocomplete["$props"]["density"];
 
 const defaultProps: FormType = {
-  title: '',
-  type: 'create',
+  title: "",
+  type: "create",
   fields: [],
   actions: {
-    confirmText: 'Create',
-    cancelText: 'Cancel',
-    contentClass: 'w-full',
-    confirmClass: 'w-2/3',
-    cancelClass: 'w-1/3',
-    confirmTextClass: 'text-white text-lg',
-    cancelTextClass: 'text-rose-700 text-lg'
-  }
-} as unknown as FormType
+    confirmText: "Create",
+    cancelText: "Cancel",
+    contentClass: "w-full",
+    confirmClass: "w-2/3",
+    cancelClass: "w-1/3",
+    confirmTextClass: "text-white text-lg",
+    cancelTextClass: "text-rose-700 text-lg",
+  },
+} as unknown as FormType;
 
-const props = defineProps<FormType>()
+const props = defineProps<FormType>();
 
 const deepMerge = (target: any, source: any): FormType => {
-  if (typeof target !== 'object' || typeof source !== 'object') return source
+  if (typeof target !== "object" || typeof source !== "object") return source;
   Object.keys(source).forEach((key) => {
-    const targetValue = target[key]
-    const sourceValue = source[key]
+    const targetValue = target[key];
+    const sourceValue = source[key];
     if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
-      target[key] = [...targetValue, ...sourceValue]
+      target[key] = [...targetValue, ...sourceValue];
     } else if (
-      typeof targetValue === 'object' &&
-      typeof sourceValue === 'object'
+      typeof targetValue === "object" &&
+      typeof sourceValue === "object"
     ) {
-      target[key] = deepMerge(Object.assign({}, targetValue), sourceValue)
+      target[key] = deepMerge(Object.assign({}, targetValue), sourceValue);
     } else {
-      target[key] = sourceValue
+      target[key] = sourceValue;
     }
-  })
-  return target
-}
+  });
+  return target;
+};
 
-const mergedConfig = ref<FormType>(deepMerge(defaultProps, props))
+const mergedConfig = ref<FormType>(deepMerge(defaultProps, props));
 
-const title = ref(mergedConfig.value.title)
-const slots = useSlots()
+const title = ref(mergedConfig.value.title);
+const slots = useSlots();
 
-const emits = defineEmits(['click:submit', 'click:cancel'] as {
-  [key: string]: any
-})
+const emits = defineEmits(["click:submit", "click:cancel"] as {
+  [key: string]: any;
+});
 
 const guardObjectType = (value: any): value is object => {
-  return value && typeof value === 'object'
-}
+  return value && typeof value === "object";
+};
 
 // const displayColumn = (header: Field, value: any): any => {
 //   let display = ''
@@ -104,17 +104,17 @@ const guardObjectType = (value: any): value is object => {
 //   return display
 // }
 
-const handleSubmit = (actions: FormType['actions'], type: FormType['type']) => {
-  emits('click:submit', { actions, type, fields: mergedConfig.value.fields })
-}
+const handleSubmit = (actions: FormType["actions"], type: FormType["type"]) => {
+  emits("click:submit", { actions, type, fields: mergedConfig.value.fields });
+};
 
-const handleBack = (actions: FormType['actions']) => {
-  emits('click:cancel', { actions })
-}
+const handleBack = (actions: FormType["actions"]) => {
+  emits("click:cancel", { actions });
+};
 
 watchEffect(() => {
-  mergedConfig.value = deepMerge(defaultProps, props)
-})
+  mergedConfig.value = deepMerge(defaultProps, props);
+});
 </script>
 <template>
   <form
@@ -253,11 +253,15 @@ watchEffect(() => {
         <d-button
           v-if="!slots[`cancel`]"
           @click="handleBack(mergedConfig.actions)"
-          :class="[
-            'grow justify-center rounded-lg !border !border-solid !border-rose-700 py-2 !text-rose-700 transition-all ease-in-out hover:!bg-rose-50',
-            mergedConfig.actions?.cancelClass ?? ''
-          ].join(' ')"
-          :text-class="mergedConfig.actions?.cancelTextClass ?? 'text-rose-700 text-lg'"
+          :class="
+            [
+              'grow justify-center rounded-lg !border !border-solid !border-rose-700 py-2 !text-rose-700 transition-all ease-in-out hover:!bg-rose-50',
+              mergedConfig.actions?.cancelClass ?? '',
+            ].join(' ')
+          "
+          :text-class="
+            mergedConfig.actions?.cancelTextClass ?? 'text-rose-700 text-lg'
+          "
           :cta="mergedConfig.actions?.cancelText"
           type="submit"
           :no-icon="true"
@@ -272,11 +276,15 @@ watchEffect(() => {
 
         <d-button
           v-if="!slots[`confirm`]"
-          :class="[
-            ' w-2/3 justify-center rounded-lg !bg-[#4094D4] py-2 text-white transition-all ease-in-out hover:!bg-[#3882ba]',
-            mergedConfig.actions?.confirmClass ?? ''
-          ].join(' ')"
-          :text-class="mergedConfig.actions?.confirmTextClass ?? 'text-white text-lg'"
+          :class="
+            [
+              ' w-2/3 justify-center rounded-lg !bg-[#4094D4] py-2 text-white transition-all ease-in-out hover:!bg-[#3882ba]',
+              mergedConfig.actions?.confirmClass ?? '',
+            ].join(' ')
+          "
+          :text-class="
+            mergedConfig.actions?.confirmTextClass ?? 'text-white text-lg'
+          "
           :cta="mergedConfig.actions?.confirmText"
           @click="handleSubmit(mergedConfig.actions, mergedConfig.type)"
           type="submit"

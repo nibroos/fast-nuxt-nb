@@ -130,11 +130,12 @@ const getParentLink = (link: string) => {
         search-placeholder="Search anything related to item sub groups.."
         is-quick-select
         no-title
+        edit-link="/masters/customizations/item-sub-groups/edit"
         :fields="fieldsConfig"
         :filters="filtersConfig"
         :query-modal="queryModal.qListIndex"
         :create-option="{
-          link: '/masters/item-sub-groups/create',
+          link: '/masters/customizations/item-sub-groups/create',
           show: true,
           cta: '+ Create',
         }"

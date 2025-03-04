@@ -1,10 +1,18 @@
 import { useAlert } from '~/composables/useAlert'
 import { useMyFetch } from '~/composables/useMyFetch'
 import type { Meta, Pagination, PaginationMeta } from '~/interfaces/LaravelPaginationInterface'
+import type { FormItemSubGroupType } from '~/types/ItemSubGroupType'
 
 const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
   state: () => ({
-
+    form: {
+      id: null,
+      name: '',
+      description: '',
+      remark: '',
+      item_group_id: null,
+      status: 1
+    } as FormItemSubGroupType,
     queryModal: {
       qListIndex: {
         page: 1,
@@ -22,6 +30,9 @@ const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
         meta: {} as Meta
       } as PaginationMeta,
     },
+    tabFormIndex: 0,
+    errors: {} as Record<string, any>,
+    formLoading: false
   }),
 
   actions: {
@@ -38,6 +49,104 @@ const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
         navigateTo('/login')
       } finally {
         this.metaModal.index.loading = false
+      }
+    },
+
+    async store() {
+      if (!!this.formLoading) return
+      this.formLoading = true
+
+      const isConfirmed = await useAlert.showPopupConfirmation(
+        'Are you sure to save this data?',
+        'Data will be saved'
+      )
+
+      if (!isConfirmed) {
+        this.formLoading = false
+        return
+      }
+
+      try {
+        const response = await useMyFetch().post(
+          '/v1/item-sub-groups/create-item-sub-group',
+          this.form
+        )
+        this.form = JSON.parse(
+          JSON.stringify(useInitials.formItemSubGroupCreateEdit)
+        )
+
+        // navigateTo(`/masters/customizations/item-sub-groups/edit/${response.data.data.data[0].id}`)
+        useAlert.hideAlert()
+        useAlert.alertSuccess(response.data.message)
+
+        return response
+      } catch (error: any) {
+        const responseData = error.response.data
+        console.log('Failed To Create Data', error.response.data)
+        let errors = ''
+
+        if (typeof responseData.errors === 'object') {
+          await Promise.all(
+            Object.keys(responseData.errors).map((row: any) => {
+              errors += `- ${responseData.errors[row][0]} <br />`
+              this.errors[row] = responseData.errors[row][0]
+            })
+          )
+        }
+        useAlert.alertError(errors + `<br /> ${responseData.message}`)
+
+        return error.response.data
+      } finally {
+        this.formLoading = false
+      }
+    },
+
+    async update() {
+      if (!!this.formLoading) return
+      this.formLoading = true
+
+      const isConfirmed = await useAlert.showPopupConfirmation(
+        'Are you sure to save this data?',
+        'Data will be saved'
+      )
+
+      if (!isConfirmed) {
+        this.formLoading = false
+        return
+      }
+
+      try {
+        const response = await useMyFetch().post(
+          '/v1/item-sub-groups/update-item-sub-group',
+          this.form
+        )
+        this.form = JSON.parse(
+          JSON.stringify(useInitials.formItemSubGroupCreateEdit)
+        )
+
+        // navigateTo(`/masters/customizations/item-sub-groups/edit/${response.data.data.data[0].id}`)
+        useAlert.hideAlert()
+        useAlert.alertSuccess(response.data.message)
+
+        return response
+      } catch (error: any) {
+        const responseData = error.response.data
+        console.log('Failed To Create Data', error.response.data)
+        let errors = ''
+
+        if (typeof responseData.errors === 'object') {
+          await Promise.all(
+            Object.keys(responseData.errors).map((row: any) => {
+              errors += `- ${responseData.errors[row][0]} <br />`
+              this.errors[row] = responseData.errors[row][0]
+            })
+          )
+        }
+        useAlert.alertError(errors + `<br /> ${responseData.message}`)
+
+        return error.response.data
+      } finally {
+        this.formLoading = false
       }
     },
   },

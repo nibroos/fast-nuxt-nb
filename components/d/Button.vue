@@ -20,10 +20,11 @@ interface IProps {
   maxLengthDisplay?: number | string;
   variant?: string;
   size?: string;
+  title?: string;
 }
 
 const props = withDefaults(defineProps<IProps>(), {
-  cta: "Back",
+  cta: "",
   noIcon: false,
   class: "",
   textClass: "text-black",
@@ -41,6 +42,7 @@ const props = withDefaults(defineProps<IProps>(), {
   maxLengthDisplay: 30,
   variant: "flat",
   size: "small",
+  title: "",
 });
 
 const mergedConfig = computed(() => {
@@ -151,6 +153,7 @@ onMounted(() => {});
     :disabled="localDisabled"
     :variant="props.variant"
     :size="props.size"
+    :title="props.cta ?? props.title"
   >
     <v-icon
       :icon="props.icon"
@@ -196,7 +199,7 @@ onMounted(() => {});
     @click="handleClick"
     :type="type"
     :disabled="localDisabled"
-    :title="props.cta"
+    :title="props.cta ?? props.title"
     :variant="props.variant"
     :size="props.size"
   >

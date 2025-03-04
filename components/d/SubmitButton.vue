@@ -24,11 +24,7 @@ const handleClickClear = () => {
 </script>
 
 <template>
-  <div
-    :class="
-      classMerge('flex flex-row ms:flex-col items-stretch gap-2', props.class)
-    "
-  >
+  <div :class="classMerge('grid grid-cols-6 items-stretch gap-2', props.class)">
     <!-- <v-btn
       variant="tonal"
       height="35"
@@ -42,12 +38,12 @@ const handleClickClear = () => {
     >
       Find
     </v-btn> -->
-    <div class="flex gap-2 items-stretch">
+    <div class="grid grid-cols-5 gap-2 items-stretch col-span-3 sm:col-span-6">
       <d-button
         :cta="'Find'"
         :class="
           classMerge(
-            '!bg-sc hover:!bg-scDarker text-white grow text-sm transition-all ease-in-out border-1.5 p-2 rounded-lg ',
+            '!bg-sc hover:!bg-scDarker col-span-3 text-white grow text-sm transition-all ease-in-out border-1.5 p-2 rounded-lg ',
             props.submitClass
           )
         "
@@ -61,7 +57,7 @@ const handleClickClear = () => {
         :cta="'Clear'"
         :class="
           classMerge(
-            'dark:!bg-dark2 hover:bg-scLightest !gap-6 grow dark:hover:!bg-dark1 w-1/4 text-sm transition-all ease-in-out !border-2 p-2 rounded-lg !border-solid !border-sc dark:!border-dark2 ',
+            'dark:!bg-dark2 hover:bg-scLightest col-span-2 !gap-6 grow dark:hover:!bg-dark1 text-sm transition-all ease-in-out !border-2 p-2 rounded-lg !border-solid !border-sc dark:!border-dark2 ',
             props.clearClass
           )
         "

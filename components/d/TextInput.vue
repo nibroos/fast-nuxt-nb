@@ -95,8 +95,12 @@ watch(
     <div v-if="slots.details && errors.length == 0" class="flex flex-col gap-1">
       <slot name="details" />
     </div>
-    <div class="flex flex-col gap-1">
-      <div v-for="error in errors" :key="error" class="text-sm text-red-500">
+    <div
+      class="flex flex-col gap-1 text-rose-500 text-sm"
+      v-if="props.errors.length > 0 && !!props.errors[0]"
+    >
+      <slot name="errors" />
+      <div v-for="error in errors" :key="error" class="text-sm">
         {{ error }}
       </div>
     </div>

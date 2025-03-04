@@ -107,7 +107,7 @@ const getParentLink = (link: string) => {
         :filters="filtersConfig"
         :query-modal="queryModal.qListIndex"
         :create-option="{
-          link: '/masters/item-groups/create',
+          link: '/masters/customizations/item-groups/create',
           show: true,
           cta: '+ Create',
         }"
