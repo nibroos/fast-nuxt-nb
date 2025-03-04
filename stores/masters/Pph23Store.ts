@@ -34,7 +34,7 @@ const usePph23Store = defineStore('Pph23Store', {
         // return response
       } catch (error: any) {
         useAlert.alertError(error?.response?.data?.message || 'Login Failed!')
-        navigateTo('/login')
+
       } finally {
         this.metaModal.index.loading = false
       }

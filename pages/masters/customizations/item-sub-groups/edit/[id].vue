@@ -27,6 +27,7 @@ const formLayout = ref({
   button: {
     create: {
       show: true,
+      cta: "Create New",
       path: "/masters/customizations/item-sub-groups/create",
     },
     save: {
@@ -51,12 +52,19 @@ const formLayout = ref({
 } as FormLayoutType);
 
 const handleSubmit = async () => {
-  await itemSubGroupStore.store();
+  await itemSubGroupStore.update();
 };
 
 const handleClickClear = () => {
   form.value = cloneObject(useInitials.formItemSubGroupCreateEdit);
 };
+
+const router = useRouter();
+
+onMounted(async () => {
+  form.value.id = Number(router.currentRoute.value.params.id);
+  Promise.all([itemSubGroupStore.show()]);
+});
 </script>
 
 <template>
@@ -77,7 +85,6 @@ const handleClickClear = () => {
       @update:current-tab="tabFormIndex = $event"
     >
       <template #header>
-        edit
         <div
           :class="
             classMerge(
@@ -126,7 +133,12 @@ const handleClickClear = () => {
             />
           </div>
           <div class="sm:col-span-1">
-            <d-switch-status v-model="form.status" :label="`Status`" />
+            <d-switch-status
+              v-model="form.status"
+              :label="`Status`"
+              :true-value="1"
+              :false-value="0"
+            />
           </div>
         </div>
       </template>

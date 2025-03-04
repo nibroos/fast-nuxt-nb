@@ -1,5 +1,5 @@
 export type FormItemSubGroupType = {
-  id?: number | null
+  id?: number | null | undefined | string | string[]
   name: string
   description?: string | null
   remark?: string | null

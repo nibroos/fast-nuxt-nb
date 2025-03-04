@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cloneDeep } from "lodash";
 import useItemSubGroupStore from "~/stores/masters/ItemSubGroupStore";
 import type { FormLayoutType } from "~/types/FormLayoutType";
 
@@ -62,6 +63,10 @@ const handleSubmit = async () => {
 const handleClickClear = () => {
   form.value = cloneObject(useInitials.formItemSubGroupCreateEdit);
 };
+
+onMounted(() => {
+  handleClickClear();
+});
 </script>
 
 <template>

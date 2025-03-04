@@ -291,7 +291,7 @@ onBeforeUnmount(() => {
             :cta="mergedConfig?.button?.create?.cta ?? 'Create New'"
             :class="
               classMerge(
-                'rounded-lg bg-sc transition-all ease-in-out hover:!bg-scDarker3',
+                'rounded-lg !bg-sc transition-all ease-in-out hover:!bg-scDarker3',
                 mergedConfig.button?.create?.class ?? ''
               )
             "

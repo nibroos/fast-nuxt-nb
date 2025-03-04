@@ -19,12 +19,32 @@ const props = withDefaults(defineProps<IProps>(), {
   color: "brown",
 });
 
-const switchActive = ref<number>(props.modelValue ? 1 : 0);
+const switchActive = ref<number | undefined>(props.modelValue);
 
 const toggleSwitch = () => {
   switchActive.value = switchActive.value == 1 ? 0 : 1;
   emit("update:modelValue", switchActive.value);
 };
+
+// watch(
+//   () => props.modelValue,
+//   (oldValue, newValue) => {
+//     if (oldValue != newValue) {
+//       console.log("newValue", oldValue, newValue);
+
+//       switchActive.value = newValue;
+//     }
+//   },
+//   { immediate: true, deep: true }
+// );
+
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    switchActive.value = newValue;
+  },
+  { immediate: true }
+);
 </script>
 <template>
   <v-switch

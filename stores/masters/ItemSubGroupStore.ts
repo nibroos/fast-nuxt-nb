@@ -46,9 +46,22 @@ const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
         // return response
       } catch (error: any) {
         useAlert.alertError(error?.response?.data?.message || 'Login Failed!')
-        navigateTo('/login')
+
       } finally {
         this.metaModal.index.loading = false
+      }
+    },
+    async show() {
+      try {
+        const response = await useMyFetch().post(
+          '/v1/item-sub-groups/show-item-sub-group',
+          this.form
+        )
+        this.form = response.data.data[0]
+
+        return response
+      } catch (error: any) {
+        console.log('Failed To Fetch Data', error.response.data);
       }
     },
 
@@ -75,9 +88,9 @@ const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
           JSON.stringify(useInitials.formItemSubGroupCreateEdit)
         )
 
-        // navigateTo(`/masters/customizations/item-sub-groups/edit/${response.data.data.data[0].id}`)
         useAlert.hideAlert()
         useAlert.alertSuccess(response.data.message)
+        navigateTo(`/masters/customizations/item-sub-groups/edit/${response.data.data[0].id}`)
 
         return response
       } catch (error: any) {
@@ -116,6 +129,8 @@ const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
       }
 
       try {
+        let id = this.form.id
+
         const response = await useMyFetch().post(
           '/v1/item-sub-groups/update-item-sub-group',
           this.form
@@ -124,7 +139,11 @@ const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
           JSON.stringify(useInitials.formItemSubGroupCreateEdit)
         )
 
-        // navigateTo(`/masters/customizations/item-sub-groups/edit/${response.data.data.data[0].id}`)
+        // navigateTo(`/masters/customizations/item-sub-groups/edit/${response.data.data[0].id}`)
+
+        this.form.id = id
+        this.show()
+
         useAlert.hideAlert()
         useAlert.alertSuccess(response.data.message)
 
