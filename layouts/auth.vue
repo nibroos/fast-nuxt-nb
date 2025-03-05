@@ -36,6 +36,8 @@ const {
   topTitle,
   lastFullPath,
   isCloseSidebar,
+  lastVisitedMasterRoute,
+  currentRouteName,
 } = storeToRefs(layoutState);
 
 const route = useRoute();
@@ -134,7 +136,7 @@ onBeforeUnmount(() => {
                   </p>
                 </div>
 
-                <div v-else-if="lastPathSegment" class="flex items-center">
+                <div v-if="lastPathSegment" class="flex items-center">
                   <div
                     class="h-2 w-2 rounded-full mx-2 bg-zinc-900 dark:!bg-scDarker"
                   />

@@ -3,10 +3,11 @@ import { resolve } from 'path'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   spaLoadingTemplate: false,
   app: {
     head: {
+      titleTemplate: '%s | Nibros',
       title: process.env.TITLE || 'NUXT APP',
     }
   },
@@ -71,6 +72,6 @@ export default defineNuxtConfig({
   },
   devServer: {
     host: '0.0.0.0',
-    port: 3001,
+    port: 3002,
   },
 })

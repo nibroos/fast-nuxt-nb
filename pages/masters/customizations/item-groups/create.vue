@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import useItemSubGroupStore from "~/stores/masters/ItemSubGroupStore";
+import useItemGroupStore from "~/stores/masters/ItemGroupStore";
 import type { FormLayoutType } from "~/types/FormLayoutType";
 
-const itemSubGroupStore = useItemSubGroupStore();
-const { tabFormIndex, form, errors } = storeToRefs(itemSubGroupStore);
+const itemGroupStore = useItemGroupStore();
+const { tabFormIndex, form, errors } = storeToRefs(itemGroupStore);
 
 definePageMeta({
   layout: "auth",
@@ -11,7 +11,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Create Item Sub Groups",
+  title: "Create Item Groups",
 });
 
 const parentLink = ref("");
@@ -21,7 +21,7 @@ const getParentLink = (link: string) => {
 
 const formLayout = ref({
   title: "Basic Information",
-  parentPath: "/masters/customizations/item-sub-groups",
+  parentPath: "/masters/customizations/item-groups",
   currentTab: tabFormIndex.value,
   button: {
     clear: {
@@ -56,11 +56,11 @@ const handleSubmit = async () => {
   //   return;
   // }
 
-  await itemSubGroupStore.store();
+  await itemGroupStore.store();
 };
 
 const handleClickClear = () => {
-  form.value = cloneObject(useInitials.formItemSubGroupCreateEdit);
+  form.value = cloneObject(useInitials.formItemGroupCreateEdit);
   errors.value = {};
 };
 
@@ -94,7 +94,7 @@ onMounted(() => {
               Object.keys(errors).length > 0 ? '!items-start' : '!items-center'
             )
           "
-          @submit.prevent="handleSubmit"
+          @submit.prevent="handleSubmit()"
         >
           <div class="sm:col-span-1 flex flex-col">
             <d-text-input
@@ -104,20 +104,6 @@ onMounted(() => {
               :errors="[errors.name]"
             >
             </d-text-input>
-          </div>
-          <div class="sm:col-span-1">
-            <d-autocomplete
-              v-model="form.item_group_id"
-              api="/v1/item-groups/index-item-group"
-              single-api="/v1/item-groups/show-item-group"
-              page-end-prop="meta.next_page_url"
-              item-title="name"
-              item-value="id"
-              method-api="post"
-              inner-search-key="global"
-              label="Item Group"
-              :errors="[errors.item_group_id]"
-            ></d-autocomplete>
           </div>
           <div class="sm:col-span-1">
             <d-text-input

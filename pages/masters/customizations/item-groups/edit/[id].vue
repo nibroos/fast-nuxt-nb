@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import useItemSubGroupStore from "~/stores/masters/ItemSubGroupStore";
+import useItemGroupStore from "~/stores/masters/ItemGroupStore";
 import type { FormLayoutType } from "~/types/FormLayoutType";
 
-const itemSubGroupStore = useItemSubGroupStore();
-const { tabFormIndex, form, errors } = storeToRefs(itemSubGroupStore);
+const itemGroupStore = useItemGroupStore();
+const { tabFormIndex, form, errors } = storeToRefs(itemGroupStore);
 
 definePageMeta({
   layout: "auth",
@@ -11,7 +11,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Create Item Sub Groups",
+  title: "Edit Item Sub Groups",
 });
 
 const parentLink = ref("");
@@ -22,50 +22,44 @@ const getParentLink = (link: string) => {
 const formLayout = ref({
   title: "Basic Information",
   parentPath: "/masters/customizations/item-sub-groups",
+  mode: "edit",
   currentTab: tabFormIndex.value,
   button: {
+    create: {
+      show: true,
+      cta: "Create New",
+      path: "/masters/customizations/item-sub-groups/create",
+    },
+    save: {
+      show: true,
+      loading: false,
+      type: "submit",
+    },
     clear: {
       show: true,
+      loading: false,
     },
   },
   permission: {
-    name: ["c_ms"],
+    name: ["u_ms"],
     isActive: true,
   },
 } as FormLayoutType);
 
-// const formSchema = z.object({
-//   name: customRules.required("name", form.value.name),
-//   item_group_id: customRules.required(
-//     "item_group_id",
-//     form.value.item_group_id
-//   ),
-// });
-
 const handleSubmit = async () => {
-  // const validatedForm = formSchema.safeParse(form.value);
-
-  // if (!validatedForm.success) {
-  //   errors.value = {};
-  //   console.log("log", validatedForm.error.errors);
-
-  //   validatedForm.error.errors.map((ZodIssue) => {
-  //     errors.value[ZodIssue.path[0]] = ZodIssue.message;
-  //   });
-
-  //   return;
-  // }
-
-  await itemSubGroupStore.store();
+  await itemGroupStore.update();
 };
 
 const handleClickClear = () => {
-  form.value = cloneObject(useInitials.formItemSubGroupCreateEdit);
+  form.value = cloneObject(useInitials.formItemGroupCreateEdit);
   errors.value = {};
 };
 
-onMounted(() => {
-  handleClickClear();
+const router = useRouter();
+
+onMounted(async () => {
+  form.value.id = Number(router.currentRoute.value.params.id);
+  Promise.all([itemGroupStore.show()]);
 });
 </script>
 
@@ -94,7 +88,7 @@ onMounted(() => {
               Object.keys(errors).length > 0 ? '!items-start' : '!items-center'
             )
           "
-          @submit.prevent="handleSubmit"
+          @submit.prevent="handleSubmit()"
         >
           <div class="sm:col-span-1 flex flex-col">
             <d-text-input
@@ -104,20 +98,6 @@ onMounted(() => {
               :errors="[errors.name]"
             >
             </d-text-input>
-          </div>
-          <div class="sm:col-span-1">
-            <d-autocomplete
-              v-model="form.item_group_id"
-              api="/v1/item-groups/index-item-group"
-              single-api="/v1/item-groups/show-item-group"
-              page-end-prop="meta.next_page_url"
-              item-title="name"
-              item-value="id"
-              method-api="post"
-              inner-search-key="global"
-              label="Item Group"
-              :errors="[errors.item_group_id]"
-            ></d-autocomplete>
           </div>
           <div class="sm:col-span-1">
             <d-text-input
@@ -136,7 +116,12 @@ onMounted(() => {
             />
           </div>
           <div class="sm:col-span-1">
-            <d-switch-status v-model="form.status" :label="`Status`" />
+            <d-switch-status
+              v-model="form.status"
+              :label="`Status`"
+              :true-value="1"
+              :false-value="0"
+            />
           </div>
           <d-button type="submit" class="!hidden"></d-button>
         </form>

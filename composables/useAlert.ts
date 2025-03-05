@@ -75,13 +75,13 @@ const showPopupConfirmation = async (
     customClass: {
       popup: opt?.customClass?.popup || 'p-3',
       container: opt?.customClass?.container || '',
-      actions: opt?.customClass?.actions || 'flex gap-3 w-full',
+      actions: opt?.customClass?.actions || 'flex gap-3 !w-full !grow px-3',
       confirmButton:
         opt?.customClass?.confirmButton ||
-        '!bg-[#977669] transition-all ease-in-out hover:!bg-[#846358] text-white grow',
+        '!bg-[#977669] transition-all grow ease-in-out grow hover:!bg-[#846358] text-white',
       cancelButton:
         opt?.customClass?.cancelButton ||
-        '!border !border-solid !text-rose-700 !border-rose-700 transition-all ease-in-out !bg-white hover:!bg-rose-50 grow'
+        '!border !border-solid !text-rose-700 !border-rose-700 transition-all grow ease-in-out grow !bg-white hover:!bg-rose-50'
     }
   }).then((result) => result.isConfirmed)
 }

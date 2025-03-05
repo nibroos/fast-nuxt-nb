@@ -131,6 +131,7 @@ const getParentLink = (link: string) => {
         is-quick-select
         no-title
         edit-link="/masters/customizations/item-sub-groups/edit"
+        delete-api="/v1/item-sub-groups/delete-item-sub-group"
         :fields="fieldsConfig"
         :filters="filtersConfig"
         :query-modal="queryModal.qListIndex"
@@ -139,8 +140,9 @@ const getParentLink = (link: string) => {
           show: true,
           cta: '+ Create',
         }"
+        @click:delete="console.log('testabc')"
         @update:filters="
-          (filters) => {
+          (filters: Record<string, any>) => {
             queryModal.qListIndex = filters;
           }
         "

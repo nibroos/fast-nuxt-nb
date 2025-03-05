@@ -35,11 +35,6 @@ const formLayout = ref({
       loading: false,
       type: "submit",
     },
-    // pdf: {
-    //   show: true,
-    //   loading: false
-    //   // isLoadingDefault: false
-    // },
     clear: {
       show: true,
       loading: false,
@@ -57,6 +52,7 @@ const handleSubmit = async () => {
 
 const handleClickClear = () => {
   form.value = cloneObject(useInitials.formItemSubGroupCreateEdit);
+  errors.value = {};
 };
 
 const router = useRouter();
@@ -85,13 +81,14 @@ onMounted(async () => {
       @update:current-tab="tabFormIndex = $event"
     >
       <template #header>
-        <div
+        <form
           :class="
             classMerge(
               'grid grid-cols-6 gap-2',
               Object.keys(errors).length > 0 ? '!items-start' : '!items-center'
             )
           "
+          @submit.prevent="handleSubmit()"
         >
           <div class="sm:col-span-1 flex flex-col">
             <d-text-input
@@ -140,7 +137,8 @@ onMounted(async () => {
               :false-value="0"
             />
           </div>
-        </div>
+          <d-button type="submit" class="!hidden"></d-button>
+        </form>
       </template>
       <!-- <template #content> </template> -->
     </d-form-layout>

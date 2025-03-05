@@ -1,7 +1,7 @@
 import { useAlert } from '~/composables/useAlert'
 import { useMyFetch } from '~/composables/useMyFetch'
 import type { Meta, Pagination, PaginationMeta } from '~/interfaces/LaravelPaginationInterface'
-import type { FormItemSubGroupType } from '~/types/ItemSubGroupType'
+import type { FormItemSubGroupType } from '~/types/masters/ItemSubGroupType'
 
 const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
   state: () => ({
@@ -21,7 +21,7 @@ const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
         global: '',
         order_column: 'name',
         order_direction: 'desc'
-      },
+      } as Record<string, any>,
     },
     metaModal: {
       index: {
@@ -51,6 +51,7 @@ const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
         this.metaModal.index.loading = false
       }
     },
+
     async show() {
       try {
         const response = await useMyFetch().post(
@@ -168,6 +169,39 @@ const useItemSubGroupStore = defineStore('ItemSubGroupStore', {
         this.formLoading = false
       }
     },
+
+    async delete(id: number | string | string[] | undefined) {
+      this.form.id = id
+      try {
+        const response = await useMyFetch().post(
+          '/v1/item-sub-groups/delete-item-sub-group',
+          this.form
+        )
+        this.form = response.data.data[0]
+
+        return response
+      } catch (error: any) {
+        console.log('Failed To Fetch Data', error.response.data);
+        useAlert.alertError(error.response.data.message)
+      }
+    },
+
+    async restore(id: number | string | string[] | undefined) {
+      this.form.id = id
+      try {
+        const response = await useMyFetch().post(
+          '/v1/item-sub-groups/restore-item-sub-group',
+          this.form
+        )
+        this.form = response.data.data[0]
+
+        return response
+      } catch (error: any) {
+        console.log('Failed To Fetch Data', error.response.data);
+        useAlert.alertError(error.response.data.message)
+      }
+    },
+
   },
   persist: [
     {

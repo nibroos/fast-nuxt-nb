@@ -43,6 +43,8 @@ const props = withDefaults(defineProps<SelectTableType>(), {
   searchPlaceholder: "Search anything related..",
   noTitle: false,
   isEdit: true,
+  noAction: false,
+  noDelete: false,
   editLink: "",
   createOption: () => ({
     link: "",
@@ -65,6 +67,8 @@ const props = withDefaults(defineProps<SelectTableType>(), {
   detailApi: "/api/master/items/show",
   detailMethodApi: "get",
   selectedDetailApi: "/api/master/items/bulk-show",
+  deleteApi: "",
+  deleteMethodApi: "post",
 
   selectStrategy: "single",
 
@@ -104,6 +108,17 @@ const defaultFieldProps: FilterSelectableType = {
   type: "text",
 };
 
+const defaultHeaderProps: SelectTableType = {
+  title: "",
+  sortable: true,
+  key: "",
+  value: "",
+  align: "start" as "start" | "end" | "center",
+  width: 150,
+  minWidth: "150",
+  maxWidth: "150",
+};
+
 const generateFiltersObj = () => {
   generatedFiltersObj.value = [];
 
@@ -115,9 +130,52 @@ const generateFiltersObj = () => {
   });
 };
 
-const emits = defineEmits(["openModal", "update:modelValue", "update:filters"]);
+const emits = defineEmits([
+  "openModal",
+  "update:modelValue",
+  "update:filters",
+  "click:delete",
+]);
 
 let headersModal = ref(props.fields);
+
+const generateHeadersObj = () => {
+  headersModal.value = [];
+
+  // headersModal.value = [
+  //   ...props.fields,
+  //   {
+  //     title: "Action",
+  //     key: "action",
+  //     value: "action",
+  //     align: "center",
+  //     sortable: false,
+  //     show: true,
+  //   },
+  // ];
+
+  const actionHeader: FieldSelectableType = {
+    ...defaultHeaderProps,
+    title: "Action",
+    key: "action",
+    value: "action",
+    align: "center",
+    sortable: false,
+    show: true,
+  };
+
+  props.fields.forEach((field) => {
+    headersModal.value.push({
+      ...defaultHeaderProps,
+      ...field,
+    });
+  });
+
+  if (!props.noAction) {
+    headersModal.value.push(actionHeader);
+  }
+};
+
 let api = ref<string>(props.api);
 
 let showModal = ref<boolean>(props.showModal);
@@ -334,6 +392,36 @@ const onSelectOption = (event: any, row: any) => {
   }
 };
 
+const onClickDelete = async (event: any, row: any) => {
+  emits("click:delete", row);
+
+  let response;
+
+  const isConfirmed = await useAlert.showPopupConfirmation(
+    "Delete Confirmation",
+    "Are you sure want to delete this data? Data will be deleted permanently"
+  );
+
+  if (!isConfirmed) {
+    return;
+  }
+
+  try {
+    if (props.deleteMethodApi == "post") {
+      response = await useMyFetch().post(props.deleteApi, {
+        id: row.item.id,
+      });
+
+      useAlert.alertSuccess(response.data.message);
+      filterData();
+    } else if (props.deleteMethodApi == "delete") {
+      response = await useMyFetch().delete(`${props.deleteApi}/${row.item.id}`);
+    }
+  } catch (error) {
+    useAlert.alertError((error as any).response.data.message);
+  }
+};
+
 const showHideColumn = (event: any) => {
   console.log("showHideColumn", event);
 };
@@ -343,8 +431,6 @@ const showHideFilter = (event: any) => {
 };
 
 const onDoubleClick = async (event: any, row: any) => {
-  console.log(`$props.editLink/${row.item.id}`);
-
   navigateTo(`${props.editLink}/${row.item.id}`);
 };
 
@@ -372,7 +458,7 @@ watch(showModal, async (newVal) => {
 // emit when filters change
 watch(
   () => filters.value,
-  debounce((newValue: any) => {
+  debounce((newValue: Record<string, any>) => {
     emits("update:filters", newValue);
   }, 1000),
   { deep: true }
@@ -384,10 +470,9 @@ onMounted(async () => {
     ...props.queryModal,
   };
 
-  console.log("filters.val", filters.value);
-
   await Promise.all([filterData(), fetchSingle(props.modelValue)]);
 
+  generateHeadersObj();
   generateFiltersObj();
 
   if (!!props.modelValue) {
@@ -556,7 +641,30 @@ onMounted(async () => {
           :key="index"
           v-slot:[`item.${field.value}`]="{ item, index }"
         >
-          <slot :name="`item.${field.key}`" :item="item" :index="index">
+          <slot
+            v-if="field.key == 'action'"
+            :name="`item.${field.key}`"
+            :item="item"
+            :index="index"
+          >
+            <div class="flex items-center justify-center gap-2">
+              <slot name="actions.delete" :item="item" :index="index">
+                <d-button
+                  v-if="!props.noDelete"
+                  @click="onClickDelete($event, { item, index })"
+                  icon="mdi-delete"
+                  is-no-text
+                  class="p-1 hover:text-zinc-100 hover:bg-lightCancel2 rounded-full ease-in-out transition-all hover:dark:!bg-cancel1 dark:!bg-cancel"
+                  icon-class="text-cancel dark:text-primary1"
+                  rounded="xl"
+                  size=""
+                  cta="select"
+                  icon-size="16"
+                ></d-button>
+              </slot>
+            </div>
+          </slot>
+          <slot v-else :name="`item.${field.key}`" :item="item" :index="index">
             <span v-if="metaModal.data[index] && field.value">{{
               metaModal.data[index][field.value]
             }}</span>

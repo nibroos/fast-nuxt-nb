@@ -73,7 +73,7 @@ watch(
   <div
     :class="
       classMerge(
-        slots.details || errors.length > 0 ? 'gap-2' : '',
+        slots.details || errors.length > 0 ? 'gap-1' : '',
         props.parentClass
       )
     "

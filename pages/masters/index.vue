@@ -23,7 +23,7 @@ definePageMeta({
         },
       }"
     >
-      abc
+      Master
     </d-index-layout>
   </lazy-layout-topmenu>
 </template>

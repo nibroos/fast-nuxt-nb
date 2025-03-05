@@ -15,7 +15,7 @@ const token = localStorage.getItem("_token");
 const config = useRuntimeConfig();
 const BASE_URL = config.public.BASE_URL_IMAGE;
 const layoutState = useLayoutsStore();
-const { isCloseSidebar } = storeToRefs(layoutState);
+const { isCloseSidebar, lastVisitedMasterRoute } = storeToRefs(layoutState);
 // AuthStore().getAbilities()
 // AuthStore().getCompanyProfile();
 
@@ -396,7 +396,7 @@ onMounted(async () => {
           <v-list-item
             v-if="useAuth.permit('r_ms')"
             color="#898F99"
-            to="/masters/users"
+            :to="lastVisitedMasterRoute"
             rounded="lg"
             class="!text-primary1"
           >

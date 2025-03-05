@@ -2,8 +2,6 @@
 import useLayouts from "~/stores/configs/LayoutsStore";
 import { useTopMenu } from "~/stores/masters/TopMenuStore";
 import type { TopMenuPropType, TopMenuType } from "~/types/TopMenuType";
-const router = useRouter();
-const id = router.currentRoute.value.params.id;
 
 const emit = defineEmits(["update:parentLink"]);
 
@@ -73,6 +71,10 @@ const isActive = (item: TopMenuType): boolean => {
   }
 
   if (props.parent_link == item.link) {
+    return true;
+  }
+
+  if (route.path?.includes(item.number)) {
     return true;
   }
 

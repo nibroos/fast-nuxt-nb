@@ -71,6 +71,12 @@ module.exports = {
         dark3: '#27272a',
         dark2: '#3f3f46',
         dark1: '#52525b',
+        cancel: '#f43f5e',
+        cancel1: '#be123c',
+        cancel2: '#9f1239',
+        lightCancel: '#fff1f2',
+        lightCancel1: '#ffe4e6',
+        lightCancel2: '#fecdd3',
       }
     },
   },

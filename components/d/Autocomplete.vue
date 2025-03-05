@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<AutocompleteType>(), {
   query: (): any => ({} as any),
   innerSearchKey: "search",
   clearable: true,
-  aClass: "text-dark1",
+  aClass: "text-dark1 dark:text-primary1",
   uid: "id",
   initialValue: "",
   disableInitialLoad: false,
@@ -460,7 +460,7 @@ watch(
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-1">
     <v-autocomplete
       ref="vAComp"
       v-model="selected"

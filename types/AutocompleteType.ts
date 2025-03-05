@@ -42,6 +42,7 @@ export type AutocompleteType = {
   displayMultipleSeparator?: string
   returnObject?: boolean
   itemColor?: string
+  checkDuplicate?: boolean
   errors?: string[]
 }
 

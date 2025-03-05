@@ -13,7 +13,7 @@ const useLayoutsStore = defineStore({
       lastFullPath: '',
       isCloseSidebar: true,
       lastVisitedRoute: '',
-      lastVisitedMasterRoute: '',
+      lastVisitedMasterRoute: '/masters/customizations',
     }
   },
   actions: {
@@ -35,6 +35,11 @@ const useLayoutsStore = defineStore({
       this.parentTitle = config?.parentTitle ?? ''
       this.topTitle = config?.topTitle ?? titlePath
       this.currentRouteName = route.name?.toString() ?? ''
+
+      if (route.path.includes('/masters/')) {
+        this.lastVisitedMasterRoute = route.path
+      }
+
     },
     hasHistory(): boolean {
       return window.history.length > 2

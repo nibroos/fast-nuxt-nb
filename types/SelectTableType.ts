@@ -11,9 +11,9 @@ import type { DatePickerLightType } from './DatePickerLightType'
 import type { MethodAttributeType } from './DatatableClientType'
 
 // type ReadonlyHeaders = VDataTable['$props']['headers']
-type ReadonlyHeaders = VDataTable['$props']['headers']
-type UnwrapReadonlyArray<A> = A extends Readonly<Array<infer I>> ? I : never
-type ReadonlyDataTableHeader = UnwrapReadonlyArray<ReadonlyHeaders>
+// type ReadonlyHeaders = VDataTable['$props']['headers']
+// type UnwrapReadonlyArray<A> = A extends Readonly<Array<infer I>> ? I : never
+// type ReadonlyDataTableHeader = UnwrapReadonlyArray<ReadonlyHeaders>
 
 export type MethodAttributeSelectableType = {
   type?: DisplayColumnType
@@ -28,12 +28,17 @@ export type MethodAttributeSelectableType = {
 export type FieldSelectableType = {
   key: string
   title?: string
-  value?: string
+  align?: 'start' | 'center' | 'end' | undefined
+  width?: string | number
+  minWidth?: string
+  maxWidth?: string
+  sortable?: boolean
+  value: string
   placeholder?: string
   class?: string
   cellClass?: string[]
   show?: boolean
-} & ReadonlyDataTableHeader
+}
 
 export type GeneratedFieldSelectableType = {
   key: string
@@ -42,11 +47,18 @@ export type GeneratedFieldSelectableType = {
   placeholder?: string
   cellClass?: string[]
   index?: MethodAttributeSelectableType | boolean
-} & ReadonlyDataTableHeader
+}
 
 export type SelectTableType = {
   modelValue?: any
+  title?: string
+  key?: string
+  value?: string
   label?: string
+  align?: 'start' | 'center' | 'end' | undefined
+  width?: string | number
+  minWidth?: string
+  maxWidth?: string
   cta?: string
   noIcon?: boolean
   class?: string
@@ -73,6 +85,10 @@ export type SelectTableType = {
   noTitle?: boolean
   queryModal?: Record<string, any>
   isEdit?: boolean
+  noAction?: boolean
+  noDelete?: boolean
+  show?: boolean
+  sortable?: boolean
   editLink?: string
   createOption?: CreateOptionSelectableType
 
@@ -88,6 +104,9 @@ export type SelectTableType = {
   detailApi?: string
   detailMethodApi?: 'get' | 'post'
   selectedDetailApi?: string
+  selectedDetailMethodApi?: 'get' | 'post'
+  deleteApi?: string
+  deleteMethodApi?: 'post' | 'delete'
 
   selectStrategy?: 'single' | 'page' | 'all' | undefined
 
