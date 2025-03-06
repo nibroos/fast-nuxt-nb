@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import useItemGroupStore from "~/stores/masters/ItemGroupStore";
+import useCurrencyStore from "~/stores/masters/CurrencyStore";
 import type { FormLayoutType } from "~/types/FormLayoutType";
 
-const itemGroupStore = useItemGroupStore();
-const { tabFormIndex, form, errors } = storeToRefs(itemGroupStore);
+const currencyStore = useCurrencyStore();
+const { tabFormIndex, form, errors } = storeToRefs(currencyStore);
 
 definePageMeta({
   layout: "auth",
@@ -11,7 +11,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Edit Item Sub Groups",
+  title: "Create Item Groups",
 });
 
 const parentLink = ref("");
@@ -21,45 +21,51 @@ const getParentLink = (link: string) => {
 
 const formLayout = ref({
   title: "Basic Information",
-  parentPath: "/masters/customizations/item-groups",
-  mode: "edit",
+  parentPath: "/masters/customizations/currencies",
   currentTab: tabFormIndex.value,
   button: {
-    create: {
-      show: true,
-      cta: "Create New",
-      path: "/masters/customizations/item-groups/create",
-    },
-    save: {
-      show: true,
-      loading: false,
-      type: "submit",
-    },
     clear: {
       show: true,
-      loading: false,
     },
   },
   permission: {
-    name: ["u_ms"],
+    name: ["c_ms"],
     isActive: true,
   },
 } as FormLayoutType);
 
+// const formSchema = z.object({
+//   name: customRules.required("name", form.value.name),
+//   item_group_id: customRules.required(
+//     "item_group_id",
+//     form.value.item_group_id
+//   ),
+// });
+
 const handleSubmit = async () => {
-  await itemGroupStore.update();
+  // const validatedForm = formSchema.safeParse(form.value);
+
+  // if (!validatedForm.success) {
+  //   errors.value = {};
+  //   console.log("log", validatedForm.error.errors);
+
+  //   validatedForm.error.errors.map((ZodIssue) => {
+  //     errors.value[ZodIssue.path[0]] = ZodIssue.message;
+  //   });
+
+  //   return;
+  // }
+
+  await currencyStore.store();
 };
 
 const handleClickClear = () => {
-  form.value = cloneObject(useInitials.formItemGroupCreateEdit);
+  form.value = cloneObject(useInitials.formCurrencyCreateEdit);
   errors.value = {};
 };
 
-const router = useRouter();
-
-onMounted(async () => {
-  form.value.id = Number(router.currentRoute.value.params.id);
-  Promise.all([itemGroupStore.show()]);
+onMounted(() => {
+  handleClickClear();
 });
 </script>
 
@@ -100,6 +106,17 @@ onMounted(async () => {
             </d-text-input>
           </div>
           <div class="sm:col-span-1">
+            <d-num-v-format
+              v-model="form.num"
+              :precision="{
+                min: 3,
+                max: 3,
+              }"
+              hide-currency-display
+              label="Exchange Rate"
+            />
+          </div>
+          <div class="sm:col-span-1">
             <d-text-input
               v-model="form.description"
               :label="`Description`"
@@ -116,12 +133,7 @@ onMounted(async () => {
             />
           </div>
           <div class="sm:col-span-1">
-            <d-switch-status
-              v-model="form.status"
-              :label="`Status`"
-              :true-value="1"
-              :false-value="0"
-            />
+            <d-switch-status v-model="form.status" :label="`Status`" />
           </div>
           <d-button type="submit" class="!hidden"></d-button>
         </form>

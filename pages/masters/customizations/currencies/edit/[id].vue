@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import useItemGroupStore from "~/stores/masters/ItemGroupStore";
+import useCurrencyStore from "~/stores/masters/CurrencyStore";
 import type { FormLayoutType } from "~/types/FormLayoutType";
 
-const itemGroupStore = useItemGroupStore();
-const { tabFormIndex, form, errors } = storeToRefs(itemGroupStore);
+const currencyStore = useCurrencyStore();
+const { tabFormIndex, form, errors } = storeToRefs(currencyStore);
 
 definePageMeta({
   layout: "auth",
@@ -11,7 +11,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Edit Item Sub Groups",
+  title: "Edit Currencies",
 });
 
 const parentLink = ref("");
@@ -21,14 +21,14 @@ const getParentLink = (link: string) => {
 
 const formLayout = ref({
   title: "Basic Information",
-  parentPath: "/masters/customizations/item-groups",
+  parentPath: "/masters/customizations/currencies",
   mode: "edit",
   currentTab: tabFormIndex.value,
   button: {
     create: {
       show: true,
       cta: "Create New",
-      path: "/masters/customizations/item-groups/create",
+      path: "/masters/customizations/currencies/create",
     },
     save: {
       show: true,
@@ -47,11 +47,11 @@ const formLayout = ref({
 } as FormLayoutType);
 
 const handleSubmit = async () => {
-  await itemGroupStore.update();
+  await currencyStore.update();
 };
 
 const handleClickClear = () => {
-  form.value = cloneObject(useInitials.formItemGroupCreateEdit);
+  form.value = cloneObject(useInitials.formCurrencyCreateEdit);
   errors.value = {};
 };
 
@@ -59,7 +59,7 @@ const router = useRouter();
 
 onMounted(async () => {
   form.value.id = Number(router.currentRoute.value.params.id);
-  Promise.all([itemGroupStore.show()]);
+  Promise.all([currencyStore.show()]);
 });
 </script>
 
@@ -98,6 +98,17 @@ onMounted(async () => {
               :errors="[errors.name]"
             >
             </d-text-input>
+          </div>
+          <div class="sm:col-span-1">
+            <d-num-v-format
+              v-model="form.num"
+              :precision="{
+                min: 3,
+                max: 3,
+              }"
+              hide-currency-display
+              label="Exchange Rate"
+            />
           </div>
           <div class="sm:col-span-1">
             <d-text-input

@@ -1,5 +1,6 @@
 // import Form from 'vform'
 import type { Pagination } from '~/interfaces/LaravelPaginationInterface'
+import type { FormCurrencyType } from '~/types/masters/CurrencyType'
 import type { FormItemGroupType } from '~/types/masters/ItemGroupType'
 import type { FormItemSubGroupType } from '~/types/masters/ItemSubGroupType'
 
@@ -26,7 +27,7 @@ const formItemSubGroupCreateEdit = {
   name: '',
   description: '',
   remark: '',
-  status: 0,
+  status: 1,
   item_group_id: null,
 } as FormItemSubGroupType
 
@@ -34,13 +35,23 @@ const formItemGroupCreateEdit = {
   name: '',
   description: '',
   remark: '',
-  status: 0,
+  status: 1,
   item_group_id: null,
 } as FormItemGroupType
+
+const formCurrencyCreateEdit = {
+  name: '',
+  num: 0,
+  description: '',
+  remark: '',
+  status: 1,
+  item_group_id: null,
+} as FormCurrencyType
 
 export const useInitials = {
   pagination,
   perPageOptions,
   formItemSubGroupCreateEdit,
-  formItemGroupCreateEdit
+  formItemGroupCreateEdit,
+  formCurrencyCreateEdit
 }

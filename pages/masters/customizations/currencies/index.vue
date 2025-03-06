@@ -110,6 +110,8 @@ const getParentLink = (link: string) => {
         search-placeholder="Search anything related to currencies.."
         is-quick-select
         no-title
+        edit-link="/masters/customizations/currencies/edit"
+        delete-api="/v1/currencies/delete-currency"
         :fields="fieldsConfig"
         :filters="filtersConfig"
         :query-modal="queryModal.qListIndex"
