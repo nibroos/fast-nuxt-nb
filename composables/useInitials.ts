@@ -3,6 +3,7 @@ import type { Pagination } from '~/interfaces/LaravelPaginationInterface'
 import type { FormCurrencyType } from '~/types/masters/CurrencyType'
 import type { FormItemGroupType } from '~/types/masters/ItemGroupType'
 import type { FormItemSubGroupType } from '~/types/masters/ItemSubGroupType'
+import type { FormProductType } from '~/types/masters/ProductType'
 
 const pagination = {
   current_page: 1,
@@ -48,10 +49,27 @@ const formCurrencyCreateEdit = {
   item_group_id: null,
 } as FormCurrencyType
 
+const formProductCreateEdit = {
+  id: null,
+  item_sub_group_id: null,
+  item_unit_id: null,
+  code: "",
+  factory_code: "",
+  name: "",
+  sku: "",
+  barcode: "",
+  specification: "",
+  description: "",
+  remark: "",
+  status: 1,
+  expired_at: null,
+} as FormProductType
+
 export const useInitials = {
   pagination,
   perPageOptions,
   formItemSubGroupCreateEdit,
   formItemGroupCreateEdit,
-  formCurrencyCreateEdit
+  formCurrencyCreateEdit,
+  formProductCreateEdit
 }

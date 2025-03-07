@@ -31,11 +31,11 @@ export const topMenuMasterTab = [
     permissions: ["r_ms"],
   },
   {
-    title: "Item",
-    number: 'items',
+    title: "Products",
+    number: 'products',
     icon: "mdi-treasure-chest-outline",
-    link: "/masters/items",
-    link2: "/masters/items/create-item",
+    link: "/masters/products",
+    link2: "/masters/products/create-product",
     permissions: ["r_items"],
   },
   {

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import useLayoutsStore from "~/stores/configs/LayoutsStore";
-import useItemSubGroupStore from "~/stores/masters/ItemSubGroupStore";
+import useProductStore from "~/stores/masters/ProductStore";
 import type {
   FieldSelectableType,
   FilterSelectableType,
 } from "~/types/SelectTableType";
 
-const { queryModal } = useItemSubGroupStore();
+const { queryModal } = useProductStore();
 const layoutStore = useLayoutsStore();
 const { titlePath, subTitlePath, lastPathSegment, parentTitle, topTitle } =
   storeToRefs(layoutStore);
@@ -17,10 +17,31 @@ definePageMeta({
 });
 
 useHead({
-  title: "Item Sub Groups",
+  title: "Products",
 });
 
 const fieldsConfig = ref<FieldSelectableType[]>([
+  {
+    title: "Group",
+    key: "item_group_name",
+    value: "item_group_name",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Sub Group",
+    key: "item_sub_group_name",
+    value: "item_sub_group_name",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Code",
+    key: "code",
+    value: "code",
+    align: "start",
+    sortable: true,
+  },
   {
     title: "Name",
     key: "name",
@@ -29,23 +50,51 @@ const fieldsConfig = ref<FieldSelectableType[]>([
     sortable: true,
   },
   {
-    title: "Group Name",
-    key: "group_name",
-    value: "group_name",
+    title: "SKU",
+    key: "sku",
+    value: "sku",
     align: "start",
     sortable: true,
   },
   {
-    title: "Description",
-    key: "description",
-    value: "description",
+    title: "Factory Code",
+    key: "factory_code",
+    value: "factory_code",
     align: "start",
     sortable: true,
   },
   {
-    title: "Remark",
-    key: "remark",
-    value: "remark",
+    title: "Specification",
+    key: "specification",
+    value: "specification",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Price Sell",
+    key: "price_sell",
+    value: "price_sell",
+    align: "end",
+    sortable: true,
+  },
+  {
+    title: "Price Buy",
+    key: "price_buy",
+    value: "price_buy",
+    align: "end",
+    sortable: true,
+  },
+  {
+    title: "Tpb Code",
+    key: "tpb_code",
+    value: "tpb_code",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Barcode",
+    key: "barcode",
+    value: "barcode",
     align: "start",
     sortable: true,
   },
@@ -61,7 +110,7 @@ const fieldsConfig = ref<FieldSelectableType[]>([
 const filtersConfig = ref<FilterSelectableType[]>([
   {
     title: "Group",
-    key: "parent_ids",
+    key: "item_group_id",
     type: "autocomplete",
     others: {
       methodApi: "post",
@@ -80,16 +129,40 @@ const filtersConfig = ref<FilterSelectableType[]>([
     },
   },
   {
+    title: "Sub Group",
+    key: "item_sub_group_id",
+    type: "autocomplete",
+    others: {
+      methodApi: "post",
+      api: "/v1/item-sub-groups/index-item-group",
+      singleApi: "/v1/item-sub-groups/show-item-group",
+      mappingDetail: "data",
+      itemsProp: "data",
+      pageEndProp: "last_page",
+      itemTitle: "name",
+      itemValue: "id",
+      label: "Roles",
+      innerSearchKey: "global",
+      multiple: true,
+      returnObject: false,
+      itemColor: "brown-lighten-2",
+    },
+  },
+  {
+    title: "Code",
+    key: "code",
+  },
+  {
     title: "Name",
     key: "name",
   },
   {
-    title: "Description",
-    key: "description",
+    title: "SKU",
+    key: "sku",
   },
   {
-    title: "Remark",
-    key: "remark",
+    title: "Factory Code",
+    key: "factory_code",
   },
 ]);
 
@@ -119,8 +192,8 @@ const getParentLink = (link: string) => {
       }"
     >
       <d-datatable
-        api="/v1/item-sub-groups/index-item-sub-group"
-        detail-link="/masters/item-sub-groups"
+        api="/v1/products/index-product"
+        detail-link="/masters/products"
         method-api="post"
         detail-method-api="post"
         items-prop="data"
@@ -130,13 +203,13 @@ const getParentLink = (link: string) => {
         search-placeholder="Search anything related to item sub groups.."
         is-quick-select
         no-title
-        edit-link="/masters/customizations/item-sub-groups/edit"
-        delete-api="/v1/item-sub-groups/delete-item-sub-group"
+        edit-link="/masters/products/edit"
+        delete-api="/v1/products/delete-product"
         :fields="fieldsConfig"
         :filters="filtersConfig"
         :query-modal="queryModal.qListIndex"
         :create-option="{
-          link: '/masters/customizations/item-sub-groups/create',
+          link: '/masters/products/create',
           show: true,
           cta: '+ Create',
         }"
@@ -146,6 +219,12 @@ const getParentLink = (link: string) => {
           }
         "
       >
+        <template #item.price_sell="{ item }">
+          <d-num-layout :value="item.price_sell" />
+        </template>
+        <template #item.price_buy="{ item }">
+          <d-num-layout :value="item.price_buy" />
+        </template>
         <template #item.status="{ item }">
           <d-active-status :value="item.status" />
         </template>
