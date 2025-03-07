@@ -76,7 +76,7 @@ const filtersConfig = ref<FilterSelectableType[]>([
       singleApi: "/v1/customer-types/show-customer-type",
       mappingDetail: "data",
       itemsProp: "data",
-      pageEndProp: "last_page",
+      pageEndProp: "meta.next_page_url",
       itemTitle: "name",
       itemValue: "id",
       label: "Customer Type",

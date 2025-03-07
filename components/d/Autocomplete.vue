@@ -98,6 +98,7 @@ const convertQuery = (searchValue?: string): string => {
 const debouncedSearch = debounce(
   async (searchValue: string, oldSearchValue: string) => {
     if (!props.api) return;
+
     if (isMenuShow.value) {
       loadingSearch.value = true;
       convertQuery(searchValue);
@@ -129,7 +130,7 @@ const debouncedSearch = debounce(
 
       const resData = response.data;
 
-      // console.log('resData', resData)
+      console.log("resData", resData);
 
       options.value = <any[]>property(props.itemsProp)(resData);
       paginationDone.value = !property(props.pageEndProp)(resData);
@@ -203,10 +204,19 @@ const getList = async () => {
       .catch((err) => {
         statusCode = err?.response?.status;
         console.log(err, "Failed to fetch list data");
+      })
+      .finally(() => {
+        loadingData.value = false;
+        isInitialLoad.value = false;
       });
   } else {
     apiUrl = `${props.api}?${queryString.value}&page=${page.value}`;
-    response = await useMyFetch().get(apiUrl);
+    response = await useMyFetch()
+      .get(apiUrl)
+      .finally(() => {
+        loadingData.value = false;
+        isInitialLoad.value = false;
+      });
   }
 
   isInitialLoad.value = false;
@@ -508,7 +518,7 @@ watch(
               :start-align="props.startAlignDisplay"
             />
             <span v-if="selected.length > 1 && selected.length - 1 !== index">
-              ,
+              ,ab
             </span>
           </div>
           <d-shorttext

@@ -552,7 +552,7 @@ onMounted(async () => {
         >
           <template #append>
             <div
-              class="grid grid-cols-3 gap-2 items-center w-full col-span-3 sm:col-span-6"
+              class="flex gap-2 items-center w-full col-span-3 sm:col-span-6"
             >
               <nuxt-link
                 v-if="!!props.createOption.show"

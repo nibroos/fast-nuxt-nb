@@ -110,7 +110,7 @@ const fieldsConfig = ref<FieldSelectableType[]>([
 const filtersConfig = ref<FilterSelectableType[]>([
   {
     title: "Group",
-    key: "item_group_id",
+    key: "item_group_ids",
     type: "autocomplete",
     others: {
       methodApi: "post",
@@ -118,7 +118,7 @@ const filtersConfig = ref<FilterSelectableType[]>([
       singleApi: "/v1/item-groups/show-item-group",
       mappingDetail: "data",
       itemsProp: "data",
-      pageEndProp: "last_page",
+      pageEndProp: "meta.next_page_url",
       itemTitle: "name",
       itemValue: "id",
       label: "Roles",
@@ -130,15 +130,15 @@ const filtersConfig = ref<FilterSelectableType[]>([
   },
   {
     title: "Sub Group",
-    key: "item_sub_group_id",
+    key: "item_sub_group_ids",
     type: "autocomplete",
     others: {
       methodApi: "post",
-      api: "/v1/item-sub-groups/index-item-group",
-      singleApi: "/v1/item-sub-groups/show-item-group",
+      api: "/v1/item-sub-groups/index-item-sub-group",
+      singleApi: "/v1/item-sub-groups/show-item-sub-group",
       mappingDetail: "data",
       itemsProp: "data",
-      pageEndProp: "last_page",
+      pageEndProp: "meta.next_page_url",
       itemTitle: "name",
       itemValue: "id",
       label: "Roles",

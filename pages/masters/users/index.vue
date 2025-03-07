@@ -51,8 +51,8 @@ const fieldsConfig = ref<FieldSelectableType[]>([
   },
   {
     title: "Roles",
-    key: "role_id",
-    value: "role_id",
+    key: "role_name",
+    value: "role_name",
     align: "start",
     sortable: true,
   },
@@ -84,18 +84,20 @@ const filtersConfig = ref<FilterSelectableType[]>([
   },
   {
     title: "Roles",
-    key: "role_id",
+    key: "role_ids",
     type: "autocomplete",
     others: {
-      api: "/api/v1/roles/index-role",
-      singleApi: "/api/v1/roles/show-role",
+      api: "/v1/roles/index-role",
+      methodApi: "post",
+      singleApi: "/v1/roles/show-role",
       mappingDetail: "data",
       itemsProp: "data",
-      pageEndProp: "last_page",
+      pageEndProp: "meta.next_page_url",
       itemTitle: "name",
       itemValue: "id",
       label: "Roles",
       innerSearchKey: "global",
+      multiple: true,
     },
   },
 ]);
@@ -127,7 +129,7 @@ const filtersConfig = ref<FilterSelectableType[]>([
         :filters="filtersConfig"
         :query-modal="queryModal.qListIndex"
         :create-option="{
-          link: '/masters/customizations/users/create',
+          link: '/masters/users/create',
           show: true,
           cta: '+ Create',
         }"

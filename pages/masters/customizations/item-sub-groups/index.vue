@@ -69,7 +69,7 @@ const filtersConfig = ref<FilterSelectableType[]>([
       singleApi: "/v1/item-groups/show-item-group",
       mappingDetail: "data",
       itemsProp: "data",
-      pageEndProp: "last_page",
+      pageEndProp: "meta.next_page_url",
       itemTitle: "name",
       itemValue: "id",
       label: "Roles",

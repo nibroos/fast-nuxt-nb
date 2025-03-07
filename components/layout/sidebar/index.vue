@@ -30,15 +30,15 @@ const itemShippings = [
 
 const itemOrders = [
   {
-    title: "Sales Order",
-    icon: "mdi-cart-outline",
-    link: "/orders/sales-order",
-    permissions: ["r_sos"],
-  },
-  {
     title: "Quotations",
     icon: "mdi-cart-outline",
     link: "/orders/quotations",
+    permissions: ["r_sos"],
+  },
+  {
+    title: "Sales Order",
+    icon: "mdi-cart-outline",
+    link: "/orders/sales-order",
     permissions: ["r_sos"],
   },
 ];
