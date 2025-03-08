@@ -73,7 +73,7 @@ const filtersConfig = ref<FilterSelectableType[]>([
     others: {
       methodApi: "post",
       api: "/v1/customer-types/index-customer-type",
-      singleApi: "/v1/customer-types/show-customer-type",
+      singleApi: "/v1/customer-types/index-customer-type",
       mappingDetail: "data",
       itemsProp: "data",
       pageEndProp: "meta.next_page_url",

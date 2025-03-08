@@ -66,7 +66,7 @@ const filtersConfig = ref<FilterSelectableType[]>([
     others: {
       methodApi: "post",
       api: "/v1/item-groups/index-item-group",
-      singleApi: "/v1/item-groups/show-item-group",
+      singleApi: "/v1/item-groups/index-item-group",
       mappingDetail: "data",
       itemsProp: "data",
       pageEndProp: "meta.next_page_url",

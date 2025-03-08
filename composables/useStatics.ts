@@ -163,3 +163,47 @@ export const topMenuCustomizationTab = [
     permissions: ["r_ms"],
   },
 ]
+
+const QuoIndexStatus = [
+  {
+    value: 'WAITING',
+    title: 'Waiting',
+    color: 'grey',
+  },
+  {
+    value: 'CONFIRMED',
+    title: 'Confirmed',
+    color: 'blue',
+  },
+  {
+    value: 'APPROVED',
+    title: 'Approved',
+    color: 'green',
+  },
+  {
+    value: 'PENDING',
+    title: 'Pending',
+    color: 'orange',
+  },
+  {
+    value: 'CANCELED',
+    title: 'Canceled',
+    color: 'red',
+  },
+]
+
+const QuoIndexDateType = [
+  {
+    value: 'expired_at',
+    title: 'Expired Date',
+  },
+  {
+    value: 'due_at',
+    title: 'Due Date',
+  },
+]
+
+export const useStatics = {
+  QuoIndexStatus,
+  QuoIndexDateType,
+}

@@ -89,7 +89,7 @@ const filtersConfig = ref<FilterSelectableType[]>([
     others: {
       api: "/v1/roles/index-role",
       methodApi: "post",
-      singleApi: "/v1/roles/show-role",
+      singleApi: "/v1/roles/index-role",
       mappingDetail: "data",
       itemsProp: "data",
       pageEndProp: "meta.next_page_url",

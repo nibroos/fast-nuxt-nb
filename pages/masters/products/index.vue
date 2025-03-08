@@ -115,7 +115,7 @@ const filtersConfig = ref<FilterSelectableType[]>([
     others: {
       methodApi: "post",
       api: "/v1/item-groups/index-item-group",
-      singleApi: "/v1/item-groups/show-item-group",
+      singleApi: "/v1/item-groups/index-item-group",
       mappingDetail: "data",
       itemsProp: "data",
       pageEndProp: "meta.next_page_url",
@@ -135,7 +135,7 @@ const filtersConfig = ref<FilterSelectableType[]>([
     others: {
       methodApi: "post",
       api: "/v1/item-sub-groups/index-item-sub-group",
-      singleApi: "/v1/item-sub-groups/show-item-sub-group",
+      singleApi: "/v1/item-sub-groups/index-item-sub-group",
       mappingDetail: "data",
       itemsProp: "data",
       pageEndProp: "meta.next_page_url",

@@ -260,6 +260,19 @@ const removeDuplicates = (array: any) => {
   });
 };
 
+const multipleSelectedDetails = ref<any[]>([]);
+
+const getTitleOnMultiSelected = (id: any) => {
+  let displayTitle;
+  multipleSelectedDetails.value.forEach((item: any) => {
+    if (item[props.itemValue as string] === id) {
+      displayTitle = item[props.itemTitle];
+    }
+  });
+
+  return displayTitle;
+};
+
 const getSingleData = async (id: any) => {
   if (!props.singleApi) return;
   let apiUrl;
@@ -272,10 +285,23 @@ const getSingleData = async (id: any) => {
     queryObjectSingle.value.page = 1;
     queryObjectSingle.value.id = id;
 
-    response = await useMyFetch().post(
-      props.singleApi,
-      queryObjectSingle.value
-    );
+    if (!props.multiple) {
+      response = await useMyFetch().post(
+        props.singleApi,
+        queryObjectSingle.value
+      );
+    } else {
+      let queryObjectMultipleSingle = {
+        ids: selected.value,
+      };
+
+      apiUrl = `${props.singleApi}`;
+      response = await useMyFetch().post(apiUrl, queryObjectMultipleSingle);
+
+      multipleSelectedDetails.value = <any[]>(
+        property(props.mappingDetail)(response.data)
+      );
+    }
     delete queryObjectSingle.value.id;
   } else {
     if (props.multiple) {
@@ -296,8 +322,6 @@ const getSingleData = async (id: any) => {
 
   const resData = response.data;
   selectedDetails.value = property(props.mappingDetail)(resData);
-  // console.log('selectedDetails', selectedDetails.value)
-  // console.log('mappingDetail', props.mappingDetail)
 
   if (Array.isArray(selectedDetails.value)) {
     if (props.multiple) {
@@ -315,8 +339,6 @@ const getSingleData = async (id: any) => {
       // selectedDetails.value = selectedDetails.value[0]
     }
   }
-  // console.log('selectedDetails2', selectedDetails.value)
-  // console.log('mappingDetail2', props.mappingDetail)
 
   if (selectedDetails.value) {
     if (props.multiple) {
@@ -329,17 +351,9 @@ const getSingleData = async (id: any) => {
       );
 
       if (!!props.isDisplayMultipleKey) {
-        // console.log('b selectedDetails', selectedDetails.value)
-        // console.log(
-        //   'b property selectedDetails',
-        //   property(props.displaySelectedTitleKey)(selectedDetails.value)
-        // )
-
         displayTitle.value = <string>(
           getDisplayMultipleKeys(selectedDetails.value)
         );
-
-        // console.log('c displayTitle', displayTitle.value)
       }
     }
   }
@@ -512,13 +526,13 @@ watch(
         <span class="whitespace-nowrap">
           <div v-if="props.multiple">
             <d-shorttext
-              :text="item.title"
+              :text="getTitleOnMultiSelected(item.value)"
               :max-length="Number(props.maxLengthDisplay)"
               :class="props.aClass"
               :start-align="props.startAlignDisplay"
             />
             <span v-if="selected.length > 1 && selected.length - 1 !== index">
-              ,ab
+              ,
             </span>
           </div>
           <d-shorttext
