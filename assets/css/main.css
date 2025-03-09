@@ -9,3 +9,11 @@
   font-family: 'Roboto';
   background-color: !brown;
 }
+
+.v-breadcrumbs-divider {
+  padding: 0 !important;
+}
+
+.v-breadcrumbs-item {
+  padding: 0 !important;
+}

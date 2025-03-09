@@ -203,7 +203,14 @@ const QuoIndexDateType = [
   },
 ]
 
+const formTabQuotation = {
+  items: 0,
+  payments: 1,
+  remarks: 2,
+}
+
 export const useStatics = {
   QuoIndexStatus,
   QuoIndexDateType,
+  formTabQuotation
 }

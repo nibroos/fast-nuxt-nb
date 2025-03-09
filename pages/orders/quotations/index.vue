@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import useLayoutsStore from "~/stores/configs/LayoutsStore";
-import useQuotationStore from "~/stores/masters/QuotationStore";
+import useQuotationStore from "~/stores/orders/QuotationStore";
 import type {
   FieldSelectableType,
   FilterSelectableType,
@@ -249,10 +249,24 @@ const filtersConfig = ref<FilterSelectableType[]>([
   },
 ]);
 
-const parentLink = ref("");
-const getParentLink = (link: string) => {
-  parentLink.value = link;
-};
+// const changeTitle = () => {
+//   let config = {
+//     topTitle: "Quotation",
+//     parentTitle: "Orders",
+//     subTitlePath: "Quotation",
+//     lastPathSegment: "",
+//   };
+
+//   layoutStore.defineTitlePath(config);
+// };
+
+// onMounted(() => {
+//   changeTitle();
+// });
+
+// watchEffect(() => {
+//   changeTitle();
+// });
 </script>
 
 <template>
@@ -267,7 +281,7 @@ const getParentLink = (link: string) => {
     >
       <d-datatable
         api="/v1/quotations/index-quotation"
-        detail-link="/masters/quotations"
+        detail-link="/orders/quotations"
         method-api="post"
         detail-method-api="post"
         items-prop="data"
@@ -277,13 +291,13 @@ const getParentLink = (link: string) => {
         search-placeholder="Search anything related to item Order Types.."
         is-quick-select
         no-title
-        edit-link="/masters/quotations/edit"
+        edit-link="/orders/quotations/edit"
         delete-api="/v1/quotations/delete-quotation"
         :fields="fieldsConfig"
         :filters="filtersConfig"
         :query-modal="queryModal.qListIndex"
         :create-option="{
-          link: '/masters/quotations/create',
+          link: '/orders/quotations/create',
           show: true,
           cta: '+ Create',
         }"

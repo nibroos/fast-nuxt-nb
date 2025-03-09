@@ -27,7 +27,11 @@ const useQuotationStore = defineStore('QuotationStore', {
     },
     tabFormIndex: 0,
     errors: {} as Record<string, any>,
-    formLoading: false
+    formLoading: false,
+    itemsCheck: {
+      checkMain: [] as any,
+      checkProds: [] as any,
+    }
   }),
 
   actions: {
@@ -197,10 +201,15 @@ const useQuotationStore = defineStore('QuotationStore', {
       }
     },
 
+    clickClearRefs() {
+      this.itemsCheck.checkMain = []
+      this.itemsCheck.checkProds = []
+    }
+
   },
   persist: [
     {
-      paths: ['queryModal'],
+      paths: ['queryModal', 'formTabQuotation'],
       storage: localStorage
     }
   ]

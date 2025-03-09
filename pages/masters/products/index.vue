@@ -176,12 +176,6 @@ const getParentLink = (link: string) => {
   <div class="flex flex-col gap-2">
     <l-top-menu :top-menu="topMenuMasterTab" :parent_link="parentLink">
     </l-top-menu>
-    <l-top-menu
-      :top-menu="topMenuCustomizationTab"
-      parent_link=""
-      @update:parent-link="getParentLink"
-    >
-    </l-top-menu>
 
     <d-index-layout
       :config="{

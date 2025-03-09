@@ -53,21 +53,17 @@ const filterPermissions = () => {
   listItem.value = newList;
 };
 
-const handleChangeActiveTab = (value: number, link: string) => {
+const handleChangeActiveTab = (value: number | string, link: string) => {
   isActiveTabIndex.value = value;
   navigateTo(link);
 };
 
 watchEffect(() => {
-  layoutState.defineTitlePath(configs.value);
   filterPermissions();
 });
 onBeforeUnmount(() => {
   // console.log("oop", isActiveTabIndex.value);
-}),
-  onMounted(() => {
-    layoutState.defineTitlePath(configs.value);
-  });
+});
 </script>
 
 <template>

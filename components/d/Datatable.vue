@@ -225,8 +225,6 @@ const filterData = async () => {
   let apiUrl;
 
   if (props.methodApi == "post") {
-    console.log("filters.value2", filters.value);
-
     apiUrl = `${api.value}`;
     response = await useMyFetch()
       .post(apiUrl, filters.value)

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { VAutocomplete } from "vuetify/components";
+import type { SnackbarType } from "~/types/components/FormType";
 
 type Variant = VAutocomplete["$props"]["variant"];
 type Density = VAutocomplete["$props"]["density"];
@@ -19,7 +20,10 @@ interface IProps {
   replaceDetailsWithError?: boolean;
   initialValue?: string;
   readonly?: boolean;
+  id?: string;
+  disabledCopy?: boolean;
 }
+
 const props = withDefaults(defineProps<IProps>(), {
   disabled: false,
   readonly: false,
@@ -35,6 +39,7 @@ const props = withDefaults(defineProps<IProps>(), {
   errors: () => [],
   replaceDetailsWithError: false,
   initialValue: "",
+  disabledCopy: true,
 });
 
 const realValue = ref(props.modelValue);
@@ -46,6 +51,22 @@ const emits = defineEmits(["update:modelValue"]);
 const updateValue = (value: string) => {
   realValue.value = value;
   emits("update:modelValue", value);
+};
+
+const snackbar = ref<SnackbarType>({
+  isOpen: false,
+  text: "Text copied!",
+  timeout: 2000,
+});
+
+const handleClick = () => {
+  if (!!props.disabledCopy && !!props.disabled) {
+    console.log("disabled", realValue.value);
+    snackbar.value.isOpen = true;
+    snackbar.value.text = `${realValue.value} copied to clipboard!`;
+
+    navigator.clipboard.writeText(realValue.value as string);
+  }
 };
 
 onMounted(() => {
@@ -68,6 +89,10 @@ watch(
     }
   }
 );
+
+onBeforeUnmount(() => {
+  snackbar.value.isOpen = false;
+});
 </script>
 <template>
   <div
@@ -78,15 +103,25 @@ watch(
       )
     "
     class="flex grow flex-col"
+    @click="handleClick"
   >
     <v-text-field
+      :id="props.id"
       :label="props.label"
       :variant="props.variant"
       v-model="realValue"
       :density="props.density"
       :placeholder="props.placeholder"
       :type="props.type"
-      :class="classMerge('w-full text-dark1 dark:text-primary1', props.class)"
+      :class="
+        classMerge(
+          'w-full text-dark1 dark:text-primary1',
+          disabled
+            ? 'cursor-pointer bg-zinc-200 text-dark3 dark:bg-dark1 dark:text-primary1'
+            : '',
+          props.class
+        )
+      "
       :clearable="props.clearable"
       :disabled="props.disabled"
       @update:model-value="updateValue"
@@ -104,5 +139,9 @@ watch(
         {{ error }}
       </div>
     </div>
+
+    <v-snackbar v-model="snackbar.isOpen" :timeout="snackbar.timeout">
+      {{ snackbar.text }}
+    </v-snackbar>
   </div>
 </template>

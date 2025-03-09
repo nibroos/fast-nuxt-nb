@@ -21,6 +21,7 @@ interface IProps {
   variant?: string;
   size?: string;
   title?: string;
+  disabledCopy?: boolean;
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -43,6 +44,7 @@ const props = withDefaults(defineProps<IProps>(), {
   variant: "flat",
   size: "small",
   title: "",
+  disabledCopy: true,
 });
 
 const mergedConfig = computed(() => {
@@ -133,11 +135,11 @@ onMounted(() => {});
 </script>
 
 <template>
-  <v-btn
+  <button
     v-if="type == 'submit'"
     :class="
       classMerge(
-        'flex cursor-pointer items-center p-3 transition-all ease-in-out hover:bg-zinc-100 sm:gap-x-1',
+        'flex cursor-pointer items-center p-1.5 transition-all ease-in-out hover:bg-zinc-100 sm:gap-x-1',
         props.class,
         `${
           localDisabled && !!disabledClass
@@ -186,8 +188,8 @@ onMounted(() => {});
         {{ props.cta }}
       </span>
     </span>
-  </v-btn>
-  <v-btn
+  </button>
+  <button
     v-else
     :class="
       classMerge(
@@ -229,12 +231,14 @@ onMounted(() => {});
         size="20"
         v-if="localLoadingState"
       ></v-progress-circular>
-      <slot name="cta">
+      <slot name="cta" :item="props">
         <d-shorttext
           :text="props.cta"
+          :class="props.textClass"
           :max-length="Number(props.maxLengthDisplay)"
         />
       </slot>
+      <slot name="append-cta" :item="props" />
     </span>
-  </v-btn>
+  </button>
 </template>

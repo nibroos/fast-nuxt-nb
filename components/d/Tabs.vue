@@ -1,51 +1,60 @@
 <script setup lang="ts">
 interface IProps {
-  class?: string
-  current?: number
-  tabs?: string[]
+  class?: string;
+  current?: number;
+  tabs?: string[];
 }
 const props = withDefaults(defineProps<IProps>(), {
-  class: '',
+  class: "",
   current: 0,
-  tabs: () => []
-})
+  tabs: () => [],
+});
 
-const currentTab = ref<unknown>(props.current)
+const currentTab = ref<unknown>(props.current);
 
-const emits = defineEmits(['update:current'])
+const emits = defineEmits(["update:current"]);
 
 const handleChange = (value: any) => {
-  emits('update:current', value)
-}
+  emits("update:current", value);
+};
 
 onMounted(() => {
-  currentTab.value = props.current
-})
+  currentTab.value = props.current;
+});
 
 watch(
   () => currentTab.value,
   (newVal, oldVal) => {
     if (newVal !== oldVal) {
-      handleChange(newVal)
+      handleChange(newVal);
     }
   }
-)
+);
 </script>
 
 <template>
   <v-tabs
     v-model="currentTab"
-    bg-color="blue-grey-lighten-5 text-blue-grey-lighten-2"
     selected-class="text-grey-darken-4"
     center-active
-    :class="[props.class, 'w-full']"
+    density="compact"
+    :class="[
+      props.class,
+      'w-full !bg-grey1 dark:!bg-dark2 dark:text-primary1 transition-all ease-in-out',
+    ]"
   >
     <v-tab
       v-for="(tab, index) in tabs"
       :key="index"
       :title="tab"
       :value="index"
-      slider-color="blue-lighten-1"
+      slider-color="brown-lighten-1"
+      density="compact"
+      :class="
+        classMerge(
+          '!bg-grey1 dark:!bg-dark1 dark:!text-primary1 transition-all ease-in-out'
+        )
+      "
     >
       {{ tab }}
     </v-tab>

@@ -2,24 +2,49 @@ const route = useRoute()
 
 const useLayoutsStore = defineStore({
   id: 'layoutsStore',
-  state: () => {
-    return {
-      titlePath: 'testlayout',
-      subTitlePath: '',
-      lastPathSegment: '',
-      parentTitle: '',
-      topTitle: '',
-      currentRouteName: '',
-      lastFullPath: '',
-      isCloseSidebar: true,
-      lastVisitedRoute: '',
-      lastVisitedMasterRoute: '/masters/customizations',
-    }
-  },
+  state: () => ({
+    titlePath: 'testlayout',
+    subTitlePath: '',
+    lastPathSegment: '',
+    parentTitle: '',
+    topTitle: '',
+    currentRouteName: '',
+    lastFullPath: '',
+    isCloseSidebar: true,
+    lastVisitedRoute: '',
+    lastVisitedMasterRoute: '/masters/customizations',
+    currentRoute: [] as Record<string, any>[],
+  }),
   actions: {
     defineTitlePath(config?: any) {
       let routePath = route.path
       let pathArray = routePath.split('/')
+
+      this.currentRoute = []
+      pathArray.forEach((item, index) => {
+        if (item != '') {
+          // this.currentRoute.push(item)
+          let active = false
+          if (index == pathArray.length - 1 || item.includes('edit')) {
+            active = true
+          }
+          // get previous to start, then combine with current
+          let href = pathArray.slice(0, index + 1).join('/').toLowerCase()
+          console.log('href', href);
+          // if (href.includes('masters') && index == 1) {
+          //   href = this.lastVisitedMasterRoute
+          // }
+
+
+          this.currentRoute.push({
+            title: item.replace(/-/g, ' '),
+            href: href,
+            active: active,
+            disabled: active
+          })
+        }
+      })
+
       let titlePath = pathArray[1]
       let subTitlePath = pathArray[3]
       let lastPathSegment = pathArray[pathArray.length - 1].replace(/-/g, ' ')

@@ -36,6 +36,7 @@ const {
   topTitle,
   lastFullPath,
   isCloseSidebar,
+  currentRoute,
   lastVisitedMasterRoute,
   currentRouteName,
 } = storeToRefs(layoutState);
@@ -50,16 +51,20 @@ const handleClikSidebar = () => {
   }
 };
 
+// watchEffect(() => {
+//   if (!!route) {
+//     layoutState.defineTitlePath();
+//     layoutState.lastVisitedRoute = route.fullPath;
+//   }
+// });
+
 watchEffect(() => {
-  if (!!route) {
-    layoutState.defineTitlePath();
-    layoutState.lastVisitedRoute = route.fullPath;
-  }
+  layoutState.defineTitlePath();
 });
 
 onMounted(() => {
   console.log("Updated20250323-1NB");
-  layoutState.defineTitlePath();
+  // layoutState.defineTitlePath();
 });
 
 onBeforeUnmount(() => {
@@ -94,11 +99,7 @@ onBeforeUnmount(() => {
         class="!bg-zinc-50 dark:!bg-dark3 !border-b !border-dark1"
       >
         <div class="flex justify-between items-center w-full">
-          <v-app-bar-nav-icon
-            class="mr-2"
-            @click.stop="handleClikSidebar"
-            flat
-          />
+          <v-app-bar-nav-icon class="" @click.stop="handleClikSidebar" flat />
 
           <div class="flex items-center justify-between">
             <div class="mb-3">
@@ -115,13 +116,47 @@ onBeforeUnmount(() => {
                 {{ topTitle.replace(/-/g, " ") }}
               </h1>
               <div class="flex w-full items-center">
-                <div v-if="parentTitle" class="flex flex-row items-center">
-                  <h1 class="text-base font-semibold">{{ parentTitle }}</h1>
+                <v-breadcrumbs
+                  :items="currentRoute"
+                  density="compact"
+                  class="!p-0"
+                  color="blue"
+                  active-class="!opacity-100"
+                >
+                  <template #divider>
+                    <v-icon icon="mdi-chevron-right"></v-icon>
+                  </template>
+                  <template #title="{ item }">
+                    <span
+                      v-if="!!item.active"
+                      class="text-sm capitalize"
+                      :class="
+                        classMerge(
+                          'text-scDarker2 dark:!text-scDarker2 font-bold opacity-100'
+                        )
+                      "
+                    >
+                      {{ item.title }}
+                    </span>
+                    <nuxt-link
+                      v-else
+                      :to="item.href"
+                      class="text-sm capitalize"
+                      role="button"
+                      :class="classMerge('!text-dark2 dark:!text-primary1')"
+                    >
+                      {{ item.title }}
+                    </nuxt-link>
+                    <!-- test abc{{ item.disabled }} -->
+                  </template>
+                </v-breadcrumbs>
+                <!-- <div v-if="parentTitle" class="flex flex-row items-center">
+                  <h1 class="text-base">{{ parentTitle }}</h1>
+                </div>
+                <div v-if="titlePath" class="flex items-center">
                   <div
                     class="h-2 w-2 rounded-full mx-2 bg-zinc-900 dark:!bg-scDarker"
                   />
-                </div>
-                <div v-if="titlePath">
                   <p class="text-sm capitalize">
                     {{ titlePath.replace(/-/g, " ") }}
                   </p>
@@ -141,7 +176,7 @@ onBeforeUnmount(() => {
                     class="h-2 w-2 rounded-full mx-2 bg-zinc-900 dark:!bg-scDarker"
                   />
                   <p class="text-sm capitalize">{{ lastPathSegment }}</p>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>

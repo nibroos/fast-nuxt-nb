@@ -1,275 +1,312 @@
 <script setup lang="ts">
-import qs from 'qs'
-import { property, debounce } from 'lodash-es'
+import qs from "qs";
+import { property, debounce } from "lodash-es";
 
-import { useMyFetch } from '~/composables/useMyFetch'
+import { useMyFetch } from "~/composables/useMyFetch";
 import type {
   FieldSelectableType,
   FilterSelectableType,
-  SelectTableType
-} from '~/types/SelectTableType'
-import { type Pagination } from '~/interfaces/LaravelPaginationInterface'
+  SelectTableType,
+} from "~/types/SelectTableType";
+import { type Pagination } from "~/interfaces/LaravelPaginationInterface";
 
 const props = withDefaults(defineProps<SelectTableType>(), {
   modelValue: null,
-  label: 'Item',
+  label: "Item",
   // cta: `Select ${props.label}`,
   cta: (props: SelectTableType) => `Select ${props.label}`,
   noIcon: false,
-  class: '',
-  btnClass: '',
-  textClass: '',
-  type: 'button',
-  icon: 'mdi-magnify',
-  appendIcon: 'mdi-magnify',
+  class: "",
+  btnClass: "",
+  textClass: "",
+  type: "button",
+  icon: "mdi-magnify",
+  appendIcon: "mdi-magnify",
   iconSize: 25,
-  iconClass: '',
+  iconClass: "",
   disabled: false,
   loading: false,
-  disabledTextClass: '',
-  disabledClass: '',
+  disabledTextClass: "",
+  disabledClass: "",
   activateLoading: false,
   isLoadingDefault: true,
   isNoText: false,
-  itemValue: 'id',
-  displayKey: 'name',
+  itemValue: "id",
+  displayKey: "name",
   isDisplayMultipleKey: false,
   displaySingleMultipleKeys: () => [],
-  displayMultipleSeparator: '-',
+  displayMultipleSeparator: "-",
   maxLengthDisplay: 20,
   isQuickSelect: false,
 
   // Modal
   showModal: false,
-  modalSize: 'sm',
+  modalSize: "sm",
   // modalTitle: 'List Of Items',
   modalTitle: (props: SelectTableType) => `List Of ${props.label}`,
-  modalHeaderClass: '',
-  modalHeaderTextClass: 'text-lg',
-  modalCustomClass: 'p-6',
-  api: '/api/master/items/index',
-  methodApi: 'get',
-  detailApi: '/api/master/items/show',
-  detailMethodApi: 'get',
-  selectedDetailApi: '/api/master/items/bulk-show',
+  modalHeaderClass: "",
+  modalHeaderTextClass: "text-lg",
+  modalCustomClass: "p-6",
+  api: "/api/master/items/index",
+  methodApi: "get",
+  detailApi: "/api/master/items/show",
+  detailMethodApi: "get",
+  selectedDetailApi: "/api/master/items/bulk-show",
 
-  selectStrategy: 'single',
+  selectStrategy: "single",
 
-  itemsProp: 'data',
-  mappingDetail: 'data',
-  totalProp: 'meta.total',
+  itemsProp: "data",
+  mappingDetail: "data",
+  totalProp: "meta.total",
 
   // Table
-  height: '450',
+  height: "450",
   multiple: false,
   returnObject: false,
   filters: (props: SelectTableType) => [],
   fields: (props: SelectTableType) => [
     {
-      title: 'ID',
-      key: 'id',
-      value: 'id',
-      align: 'start',
-      sortable: true
+      title: "ID",
+      key: "id",
+      value: "id",
+      align: "start",
+      sortable: true,
     },
     {
-      title: 'Name',
-      key: 'name',
-      value: 'name',
-      align: 'start',
-      sortable: true
-    }
-  ]
-})
+      title: "Name",
+      key: "name",
+      value: "name",
+      align: "start",
+      sortable: true,
+    },
+  ],
+});
 
-const generatedFiltersObj = ref<FilterSelectableType[]>([])
+const generatedFiltersObj = ref<FilterSelectableType[]>([]);
 
 const defaultFieldProps: FilterSelectableType = {
-  key: '',
-  title: '',
-  value: '',
-  type: 'text'
-}
+  key: "",
+  title: "",
+  value: "",
+  type: "text",
+};
 
 const generateFiltersObj = () => {
-  generatedFiltersObj.value = []
+  generatedFiltersObj.value = [];
 
   props.filters.forEach((filter) => {
     generatedFiltersObj.value.push({
       ...defaultFieldProps,
-      ...filter
-    })
-  })
-}
+      ...filter,
+    });
+  });
+};
 
-const emits = defineEmits(['openModal', 'update:modelValue'])
+const emits = defineEmits(["openModal", "update:modelValue", "click:selected"]);
 
-let headersModal = ref(props.fields)
-let api = ref<string>(props.api)
+let headersModal = ref(props.fields);
+let api = ref<string>(props.api);
 
-let showModal = ref<boolean>(props.showModal)
-let multiple = ref<boolean>(props.multiple)
-let selectStrategy = ref<'single' | 'page' | 'all' | undefined>(
-  props.multiple ? 'all' : 'single'
-)
-let icon = ref<string>(props.icon)
+let showModal = ref<boolean>(props.showModal);
+let multiple = ref<boolean>(props.multiple);
+let selectStrategy = ref<"single" | "page" | "all" | undefined>(
+  props.multiple ? "all" : "single"
+);
+let icon = ref<string>(props.icon);
 
 const openModal = (event: boolean) => {
-  showModal.value = event
+  showModal.value = event;
 
-  emits('openModal', showModal.value)
-}
+  emits("openModal", showModal.value);
+};
 
 const filters = ref<Record<string, any>>({
   page: 1,
   per_page: 100,
-  global: '',
-  order_column: 'id',
-  order_direction: 'asc'
-})
+  global: "",
+  order_column: "id",
+  order_direction: "asc",
+});
 
 const metaModal = ref<Pagination<any[]>>({
   data: [],
-  loading: false
-})
+  loading: false,
+});
 
 const showMetaModal = ref<Record<string, any>>({
   data: [],
   single: {},
-  loading: false
-})
+  loading: false,
+});
 
-const itemsCheck = ref<Record<string, any>[]>([])
+const itemsCheck = ref<Record<string, any>[]>([]);
 
 const filterData = async () => {
-  if (metaModal.value.loading) return
-  metaModal.value.loading = true
-  let queryString = qs.stringify(filters.value)
+  if (metaModal.value.loading) return;
+  metaModal.value.loading = true;
+  let queryString = qs.stringify(filters.value);
 
-  let response
-  let apiUrl
+  let response;
+  let apiUrl;
 
-  apiUrl = `${api.value}?${queryString}`
-  response = await useMyFetch()
-    .get(apiUrl)
-    .then((res) => {
-      metaModal.value.data = <any[]>property(props.itemsProp)(res.data)
-      metaModal.value.total = property(props.totalProp)(res.data) as string
-    })
-    .finally(() => {
-      // loadingSearch.value = false
-      // isInitialLoad.value = false
-      metaModal.value.loading = false
-    })
-}
+  if (props.methodApi == "post") {
+    apiUrl = `${api.value}`;
+    response = await useMyFetch()
+      .post(apiUrl, filters.value)
+      .then((res) => {
+        metaModal.value.data = <any[]>property(props.itemsProp)(res.data);
+        metaModal.value.total = property(props.totalProp)(res.data) as string;
+      })
+      .finally(() => {
+        metaModal.value.loading = false;
+      });
+  } else {
+    apiUrl = `${api.value}?${queryString}`;
+    response = await useMyFetch()
+      .get(apiUrl)
+      .then((res) => {
+        metaModal.value.data = <any[]>property(props.itemsProp)(res.data);
+        metaModal.value.total = property(props.totalProp)(res.data) as string;
+      })
+      .finally(() => {
+        metaModal.value.loading = false;
+      });
+  }
+};
 
-const selectedText = ref<string>('')
+const selectedText = ref<string>("");
 
 const fetchDataServerFetch = async (options: {
-  page: number
+  page: number;
   sortBy: [
     {
-      key: string
-      order: string
+      key: string;
+      order: string;
     }
-  ]
-  itemsPerPage: number
+  ];
+  itemsPerPage: number;
 }) => {
-  filters.value.page = options.page
-  filters.value.per_page = options.itemsPerPage
+  filters.value.page = options.page;
+  filters.value.per_page = options.itemsPerPage;
 
   if (options.sortBy.length > 0) {
-    filters.value.order_column = options.sortBy[0].key
-    filters.value.order_direction = options.sortBy[0].order
+    filters.value.order_column = options.sortBy[0].key;
+    filters.value.order_direction = options.sortBy[0].order;
+  } else {
+    filters.value.order_column = "";
+    filters.value.order_direction = "";
   }
 
-  await filterData()
-}
+  await filterData();
+};
 
 const fetchSingle = async (id: number) => {
   // return
   if (!id) {
-    return
+    return;
   }
 
-  showMetaModal.value.loading = true
-  let apiUrl
+  showMetaModal.value.loading = true;
+  let apiUrl;
 
-  if (props.detailMethodApi == 'post') {
-    apiUrl = `${props.detailApi}`
+  if (props.detailMethodApi == "post") {
+    let payload;
+
+    console.log("itemscheck", itemsCheck.value);
+
+    if (props.multiple && !props.returnObject) {
+      payload = { ids: itemsCheck.value };
+    } else {
+      payload = { ids: [id] };
+    }
+
+    console.log("payload", payload);
+
+    apiUrl = `${props.detailApi}`;
     await useMyFetch()
-      .post(apiUrl, { id })
+      .post(apiUrl, payload)
       .then((res) => {
-        showMetaModal.value.single = (<Record<string, any>>(
-          property(props.mappingDetail)(res.data)
-        )) as any
+        if (!!props.multiple) {
+        } else {
+          showMetaModal.value.single = (<Record<string, any>>(
+            property(props.mappingDetail)(res.data)
+          )) as any;
 
-        selectedText.value = showMetaModal.value.single[props.displayKey]
-        if (!!props.isDisplayMultipleKey) {
-          selectedText.value = props.displaySingleMultipleKeys
-            .map((key) => showMetaModal.value.single[key])
-            .join(props.displayMultipleSeparator)
+          console.log("showMetaModal.value.single", showMetaModal.value.single);
+
+          selectedFull.value = showMetaModal.value.single;
+          emits("click:selected", showMetaModal.value.single);
+
+          selectedText.value = showMetaModal.value.single[props.displayKey];
+          if (!!props.isDisplayMultipleKey) {
+            selectedText.value = props.displaySingleMultipleKeys
+              .map((key) => showMetaModal.value.single[key])
+              .join(props.displayMultipleSeparator);
+          }
         }
       })
       .finally(() => {
-        showMetaModal.value.loading = false
-      })
+        showMetaModal.value.loading = false;
+      });
   } else {
-    apiUrl = `${props.detailApi}/${id}`
+    apiUrl = `${props.detailApi}/${id}`;
     await useMyFetch()
       .get(apiUrl)
       .then((res) => {
         showMetaModal.value.single = (<Record<string, any>>(
           property(props.mappingDetail)(res.data)
-        )) as any
+        )) as any;
 
-        selectedText.value = showMetaModal.value.single[props.displayKey]
+        selectedText.value = showMetaModal.value.single[props.displayKey];
         if (!!props.isDisplayMultipleKey) {
           selectedText.value = props.displaySingleMultipleKeys
             .map((key) => showMetaModal.value.single[key])
-            .join(props.displayMultipleSeparator)
+            .join(props.displayMultipleSeparator);
         }
       })
       .finally(() => {
-        showMetaModal.value.loading = false
-      })
+        showMetaModal.value.loading = false;
+      });
   }
-}
+};
 
 const fetchBulk = async (ids: number[]) => {
-  showMetaModal.value.loading = true
-  let apiUrl
+  showMetaModal.value.loading = true;
+  let apiUrl;
 
-  apiUrl = `${props.selectedDetailApi}`
+  apiUrl = `${props.selectedDetailApi}`;
   await useMyFetch()
     .post(apiUrl, { ids })
     .then((res) => {
-      showMetaModal.value = res.data
+      showMetaModal.value = res.data;
     })
     .finally(() => {
-      showMetaModal.value.loading = false
-    })
-}
+      showMetaModal.value.loading = false;
+    });
+};
+
+const selectedFull = ref<any>();
 
 const onSelectItems = async () => {
+  // filter selected items
   if (itemsCheck.value.length == 0) {
-    emits('update:modelValue', null)
+    emits("update:modelValue", null);
   } else if (!multiple.value && itemsCheck.value.length > 0) {
-    emits('update:modelValue', itemsCheck.value[0])
+    emits("update:modelValue", itemsCheck.value[0]);
   } else if (multiple.value && itemsCheck.value.length > 0) {
-    emits('update:modelValue', itemsCheck.value)
+    emits("update:modelValue", itemsCheck.value);
   }
 
   // selectedText.value = itemsCheck.value.map((item) => item.name).join(', ')
-  openModal(false)
-}
+  openModal(false);
+};
 
 const clearSelected = () => {
-  itemsCheck.value = []
-  selectedText.value = ''
-  emits('update:modelValue', null)
-  showModal.value = false
-}
+  itemsCheck.value = [];
+  selectedText.value = "";
+  emits("update:modelValue", null);
+  showModal.value = false;
+};
 
 watch(
   () => props.modelValue,
@@ -281,57 +318,62 @@ watch(
       //   await fetchBulk(newValue.map((item) => item[props.itemValue]))
       // }
 
-      if (!multiple.value && !!newValue) {
-        // single show
-        await fetchSingle(newValue)
-      }
+      // if (!multiple.value && !!newValue) {
+      //   // single show
+      //   await fetchSingle(newValue);
+      // }
 
       if (!newValue && !showMetaModal.value.loading) {
-        selectedText.value = ''
+        selectedText.value = "";
       }
     }
   }
-)
+);
 
-const onSelectOption = (event: any, row: any) => {
+const onSelectOption = async (event: any, row: any) => {
   if (props.isQuickSelect) {
-    itemsCheck.value = [row.item[props.itemValue]]
+    itemsCheck.value = [row.item[props.itemValue]];
 
-    onSelectItems()
+    if (!multiple.value) {
+      // single show
+      await fetchSingle(row.item[props.itemValue]);
+    }
+
+    onSelectItems();
   }
-}
+};
 
 watch(
   () => itemsCheck.value,
   (newValue: any, oldValue: any) => {
     if (newValue !== oldValue && props.isQuickSelect) {
-      onSelectItems()
+      onSelectItems();
     }
   }
-)
+);
 
 watch(showModal, async (newVal) => {
   if (newVal) {
-    await nextTick()
+    await nextTick();
     setTimeout(() => {
-      const input = document.getElementById('global_search_modal')
+      const input = document.getElementById("global_search_modal");
       if (input) {
-        input.focus()
+        input.focus();
       }
-    }, 300) // Adjust the delay as needed
+    }, 300); // Adjust the delay as needed
   }
-})
+});
 
 onMounted(async () => {
   // await filterData()
-  await Promise.all([filterData(), fetchSingle(props.modelValue)])
+  await Promise.all([filterData(), fetchSingle(props.modelValue)]);
 
-  generateFiltersObj()
+  generateFiltersObj();
 
   if (!!props.modelValue) {
-    itemsCheck.value.push(props.modelValue)
+    itemsCheck.value.push(props.modelValue);
   }
-})
+});
 </script>
 
 <template>
@@ -339,30 +381,48 @@ onMounted(async () => {
     :class="classMerge('flex w-full grow', props.class)"
     :title="selectedText"
   >
-    <d-button
-      :type="props.type"
+    <d-bt
+      type="button"
       :cta="selectedText ? `${props.label}: ${selectedText}` : props.cta"
       :append-icon="props.appendIcon"
       :no-icon="!!selectedText"
       :class="
         classMerge(
-          'text-none flex w-full grow items-center justify-center gap-1 whitespace-nowrap border-1.5 border-solid border-zinc-400',
+          'text-none flex w-full grow items-stretch justify-center gap-1 whitespace-nowrap !border-1.5 !border-solid dark:bg-dark1 hover:dark:bg-dark2',
+          !!selectedText
+            ? '!border-zinc-300 dark:!border-zinc-500 p-2.5 rounded-l-md'
+            : '!border-zinc-200 dark:!border-zinc-500 rounded-md p-1.5',
           props.btnClass
         )
       "
-      :text-class="classMerge('text-sm text-zinc-400', props.textClass)"
+      :text-class="
+        classMerge(
+          'text-sm dark:text-primary1  font-normal dark:!text-primary1',
+          !!selectedText ? '!text-dark3' : '!text-zinc-400',
+          props.textClass
+        )
+      "
       :icon="!selectedText ? icon : undefined"
-      :icon-class="classMerge('text-zinc-400', props.iconClass)"
+      :icon-class="
+        classMerge('!text-zinc-400 dark:text-primary1', props.iconClass)
+      "
       @click="openModal(true)"
       :max-length-display="props.maxLengthDisplay"
       :loading="showMetaModal.loading"
-    ></d-button>
+    ></d-bt>
 
-    <d-button
+    <d-bt
       v-if="selectedText"
       type="button"
       cta="Clear"
-      class="text-none m-0 flex items-center justify-center border-y-1.5 border-r-1.5 border-solid border-zinc-400 py-0"
+      :class="
+        classMerge(
+          'text-none m-0 rounded-r-md flex items-center justify-center border-y-1.5 border-r-1.5 border-solid py-0',
+          !!selectedText
+            ? 'border-zinc-300 dark:border-zinc-500'
+            : 'border-zinc-200 dark:border-zinc-500'
+        )
+      "
       text-class="text-zinc-400"
       icon="mdi-close"
       icon-class="text-zinc-400"
@@ -373,15 +433,16 @@ onMounted(async () => {
   <!-- Modal Add Style -->
   <modals-final-modal
     :is-open="showModal"
-    :size="props.modalSize"
+    :size="'sm'"
     :label="props.modalTitle"
     :header-text-class="classMerge('text-lg', props.modalHeaderTextClass)"
     :custom-class="props.modalCustomClass"
+    :parent-class="props.modalParentClass"
     @update:is-open="openModal($event)"
   >
     <template #label>
       <div class="flex items-center gap-2">
-        <span class="whitespace-nowrap text-xl">
+        <span class="whitespace-nowrap text-xl dark:text-primary1">
           {{ props.modalTitle }}
         </span>
         <span
@@ -413,10 +474,7 @@ onMounted(async () => {
             )
           "
         >
-          <div
-            v-for="(filter, index) in generatedFiltersObj"
-            :key="index"
-          >
+          <div v-for="(filter, index) in generatedFiltersObj" :key="index">
             <d-text-input
               v-if="filter.type === 'text'"
               v-model="filters[filter.key]"
@@ -438,33 +496,31 @@ onMounted(async () => {
               :inner-search-key="filter.others?.innerSearchKey"
               :items-prop="filter.others?.itemsProp"
               :page-end-prop="filter.others?.pageEndProp"
+              :method-api="filter.others?.methodApi"
             />
           </div>
-        </div>
-        <div
-          :class="
-            classMerge(
-              'flex items-center gap-x-3',
-              generatedFiltersObj.length < 3
-                ? 'w-3/5'
-                : generatedFiltersObj.length == 3
-                  ? 'w-1/2'
-                  : 'w-full'
-            )
-          "
-        >
-          <v-text-field
-            id="global_search_modal"
-            v-model="filters.global"
-            hide-details
-            label="Global Search"
-            placeholder="Search anything related to styles, style name, factory, etc"
-            variant="outlined"
-            density="compact"
-            append-inner-icon="mdi-magnify"
-          />
 
-          <d-submit-button @click:submit="filterData" />
+          <div class="col-span-3 grid grid-cols-2 gap-2 w-full">
+            <!-- <v-text-field
+              id="global_search_modal"
+              v-model="filters.global"
+              hide-details
+              label="Global Search"
+              placeholder="Search anything related to styles, style name, factory, etc"
+              variant="outlined"
+              density="compact"
+              append-inner-icon="mdi-magnify"
+              class="col-span-1"
+            /> -->
+            <d-text-input
+              id="global_search_modal"
+              v-model="filters.global"
+              label="Global"
+              placeholder="Search anything related to styles, style name, factory, etc"
+            />
+
+            <d-submit-button @click:submit="filterData" class="grid-cols-1" />
+          </div>
         </div>
       </form>
     </template>
@@ -480,10 +536,10 @@ onMounted(async () => {
         :loading="metaModal.loading"
         density="compact"
         :header-props="{
-          class: '!bg-[#F4F6F8] whitespace-nowrap'
+          class: '!bg-scLightest dark:!bg-dark2 whitespace-nowrap',
         }"
         :row-props="{
-          class: 'cursor-pointer'
+          class: 'cursor-pointer',
         }"
         :item-value="props.itemValue"
         show-current-page
@@ -502,7 +558,7 @@ onMounted(async () => {
       <div class="flex h-max w-full items-center justify-end gap-2">
         <!-- clear -->
 
-        <v-btn
+        <!-- <v-btn
           variant="tonal"
           height="35"
           density="comfortable"
@@ -512,16 +568,22 @@ onMounted(async () => {
           @click="clearSelected"
         >
           Clear
-        </v-btn>
+        </v-btn> -->
+        <d-bt
+          type="button"
+          cta="Clear"
+          @click="clearSelected"
+          class="!border border-solid border-rose-700 px-4 py-2 rounded-lg bg-white dark:!bg-rose-700 transition-all ease-in-out hover:!bg-rose-50 dark:hover:!bg-rose-900"
+          text-class="text-rose-800 mx-auto text-sm dark:text-primary1"
+          no-icon
+        />
+
         <button
           type="button"
-          class="flex items-center gap-2 rounded-md bg-[#00B8D9] px-3 py-2 text-[15px] font-bold text-white shadow-md hover:shadow-xl"
+          class="flex items-center gap-2 rounded-md bg-sc px-3 py-2 text-[15px] font-bold text-white shadow-md hover:shadow-xl"
           @click="onSelectItems"
         >
-          <Icon
-            name="material-symbols:save-rounded"
-            size="20"
-          />
+          <Icon name="material-symbols:save-rounded" size="20" />
           Select {{ props.label }}
         </button>
       </div>

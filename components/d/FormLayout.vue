@@ -198,6 +198,11 @@ const handlePermission = async () => {
   );
 };
 
+const isShowHeader = ref(true);
+const showHideHeader = () => {
+  isShowHeader.value = !isShowHeader.value;
+};
+
 watch(
   () => contentlayout.value,
   (newValue, oldValue) => {
@@ -221,6 +226,28 @@ const localLoadingsState = ref<LoadingsType>({
   csv: false,
   save: false,
 });
+
+const initResize = (e: any) => {
+  const div: any = document.getElementById(`${randomContentElementId.value}`);
+  const resizeHandle = document.createElement("div");
+  resizeHandle.className = "resize-handle";
+  div.appendChild(resizeHandle);
+
+  const startY = e.clientY;
+  const startHeight = parseInt(window.getComputedStyle(div).height, 10);
+
+  const mouseMoveHandler = (e: any) => {
+    div.style.height = `${startHeight + e.clientY - startY}px`;
+  };
+
+  const mouseUpHandler = () => {
+    document.removeEventListener("mousemove", mouseMoveHandler);
+    document.removeEventListener("mouseup", mouseUpHandler);
+  };
+
+  document.addEventListener("mousemove", mouseMoveHandler);
+  document.addEventListener("mouseup", mouseUpHandler);
+};
 
 onMounted(() => {
   document.body.style.overflowY = "hidden";
@@ -263,7 +290,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="flex h-[80vh] flex-col gap-5"
+    class="flex h-[80vh] flex-col gap-3"
     @click="updateHeight"
     v-if="isAllowed"
   >
@@ -275,9 +302,22 @@ onBeforeUnmount(() => {
     >
       <div class="flex flex-row items-center justify-between">
         <div class="flex w-max items-center gap-3 whitespace-nowrap">
-          <h1 class="text-lg font-medium text-zinc-500">
+          <h1 class="text-lg font-medium text-zinc-500 dark:text-primary1">
             {{ mergedConfig?.title }}
           </h1>
+
+          <d-button
+            @click="showHideHeader"
+            icon="mdi-eye-off"
+            is-no-text
+            class="p-1 dark:bg-transparent rounded-full ease-in-out transition-all hover:bg-scDarker3 dark:hover:bg-zinc-600 !bg-sc"
+            text-class="text-zinc-100 dark:text-primary1"
+            icon-class="text-zinc-100 dark:text-primary1"
+            rounded="xl"
+            size=""
+            cta="show/hide column"
+            icon-size="18"
+          ></d-button>
           <slot name="title-append" />
         </div>
 
@@ -286,7 +326,7 @@ onBeforeUnmount(() => {
           :class="countConfigShowButton > 2 ? 'w-2/4' : 'w-1/4'"
         >
           <slot name="prepend-action" />
-          <d-button
+          <d-bt
             v-if="mergedConfig.button?.create?.show"
             :cta="mergedConfig?.button?.create?.cta ?? 'Create New'"
             :class="
@@ -306,7 +346,7 @@ onBeforeUnmount(() => {
             @click="handleClickCreate"
           />
 
-          <d-button
+          <d-bt
             v-if="mergedConfig.button?.save?.show"
             :cta="mergedConfig?.button?.save?.cta ?? 'Save Change'"
             :class="
@@ -337,7 +377,7 @@ onBeforeUnmount(() => {
             @click:loading="emits('click:save:loading', $event)"
           />
 
-          <d-button
+          <d-bt
             v-if="mergedConfig.button?.duplicate?.show"
             :cta="mergedConfig?.button?.duplicate?.cta ?? 'Duplicate'"
             :class="
@@ -362,7 +402,7 @@ onBeforeUnmount(() => {
             type="button"
             @click="handleClickDuplicate"
           />
-          <d-button
+          <d-bt
             v-if="mergedConfig.button?.pdf?.show"
             :cta="mergedConfig?.button?.pdf?.cta ?? 'Download PDF'"
             :class="
@@ -385,7 +425,7 @@ onBeforeUnmount(() => {
             @click="handleClickPdf"
             @click:loading="emits('click:pdf:loading', $event)"
           />
-          <d-button
+          <d-bt
             v-if="mergedConfig.button?.csv?.show"
             :cta="mergedConfig?.button?.csv?.cta ?? 'Download CSV'"
             :class="
@@ -408,7 +448,7 @@ onBeforeUnmount(() => {
             @click="handleClickCsv"
             @click:loading="emits('click:csv:loading', $event)"
           />
-          <d-button
+          <d-bt
             v-if="mergedConfig.button?.clear?.show"
             :cta="mergedConfig?.button?.clear?.cta ?? 'Clear'"
             :class="
@@ -452,7 +492,9 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <slot name="header" v-if="slots.header" />
+      <div :class="classMerge(!isShowHeader ? 'hidden' : '')">
+        <slot name="header" v-if="slots.header" />
+      </div>
 
       <slot name="summary" />
       <d-summary-layout
@@ -478,15 +520,17 @@ onBeforeUnmount(() => {
         :id="randomContentElementId"
         ref="contentlayout"
         @resize="updateHeight"
+        @mousedown="initResize"
         :class="
-          classMerge(
-            'max-h-[50vh] overflow-y-auto p-1',
-            mergedConfig.contentClass
-          )
+          classMerge('overflow-y-auto p-1 relative', mergedConfig.contentClass)
         "
       >
         <slot name="content" />
         <slot></slot>
+        <div
+          class="resize-handle bg-grey1 opacity-40 hover:opacity-100 ease-in-out transition-all duration-500"
+          @mousedown.prevent="initResize"
+        ></div>
       </div>
     </div>
     <slot name="bottom" v-if="slots.bottom" />
@@ -496,3 +540,14 @@ onBeforeUnmount(() => {
     <v-skeleton-loader type="table"></v-skeleton-loader>
   </div>
 </template>
+
+<style scoped>
+.resize-handle {
+  width: 100%;
+  height: 0.25rem;
+  cursor: ns-resize;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+</style>

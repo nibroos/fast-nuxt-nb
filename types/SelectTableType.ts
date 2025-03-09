@@ -99,6 +99,7 @@ export type SelectTableType = {
   modalHeaderClass?: string
   modalHeaderTextClass?: string
   modalCustomClass?: string
+  modalParentClass?: string
   api?: string
   methodApi?: 'get' | 'post'
   detailApi?: string

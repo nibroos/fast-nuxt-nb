@@ -4,6 +4,7 @@ import type { FormCurrencyType } from '~/types/masters/CurrencyType'
 import type { FormItemGroupType } from '~/types/masters/ItemGroupType'
 import type { FormItemSubGroupType } from '~/types/masters/ItemSubGroupType'
 import type { FormProductType } from '~/types/masters/ProductType'
+import type { FormQuotationType } from '~/types/quotations/QuotationType'
 
 const pagination = {
   current_page: 1,
@@ -65,11 +66,44 @@ const formProductCreateEdit = {
   expired_at: null,
 } as FormProductType
 
+const formQuotationCreateEdit = {
+  id: null,
+  customer_id: null,
+  order_type_id: null,
+  currency_id: null,
+  vat_id: null,
+  payment_id: null,
+  pph23_id: null,
+  branch_id: null,
+  quo_no: "",
+  title: "",
+  remark: "",
+  status: "",
+  is_approved: 0,
+  exchange_rate: null,
+  vat_perc: 0,
+  pph23_perc: 0,
+  total_qty: 0,
+  subtotal: 0,
+  total_discount: 0,
+  total_pph23: 0,
+  total_vat: 0,
+  grand_total: 0,
+  due_at: "",
+  expired_at: "",
+  quo_dts: [],
+
+  email: "",
+  phone: "",
+  address: "",
+} as FormQuotationType
+
 export const useInitials = {
   pagination,
   perPageOptions,
   formItemSubGroupCreateEdit,
   formItemGroupCreateEdit,
   formCurrencyCreateEdit,
-  formProductCreateEdit
+  formProductCreateEdit,
+  formQuotationCreateEdit
 }

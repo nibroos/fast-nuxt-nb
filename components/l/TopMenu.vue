@@ -93,13 +93,12 @@ const getCurrentActiveTab = () => {
 };
 
 watchEffect(() => {
-  layoutState.defineTitlePath(configs.value);
   filterPermissions();
 });
 
 onMounted(() => {
   getCurrentActiveTab();
-  layoutState.defineTitlePath(configs.value);
+  // layoutState.defineTitlePath(configs.value);
 });
 </script>
 

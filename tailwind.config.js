@@ -77,6 +77,9 @@ module.exports = {
         lightCancel: '#fff1f2',
         lightCancel1: '#ffe4e6',
         lightCancel2: '#fecdd3',
+        grey1: '#e4e4e7',
+        grey2: '#d4d4d8',
+        grey3: '#71717a',
       }
     },
   },
