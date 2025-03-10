@@ -9,10 +9,16 @@ const props = withDefaults(defineProps<OptionRefBtnType>(), {
 
 const currentTab = ref<unknown>(props.current);
 
-const emits = defineEmits(["update:current", "update:refs"]);
+const emits = defineEmits(["update:current", "update:refs", "click:ref"]);
 
 const handleChange = (value: any) => {
   emits("update:current", value);
+};
+
+const onClick = (ref: any) => {
+  console.log("ref", ref);
+
+  emits("click:ref", ref);
 };
 
 onMounted(() => {
@@ -48,6 +54,7 @@ watch(
       :cta="ref.cta"
       :disabled="ref.disabled"
       :loading="ref.loading"
+      @click="() => onClick(ref)"
     >
       <template #append-cta="{ item }">
         <slot :name="`append-cta-${ref.key}`" :item="item">

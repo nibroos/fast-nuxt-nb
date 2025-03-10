@@ -17,6 +17,15 @@ const useQuotationStore = defineStore('QuotationStore', {
         order_column: 'name',
         order_direction: 'desc'
       } as Record<string, any>,
+
+      qIndexProducts: {
+        item_group_ids: [],
+        item_sub_group_ids: [],
+        code: '',
+        name: '',
+        sku: '',
+        factory_code: '',
+      } as any
     },
     metaModal: {
       index: {
@@ -24,13 +33,21 @@ const useQuotationStore = defineStore('QuotationStore', {
         loading: false,
         meta: {} as Meta
       } as PaginationMeta,
+      indexProducts: {
+        data: [] as any,
+        loading: false,
+        meta: {} as Meta
+      } as PaginationMeta
     },
     tabFormIndex: 0,
     errors: {} as Record<string, any>,
     formLoading: false,
     itemsCheck: {
       checkMain: [] as any,
-      checkProds: [] as any,
+      checkProducts: [] as any,
+    },
+    isOpenModal: {
+      products: false,
     }
   }),
 
@@ -201,9 +218,40 @@ const useQuotationStore = defineStore('QuotationStore', {
       }
     },
 
+    async indexProduct() {
+      if (this.metaModal.index.loading) return
+      this.metaModal.index.loading = true
+
+      try {
+        const response = await useMyFetch().post(
+          '/v1/products/index-product',
+          this.queryModal.qIndexProducts
+        )
+
+        this.metaModal.indexProducts = response.data
+
+        return response
+      } catch (error: any) {
+        console.log('Failed To Fetch Data', error.response.data);
+      } finally {
+        this.metaModal.index.loading = false
+      }
+    },
+
     clickClearRefs() {
       this.itemsCheck.checkMain = []
-      this.itemsCheck.checkProds = []
+      this.itemsCheck.checkProducts = []
+    },
+
+    handleClearQuery() {
+      this.queryModal.qIndexProducts = {
+        item_group_ids: [],
+        item_sub_group_ids: [],
+        code: '',
+        name: '',
+        sku: '',
+        factory_code: '',
+      }
     }
 
   },

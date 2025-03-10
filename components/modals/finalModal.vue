@@ -18,7 +18,7 @@
       <slot name="header">
         <div class="flex flex-row items-center justify-between">
           <h1
-            class="text-lg font-semibold text-zinc-900"
+            class="text-lg font-semibold text-zinc-900 dark:text-primary1"
             :class="[props.headerTextClass]"
           >
             <slot name="label">

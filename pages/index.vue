@@ -14,5 +14,5 @@ definePageMeta({
 </script>
 
 <template>
-  <div>Welkam Nibros</div>
+  <div>Dashboard</div>
 </template>

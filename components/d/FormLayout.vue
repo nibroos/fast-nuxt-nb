@@ -453,7 +453,7 @@ onBeforeUnmount(() => {
             :cta="mergedConfig?.button?.clear?.cta ?? 'Clear'"
             :class="
               classMerge(
-                '!bg-zinc-200 dark:!bg-dark2 hover:bg-scLightest !gap-6 dark:hover:!bg-dark1 text-sm transition-all ease-in-out !border-2 p-2 rounded-lg !border-zinc-200 dark:border-none',
+                '!bg-zinc-200 dark:!bg-dark1 hover:bg-scLightest !gap-6 dark:hover:!bg-dark2 text-sm transition-all ease-in-out !border-2 p-2 rounded-lg !border-zinc-200 dark:border-none',
                 mergedConfig.button?.clear?.class ?? ''
               )
             "
