@@ -126,7 +126,9 @@ onBeforeUnmount(() => {
       :disabled="props.disabled"
       @update:model-value="updateValue"
       hide-details
-    ></v-text-field>
+    >
+      <slot :value="realValue"> </slot>
+    </v-text-field>
     <div v-if="slots.details && errors.length == 0" class="flex flex-col gap-1">
       <slot name="details" />
     </div>

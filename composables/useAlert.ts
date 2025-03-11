@@ -134,6 +134,31 @@ const alertWarning = () => {
   })
 }
 
+const alertAction = (message: string, title: string, icon: any, opt?: any) => {
+  Swal.fire({
+    title,
+    icon,
+    text: message,
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 5000,
+    timerProgressBar: true,
+    allowOutsideClick: false, // Prevents closing by clicking outside
+    allowEscapeKey: false, // Prevents closing with Escape key
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
+    },
+    customClass: {
+      title: opt?.customClass?.title || '!p-0 !m-0 !mb-2 !ml-2',
+      popup: opt?.customClass?.popup || '!p-2',
+      container: opt?.customClass?.container || '!p-0 !m-0',
+      htmlContainer: opt?.customClass?.htmlContainer || '!p-0 !m-0 !ml-2',
+    }
+  })
+}
+
 const hideAlert = () => {
   Swal.close()
 }
@@ -147,5 +172,6 @@ export const useAlert = {
   hideAlert,
   showPopupConfirmation,
   alertLoading,
-  alertLoading2
+  alertLoading2,
+  alertAction
 }

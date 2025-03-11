@@ -17,3 +17,52 @@
 .v-breadcrumbs-item {
   padding: 0 !important;
 }
+
+.sticky-right {
+  position: sticky !important;
+  right: 0 !important;
+  z-index: 1;
+}
+
+
+.action-table {
+  height: 100%;
+  white-space: nowrap;
+  text-align: right;
+  position: relative;
+}
+
+.action-table .action-button {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translate(0, -50%);
+  height: 100%;
+  transition: all 0.05s ease;
+  opacity: 0;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  z-index: 5;
+}
+
+.action-table .action-button a {
+  margin-right: 0.25em;
+}
+
+.table-hover tbody tr:hover td.action-table .action-button {
+  opacity: 1;
+  background-color: #bfa094 !important;
+}
+
+[data-theme="dark"].table-hover tbody tr:hover td.action-table .action-button {
+  opacity: 1;
+  background-color: #3f3f46 !important;
+}
+
+.custom-swal {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}

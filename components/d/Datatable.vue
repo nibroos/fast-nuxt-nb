@@ -661,8 +661,9 @@ onMounted(async () => {
             :name="`item.${field.key}`"
             :item="item"
             :index="index"
+            class="abcd"
           >
-            <div class="flex items-center justify-center gap-2">
+            <div class="flex items-center justify-center gap-2 abc">
               <slot name="actions.delete" :item="item" :index="index">
                 <d-button
                   v-if="!props.noDelete"

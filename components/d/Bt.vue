@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { SnackbarType } from "~/types/components/FormType";
 import { classMerge } from "~/utils/strings";
 // import {normalizeClass}
 interface IProps {
@@ -22,6 +23,10 @@ interface IProps {
   size?: string;
   title?: string;
   disabledCopy?: boolean;
+  appendIcon?: string;
+  isNotif?: boolean;
+  notifText?: string;
+  notifTimeout?: number;
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -45,6 +50,10 @@ const props = withDefaults(defineProps<IProps>(), {
   size: "small",
   title: "",
   disabledCopy: true,
+  appendIcon: "",
+  isNotif: false,
+  notifText: (props) => `${props.cta}`,
+  notifTimeout: 5000,
 });
 
 const mergedConfig = computed(() => {
@@ -60,6 +69,12 @@ const handleClick = () => {
   if (localDisabled.value) return;
   emits("click");
   emits("click:loading", true);
+
+  if (!!props.isNotif) {
+    // snackbar.value.text = props.notifText;
+    // snackbar.value.timeout = props.notifTimeout;
+    useAlert.alertAction(props.notifText, "Notification", "success");
+  }
 
   if (!!props.activateLoading) {
     localLoadingState.value = true;
@@ -135,110 +150,112 @@ onMounted(() => {});
 </script>
 
 <template>
-  <button
-    v-if="type == 'submit'"
-    :class="
-      classMerge(
-        'flex cursor-pointer items-center p-1.5 transition-all ease-in-out hover:bg-zinc-100 sm:gap-x-1',
-        props.class,
-        `${
-          localDisabled && !!disabledClass
-            ? disabledClass
-            : localDisabled
-            ? 'cursor-not-allowed bg-zinc-400 hover:!bg-zinc-400'
-            : ''
-        }`
-      )
-    "
-    @click="handleClick"
-    :type="type"
-    :disabled="localDisabled"
-    :variant="props.variant"
-    :size="props.size"
-    :title="props.cta ?? props.title"
-  >
-    <v-icon
-      :icon="props.icon"
-      :size="iconSize"
-      v-if="!props.noIcon && !props.loading"
-      :class="props.iconClass"
-    />
+  <slot>
+    <button
+      v-if="type == 'submit'"
+      :class="
+        classMerge(
+          'flex cursor-pointer items-center p-1.5 transition-all ease-in-out hover:bg-zinc-100 sm:gap-x-1',
+          props.class,
+          `${
+            localDisabled && !!disabledClass
+              ? disabledClass
+              : localDisabled
+              ? 'cursor-not-allowed bg-zinc-400 hover:!bg-zinc-400'
+              : ''
+          }`
+        )
+      "
+      @click="handleClick"
+      :type="type"
+      :disabled="localDisabled"
+      :variant="props.variant"
+      :size="props.size"
+      :title="props.cta ?? props.title"
+    >
+      <v-icon
+        :icon="props.icon"
+        :size="iconSize"
+        v-if="!props.noIcon && !props.loading"
+        :class="props.iconClass"
+      />
 
-    <span
-      v-if="!props.isNoText"
-      :class="
-        classMerge(
-          'flex items-center justify-center font-medium capitalize transition-all ease-in-out',
-          props.textClass,
-          `${
-            localDisabled && !!localDisabledTextClass
-              ? localDisabledTextClass ?? 'text-zinc-400'
-              : ''
-          }`,
-          `${localLoadingState ? 'flex-row gap-3' : ''}`
-        )
-      "
-    >
-      <v-progress-circular
-        indeterminate
-        size="20"
-        v-if="localLoadingState"
-      ></v-progress-circular>
-      <span>
-        {{ props.cta }}
+      <span
+        v-if="!props.isNoText"
+        :class="
+          classMerge(
+            'flex items-center justify-center font-medium capitalize transition-all ease-in-out',
+            props.textClass,
+            `${
+              localDisabled && !!localDisabledTextClass
+                ? localDisabledTextClass ?? 'text-zinc-400'
+                : ''
+            }`,
+            `${localLoadingState ? 'flex-row gap-3' : ''}`
+          )
+        "
+      >
+        <v-progress-circular
+          indeterminate
+          size="20"
+          v-if="localLoadingState"
+        ></v-progress-circular>
+        <span>
+          {{ props.cta }}
+        </span>
       </span>
-    </span>
-  </button>
-  <button
-    v-else
-    :class="
-      classMerge(
-        'flex cursor-pointer flex-row items-center transition-all ease-in-out hover:bg-zinc-100',
-        props.class,
-        `${localDisabled ? 'cursor-not-allowed' : ''}`
-      )
-    "
-    @click="handleClick"
-    :type="type"
-    :disabled="localDisabled"
-    :title="props.cta ?? props.title"
-    :variant="props.variant"
-    :size="props.size"
-  >
-    <v-icon
-      :icon="props.icon"
-      :size="iconSize"
-      v-if="!props.noIcon && !props.loading"
-      :class="props.iconClass"
-    />
-    <span
-      v-if="!props.isNoText"
+    </button>
+    <button
+      v-else
       :class="
         classMerge(
-          'flex items-center justify-center font-medium capitalize transition-all ease-in-out',
-          props.textClass,
-          `${
-            localDisabled && !!localDisabledTextClass
-              ? localDisabledTextClass ?? 'text-zinc-400'
-              : ''
-          }`,
-          `${localLoadingState ? 'flex-row gap-3' : ''}`
+          'flex cursor-pointer flex-row items-center transition-all ease-in-out hover:bg-zinc-100',
+          props.class,
+          `${localDisabled ? 'cursor-not-allowed' : ''}`
         )
       "
+      @click="handleClick"
+      :type="type"
+      :disabled="localDisabled"
+      :title="props.cta ?? props.title"
+      :variant="props.variant"
+      :size="props.size"
     >
-      <v-progress-circular
-        indeterminate
-        size="20"
-        v-if="localLoadingState"
-      ></v-progress-circular>
-      <slot name="cta" :item="props">
-        <d-shorttext
-          :text="props.cta"
-          :class="props.textClass"
-          :max-length="Number(props.maxLengthDisplay)"
-        />
-      </slot>
-      <slot name="append-cta" :item="props" />
-    </span>
-  </button>
+      <v-icon
+        :icon="props.icon"
+        :size="iconSize"
+        v-if="!props.noIcon && !props.loading"
+        :class="props.iconClass"
+      />
+      <span
+        v-if="!props.isNoText"
+        :class="
+          classMerge(
+            'flex items-center justify-center font-medium capitalize transition-all ease-in-out',
+            props.textClass,
+            `${
+              localDisabled && !!localDisabledTextClass
+                ? localDisabledTextClass ?? 'text-zinc-400'
+                : ''
+            }`,
+            `${localLoadingState ? 'flex-row gap-3' : ''}`
+          )
+        "
+      >
+        <v-progress-circular
+          indeterminate
+          size="20"
+          v-if="localLoadingState"
+        ></v-progress-circular>
+        <slot name="cta" :item="props">
+          <d-shorttext
+            :text="props.cta"
+            :class="props.textClass"
+            :max-length="Number(props.maxLengthDisplay)"
+          />
+        </slot>
+        <slot name="append-cta" :item="props" />
+      </span>
+    </button>
+  </slot>
 </template>

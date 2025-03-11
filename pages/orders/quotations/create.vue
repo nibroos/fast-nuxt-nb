@@ -6,8 +6,19 @@ import type {
   RefBtnType,
 } from "~/types/components/OptionRefBtnType";
 import type { FormLayoutType } from "~/types/FormLayoutType";
-import type { FieldSelectableType } from "~/types/SelectTableType";
+import type {
+  FieldSelectableType,
+  FilterSelectableType,
+} from "~/types/SelectTableType";
 import { debounce } from "lodash-es";
+import type { FormVatType } from "~/types/masters/VatType";
+import type { FormPph23Type } from "~/types/masters/Pph23Type";
+import type { FormCurrencyType } from "~/types/masters/CurrencyType";
+import type {
+  FormQuotationType,
+  QuoDtDiscType,
+  QuoDtType,
+} from "~/types/quotations/QuotationType";
 
 const layoutStore = useLayoutsStore();
 const { topTitle } = storeToRefs(layoutStore);
@@ -48,7 +59,15 @@ const headers = ref([
   { key: "disc_am", title: "Disc (Am)", sortable: true },
   { key: "disc_perc", title: "Disc (%)", sortable: true },
   { key: "total_am", title: "Total Amount", sortable: true },
-  { key: "action", title: "Action", sortable: false },
+  {
+    key: "action",
+    title: "Action",
+    sortable: false,
+    headerProps: { class: "cursor-pointer action-table sticky-right" },
+    cellProps: {
+      class: "action-table sticky-right",
+    },
+  },
 ]);
 
 const headersBOM = ref([
@@ -56,7 +75,130 @@ const headersBOM = ref([
   { key: "item_name", title: "Product Name", sortable: true },
   { key: "item_unit_name", title: "Unit", sortable: true },
   { key: "qty", title: "Qty", sortable: true },
-  { key: "action", title: "Action", sortable: false },
+  {
+    key: "action",
+    title: "Action",
+    sortable: false,
+    headerProps: { class: "cursor-pointer action-table sticky-right" },
+    cellProps: {
+      class: "action-table sticky-right",
+    },
+  },
+]);
+
+const headersVAT = ref<FieldSelectableType[]>([
+  {
+    title: "Name",
+    key: "name",
+    value: "name",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Percentage",
+    key: "num",
+    value: "num",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Multiplier",
+    key: "multiplier",
+    value: "multiplier",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Divider",
+    key: "divider",
+    value: "divider",
+    align: "start",
+    sortable: true,
+  },
+]);
+
+const headersCustomer = ref<FieldSelectableType[]>([
+  {
+    title: "Name",
+    key: "name",
+    value: "name",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Code",
+    key: "code",
+    value: "code",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Phone",
+    key: "phone",
+    value: "phone",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Email",
+    key: "email",
+    value: "email",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Address",
+    key: "address",
+    value: "address",
+    align: "start",
+    sortable: true,
+  },
+  {
+    title: "Customer Type",
+    key: "customer_type_name",
+    value: "customer_type_name",
+    align: "start",
+    sortable: true,
+  },
+]);
+
+const filtersCustomer = ref<FilterSelectableType[]>([
+  {
+    title: "Name",
+    key: "name",
+  },
+  {
+    title: "Code",
+    key: "code",
+  },
+  {
+    title: "Phone",
+    key: "phone",
+  },
+  {
+    title: "Email",
+    key: "email",
+  },
+  {
+    title: "Address",
+    key: "address",
+  },
+  {
+    title: "Customer Type",
+    key: "customer_type_ids",
+    type: "autocomplete",
+    display: "name",
+    others: {
+      methodApi: "post",
+      api: "/v1/customer-types/index-customer-type",
+      singleApi: "/v1/customer-types/index-customer-type",
+      pageEndProp: "meta.next_page_url",
+      itemTitle: "name",
+      itemValue: "id",
+      label: "Customer Type",
+      innerSearchKey: "global",
+    },
+  },
 ]);
 
 const headersModalProducts = ref<FieldSelectableType[]>([
@@ -139,7 +281,7 @@ const headersModalProducts = ref<FieldSelectableType[]>([
   },
 ]);
 
-const filterOptionsProducts = ref([
+const filtersOptionsProducts = ref([
   {
     title: "Group",
     key: "item_group_ids",
@@ -172,7 +314,7 @@ const filterOptionsProducts = ref([
   },
 ]);
 
-const filterTextProducts = ref([
+const filtersTextProducts = ref([
   {
     title: "Code",
     key: "code",
@@ -255,18 +397,39 @@ const autocompleteCustomer = (data: any) => {
   form.value.address = data.address;
 };
 
-const autocompleteVat = (data: any) => {
-  form.value.vat_perc = data.num;
+const autocompleteVat = (data: FormVatType) => {
+  form.value.vat_perc = Number(data.num);
+
+  if (!!form.value.vat_id) {
+    itemsCheck.value.checkMain.forEach((item: QuoDtType) => {
+      item.vat_id = null;
+      item.vat_perc = 0;
+    });
+  }
+
+  calculateTotalAmount();
 };
 
-const autocompletePph = (data: any) => {
-  form.value.pph23_perc = data.num;
+const autocompleteVatDt = (data: FormVatType, quoDtType: QuoDtType) => {
+  quoDtType.vat_perc = Number(data.num);
+
+  calculateTotalAmount();
 };
 
-const autocompleteCurrency = (data: any) => {
-  console.log("data curency", data);
+const removeVatDt = (quoDtType: QuoDtType) => {
+  if (!quoDtType.vat_id) {
+    quoDtType.vat_perc = 0;
+    quoDtType.vat_perc_am = 0;
+  }
+  calculateTotalAmount();
+};
 
-  form.value.exchange_rate = data.num;
+const autocompletePph = (data: FormPph23Type) => {
+  form.value.pph23_perc = Number(data.num);
+};
+
+const autocompleteCurrency = (data: FormCurrencyType) => {
+  form.value.exchange_rate = Number(data.num);
 };
 
 const optionRefBtnRef = ref<RefBtnType[]>([
@@ -333,28 +496,20 @@ const onClickAddProducts = () => {
   itemsCheck.value.checkMain = itemsCheck.value.checkProducts;
 
   closeAllModal();
-
-  console.log("itemsCheck.checkProducts", itemsCheck.value.checkProducts);
 };
 
 const onClickDeleteSelected = (item: any, index: number) => {
   itemsCheck.value.checkProducts.splice(index, 1);
 };
 
-const onClickDeleteBom = (item: any, index: number, internalItem: any) => {
-  console.log(
-    "internalItem",
-    "internalItem.key",
-    internalItem,
-    internalItem.index
-  );
+const onClickDeleteBom = (
+  index: number,
+  indexBom: number,
+  internalItem: any
+) => {
+  itemsCheck.value.checkMain[index].boms.splice(indexBom, 1);
 
-  itemsCheck.value.checkMain.forEach((checkItem: any, iCheck: number) => {
-    if (internalItem.index == iCheck) {
-      console.log("internalItem, iCheck", checkItem, iCheck);
-      itemsCheck.value.checkMain[iCheck].boms.splice(index, 1);
-    }
-  });
+  calculateTotalAmount();
 };
 
 const countSelectedReferences = () => {
@@ -366,51 +521,48 @@ const countSelectedReferences = () => {
 };
 
 const calculateTotalAmount = () => {
-  // debounce(() => {
-  //   itemsCheck.value.checkMain.forEach((item: any) => {
-  //     const discountPercentage = Number(item.disc_perc / 100);
-  //     const discountAmount = Number(item.disc_am);
-  //     const priceSell = Number(item.price_sell);
-  //     const qty = Number(item.qty);
-  //     const discountedPercPriceSell = Number(priceSell * discountPercentage);
-  //     const discountedPriceSell = Number(priceSell - discountedPercPriceSell);
-  //     const discountedAmount = Number(discountedPriceSell * qty);
-
-  //     item.vat_perc_val = 0;
-
-  //     if (!!item.vat_id) {
-  //       // const vatMultiplier = item.vat_id.multiplier;
-  //       // const vatDivider = item.vat_id.divider;
-  //       // const vatAmount = discountedAmount * vatMultiplier / vatDivider;
-
-  //       item.vat_perc_num = priceSell * (item.vat_perc / 100);
-  //       item.vat_perc_val = item.qty * item.vat_perc_num;
-  //     }
-
-  //     item.total_am = discountedAmount - discountAmount + item.vat_perc_val;
-  //   });
-  // }, 500);
-  itemsCheck.value.checkMain.forEach((item: any) => {
-    const discountPercentage = Number(item.disc_perc / 100);
-    const discountAmount = Number(item.disc_am);
+  itemsCheck.value.checkMain.forEach((item: QuoDtType) => {
+    const discPercentage = Number((item.disc_perc ?? 0) / 100);
+    const discAmount = Number(item.disc_am);
     const priceSell = Number(item.price_sell);
+    const priceBuy = Number(item.price_buy);
     const qty = Number(item.qty);
-    const discountedPercPriceSell = Number(priceSell * discountPercentage);
-    const discountedPriceSell = Number(priceSell - discountedPercPriceSell);
-    const discountedAmount = Number(discountedPriceSell * qty);
+    const subtotalSell = Number(priceSell * qty);
+    const subtotalBuy = Number(priceBuy * qty);
 
-    item.vat_perc_val = 0;
+    const discPercPriceSell = Number(priceSell * discPercentage);
+    const discPercNum = Number(priceSell - discPercPriceSell);
+    const discPercAm = Number(qty * discPercNum);
+
+    let discType: QuoDtDiscType = "p";
+
+    let discFinal = 0;
+    if (!!discAmount && discAmount > 0) {
+      discType = "a";
+      discFinal = subtotalSell - discAmount;
+    } else {
+      discFinal = discPercAm;
+    }
+
+    item.subtotal_sell = subtotalSell;
+    item.subtotal_buy = subtotalBuy;
+
+    item.disc_perc_num = discPercNum;
+    item.disc_perc_am = discPercAm;
+    item.disc_final = discFinal;
+    item.disc_type = discType;
+
+    item.vat_perc_am = 0;
 
     if (!!item.vat_id) {
       // const vatMultiplier = item.vat_id.multiplier;
       // const vatDivider = item.vat_id.divider;
-      // const vatAmount = discountedAmount * vatMultiplier / vatDivider;
+      // const vatAmount = discAmount * vatMultiplier / vatDivider;
 
-      item.vat_perc_num = priceSell * (item.vat_perc / 100);
-      item.vat_perc_val = item.qty * item.vat_perc_num;
+      item.vat_perc_am = discFinal * ((item.vat_perc ?? 0) / 100);
     }
 
-    item.total_am = discountedAmount - discountAmount + item.vat_perc_val;
+    item.total_am = discFinal + item.vat_perc_am;
   });
 };
 
@@ -494,88 +646,8 @@ watchEffect(() => {
               @click:selected="autocompleteCustomer"
               modal-parent-class="!z-[2500]"
               modal-custom-class="!w-4/5"
-              :fields="[
-                {
-                  title: 'Name',
-                  key: 'name',
-                  value: 'name',
-                  align: 'start',
-                  sortable: true,
-                },
-                {
-                  title: 'Code',
-                  key: 'code',
-                  value: 'code',
-                  align: 'start',
-                  sortable: true,
-                },
-                {
-                  title: 'Phone',
-                  key: 'phone',
-                  value: 'phone',
-                  align: 'start',
-                  sortable: true,
-                },
-                {
-                  title: 'Email',
-                  key: 'email',
-                  value: 'email',
-                  align: 'start',
-                  sortable: true,
-                },
-                {
-                  title: 'Address',
-                  key: 'address',
-                  value: 'address',
-                  align: 'start',
-                  sortable: true,
-                },
-                {
-                  title: 'Customer Type',
-                  key: 'customer_type_name',
-                  value: 'customer_type_name',
-                  align: 'start',
-                  sortable: true,
-                },
-              ]"
-              :filters="[
-                {
-                  title: 'Name',
-                  key: 'name',
-                },
-                {
-                  title: 'Code',
-                  key: 'code',
-                },
-                {
-                  title: 'Phone',
-                  key: 'phone',
-                },
-                {
-                  title: 'Email',
-                  key: 'email',
-                },
-                {
-                  title: 'Address',
-                  key: 'address',
-                },
-                {
-                  title: 'Customer Type',
-                  key: 'customer_type_ids',
-                  type: 'autocomplete',
-                  display: 'name',
-                  others: {
-                    methodApi: 'post',
-                    api: '/v1/customer-types/index-customer-type',
-                    singleApi: '/v1/customer-types/index-customer-type',
-                    pageEndProp: 'meta.next_page_url',
-                    itemTitle: 'name',
-                    itemValue: 'id',
-                    label: 'Customer Type',
-                    innerSearchKey: 'global',
-                  },
-                },
-              ]"
+              :fields="headersCustomer"
+              :filters="filtersCustomer"
             />
           </div>
 
@@ -636,7 +708,7 @@ watchEffect(() => {
           <div class="sm:col-span-1">
             <d-switch-status v-model="form.is_approved" :label="`Approve`" />
           </div>
-          <d-button type="submit" class="!hidden"></d-button>
+          <d-bt type="submit" class="!hidden"></d-bt>
         </form>
       </template>
       <template #content>
@@ -677,7 +749,7 @@ watchEffect(() => {
             density="compact"
             height="500"
             fixed-header
-            class="col-span-3 sm:col-span-1"
+            class="col-span-3 sm:col-span-1 table-hover"
             :header-props="{
               class: '!bg-scLightest dark:!bg-scDarker whitespace-nowrap',
             }"
@@ -686,7 +758,8 @@ watchEffect(() => {
             }"
           >
             <template #item.vat_id="{ item }">
-              <d-select-table
+              <lazy-d-select-table
+                v-if="!form.vat_id"
                 api="/v1/vats/index-vat"
                 detail-api="/v1/vats/index-vat"
                 method-api="post"
@@ -701,36 +774,9 @@ watchEffect(() => {
                 modal-custom-class="!w-4/5"
                 :display-single-multiple-keys="['name', 'num']"
                 is-display-multiple-key
-                :fields="[
-                  {
-                    title: 'Name',
-                    key: 'name',
-                    value: 'name',
-                    align: 'start',
-                    sortable: true,
-                  },
-                  {
-                    title: 'Percentage',
-                    key: 'num',
-                    value: 'num',
-                    align: 'start',
-                    sortable: true,
-                  },
-                  {
-                    title: 'Multiplier',
-                    key: 'multiplier',
-                    value: 'multiplier',
-                    align: 'start',
-                    sortable: true,
-                  },
-                  {
-                    title: 'Divider',
-                    key: 'divider',
-                    value: 'divider',
-                    align: 'start',
-                    sortable: true,
-                  },
-                ]"
+                @click:selected="(data) => autocompleteVatDt(data, item)"
+                @update:model-value="removeVatDt(item)"
+                :fields="headersVAT"
                 :filters="[
                   {
                     title: 'Name',
@@ -782,6 +828,8 @@ watchEffect(() => {
                 }"
                 hide-currency-display
                 @update:modelValue="calculateTotalAmount"
+                :disabled="!!item.disc_perc"
+                :disabled-copy="false"
                 label=""
                 class="w-[9rem]"
               />
@@ -795,6 +843,8 @@ watchEffect(() => {
                 }"
                 hide-currency-display
                 @update:modelValue="calculateTotalAmount"
+                :disabled="!!item.disc_am"
+                :disabled-copy="false"
                 label=""
                 class="w-[9rem]"
               />
@@ -804,17 +854,21 @@ watchEffect(() => {
               <d-num-layout :value="item.total_am" />
             </template>
             <template #item.action="{ item, index }">
-              <d-button
-                @click="onClickDeleteSelected(item, index)"
-                icon="mdi-delete"
-                is-no-text
-                class="p-1 hover:text-zinc-100 hover:bg-lightCancel2 rounded-full ease-in-out transition-all hover:dark:!bg-cancel1 dark:!bg-cancel"
-                icon-class="text-cancel dark:text-primary1"
-                rounded="xl"
-                size=""
-                cta="select"
-                icon-size="16"
-              ></d-button>
+              <div class="action-button">
+                <d-bt
+                  @click="onClickDeleteSelected(item, index)"
+                  icon="mdi-delete"
+                  is-no-text
+                  class="p-1 bg-primary1 hover:text-zinc-100 hover:bg-lightCancel2 rounded-full ease-in-out transition-all hover:dark:!bg-cancel1 dark:!bg-cancel"
+                  icon-class="text-cancel dark:text-primary1"
+                  rounded="xl"
+                  size=""
+                  cta="delete"
+                  icon-size="16"
+                  :is-notif="true"
+                  :notif-text="`${item.name} deleted`"
+                ></d-bt>
+              </div>
             </template>
 
             <template #item.expand="{ toggleExpand, isExpanded, internalItem }">
@@ -835,11 +889,13 @@ watchEffect(() => {
               #expanded-row="{
             columns,
             item,
-            internalItem
+            internalItem,
+            index
           }: {
             columns: any
             item: any
             internalItem: any
+            index: number
           }"
             >
               <tr v-if="item.boms.length > 0">
@@ -852,6 +908,7 @@ watchEffect(() => {
                       density="compact"
                       return-object
                       fixed-header
+                      class="table-hover"
                       :height="item.boms.length > 1 ? '170' : '100'"
                       :header-props="{
                         class: '!bg-grey1 dark:!bg-dark2 whitespace-nowrap',
@@ -872,18 +929,21 @@ watchEffect(() => {
                           class="w-[9rem]"
                         />
                       </template>
-                      <template #item.action="{ item, index }">
-                        <d-button
-                          @click="onClickDeleteBom(item, index, internalItem)"
-                          icon="mdi-delete"
-                          is-no-text
-                          class="p-1 hover:text-zinc-100 hover:bg-lightCancel2 rounded-full ease-in-out transition-all hover:dark:!bg-cancel1 dark:!bg-cancel"
-                          icon-class="text-cancel dark:text-primary1"
-                          rounded="xl"
-                          size=""
-                          cta="select"
-                          icon-size="16"
-                        ></d-button>
+                      <template #item.action="{ item: itemBom, index: iBom }">
+                        <div class="action-button">
+                          <d-bt
+                            @click="onClickDeleteBom(index, iBom, internalItem)"
+                            icon="mdi-delete"
+                            is-no-text
+                            class="p-1 hover:text-zinc-100 hover:bg-lightCancel2 rounded-full ease-in-out transition-all hover:dark:!bg-cancel1 dark:!bg-cancel"
+                            icon-class="text-cancel dark:text-primary1"
+                            rounded="xl"
+                            cta="delete"
+                            icon-size="16"
+                            :is-notif="true"
+                            :notif-text="`${itemBom.item_name} deleted`"
+                          ></d-bt>
+                        </div>
                       </template>
                     </v-data-table-virtual>
                   </div>
@@ -934,41 +994,12 @@ watchEffect(() => {
               v-model="form.vat_id"
               class="col-span-2 lg:col-span-1"
               is-quick-select
-              @click:selected="autocompleteVat"
               modal-parent-class="!z-[2500]"
               modal-custom-class="!w-4/5"
               :display-single-multiple-keys="['name', 'num']"
               is-display-multiple-key
-              :fields="[
-                {
-                  title: 'Name',
-                  key: 'name',
-                  value: 'name',
-                  align: 'start',
-                  sortable: true,
-                },
-                {
-                  title: 'Percentage',
-                  key: 'num',
-                  value: 'num',
-                  align: 'start',
-                  sortable: true,
-                },
-                {
-                  title: 'Multiplier',
-                  key: 'multiplier',
-                  value: 'multiplier',
-                  align: 'start',
-                  sortable: true,
-                },
-                {
-                  title: 'Divider',
-                  key: 'divider',
-                  value: 'divider',
-                  align: 'start',
-                  sortable: true,
-                },
-              ]"
+              @update:model-value="autocompleteVat"
+              :fields="headersVAT"
               :filters="[
                 {
                   title: 'Name',
@@ -1070,7 +1101,7 @@ watchEffect(() => {
           @submit.prevent="fetchModalFilter"
         >
           <d-autocomplete
-            v-for="filter in filterOptionsProducts"
+            v-for="filter in filtersOptionsProducts"
             :key="filter.key"
             v-model="queryModal.qIndexProducts[filter.key]"
             :api="filter.api"
@@ -1086,7 +1117,7 @@ watchEffect(() => {
           ></d-autocomplete>
 
           <d-text-input
-            v-for="filter in filterTextProducts"
+            v-for="filter in filtersTextProducts"
             :key="filter.key"
             v-model="queryModal.qIndexProducts[filter.key]"
             :label="filter.title"

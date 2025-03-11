@@ -377,131 +377,131 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div
-    :class="classMerge('flex w-full grow', props.class)"
-    :title="selectedText"
-  >
-    <d-bt
-      type="button"
-      :cta="selectedText ? `${props.label}: ${selectedText}` : props.cta"
-      :append-icon="props.appendIcon"
-      :no-icon="!!selectedText"
-      :class="
-        classMerge(
-          'text-none flex w-full grow items-stretch justify-center gap-1 whitespace-nowrap !border-1.5 !border-solid dark:bg-dark1 hover:dark:bg-dark2',
-          !!selectedText
-            ? '!border-zinc-300 dark:!border-zinc-500 p-2.5 rounded-l-md'
-            : '!border-zinc-200 dark:!border-zinc-500 rounded-md p-1.5',
-          props.btnClass
-        )
-      "
-      :text-class="
-        classMerge(
-          'text-sm dark:text-primary1  font-normal dark:!text-primary1',
-          !!selectedText ? '!text-dark3' : '!text-zinc-400',
-          props.textClass
-        )
-      "
-      :icon="!selectedText ? icon : undefined"
-      :icon-class="
-        classMerge('!text-zinc-400 dark:text-primary1', props.iconClass)
-      "
-      @click="openModal(true)"
-      :max-length-display="props.maxLengthDisplay"
-      :loading="showMetaModal.loading"
-    ></d-bt>
-
-    <d-bt
-      v-if="selectedText"
-      type="button"
-      cta="Clear"
-      :class="
-        classMerge(
-          'text-none m-0 rounded-r-md flex items-center justify-center border-y-1.5 border-r-1.5 border-solid py-0',
-          !!selectedText
-            ? 'border-zinc-300 dark:border-zinc-500'
-            : 'border-zinc-200 dark:border-zinc-500'
-        )
-      "
-      text-class="text-zinc-400"
-      icon="mdi-close"
-      icon-class="text-zinc-400"
-      is-no-text
-      @click="clearSelected"
-    />
-  </div>
-  <!-- Modal Add Style -->
-  <modals-final-modal
-    :is-open="showModal"
-    :size="'sm'"
-    :label="props.modalTitle"
-    :header-text-class="classMerge('text-lg', props.modalHeaderTextClass)"
-    :custom-class="props.modalCustomClass"
-    :parent-class="props.modalParentClass"
-    @update:is-open="openModal($event)"
-  >
-    <template #label>
-      <div class="flex items-center gap-2">
-        <span class="whitespace-nowrap text-xl dark:text-primary1">
-          {{ props.modalTitle }}
-        </span>
-        <span
-          class="rounded-sm bg-slate-200 px-2 py-1 font-normal"
-          v-if="selectedText"
-        >
-          Selected : {{ selectedText }}
-        </span>
-      </div>
-    </template>
-    <template #top>
-      <form
+  <slot>
+    <div
+      :class="classMerge('flex w-full grow', props.class)"
+      :title="selectedText"
+    >
+      <lazy-d-bt
+        type="button"
+        :cta="selectedText ? `${props.label}: ${selectedText}` : props.cta"
+        :no-icon="!!selectedText"
         :class="
           classMerge(
-            'flex flex-col gap-3',
-            generatedFiltersObj.length <= 3 ? 'flex-row' : 'flex-col'
+            'text-none flex w-full grow items-stretch justify-center gap-1 whitespace-nowrap !border-1.5 !border-solid dark:bg-dark1 hover:dark:bg-dark2',
+            !!selectedText
+              ? '!border-zinc-300 dark:!border-zinc-500 p-2.5 rounded-l-md'
+              : '!border-zinc-200 dark:!border-zinc-500 rounded-md p-1.5',
+            props.btnClass
           )
         "
-        @submit.prevent="filterData()"
-      >
-        <div
-          v-if="generatedFiltersObj.length > 0"
-          :class="
-            classMerge(
-              'grid grid-cols-5 gap-3',
-              generatedFiltersObj.length <= 3
-                ? `grow grid-cols-${generatedFiltersObj.length}`
-                : 'grid-cols-5'
-            )
-          "
-        >
-          <div v-for="(filter, index) in generatedFiltersObj" :key="index">
-            <d-text-input
-              v-if="filter.type === 'text'"
-              v-model="filters[filter.key]"
-              :label="filter.title"
-            />
-            <d-date-picker-light
-              v-else-if="filter.type === 'date'"
-              v-model="filters[filter.key]"
-              :label="filter.title"
-            />
-            <d-autocomplete
-              v-else-if="filter.type === 'autocomplete'"
-              v-model="filters[filter.key]"
-              :label="filter.title"
-              :api="filter.others?.api"
-              :item-value="filter.others?.itemValue"
-              :item-title="filter.others?.itemTitle"
-              :mapping-detail="filter.others?.mappingDetail"
-              :inner-search-key="filter.others?.innerSearchKey"
-              :items-prop="filter.others?.itemsProp"
-              :page-end-prop="filter.others?.pageEndProp"
-              :method-api="filter.others?.methodApi"
-            />
-          </div>
+        :text-class="
+          classMerge(
+            'text-sm dark:text-primary1  font-normal dark:!text-primary1',
+            !!selectedText ? '!text-dark3' : '!text-zinc-400',
+            props.textClass
+          )
+        "
+        :icon="!selectedText ? icon : undefined"
+        :icon-class="
+          classMerge('!text-zinc-400 dark:text-primary1', props.iconClass)
+        "
+        @click="openModal(true)"
+        :max-length-display="props.maxLengthDisplay"
+        :loading="showMetaModal.loading"
+      ></lazy-d-bt>
 
-          <div class="col-span-3 grid grid-cols-2 gap-2 w-full">
-            <!-- <v-text-field
+      <d-bt
+        v-if="selectedText"
+        type="button"
+        cta="Clear"
+        :class="
+          classMerge(
+            'text-none m-0 rounded-r-md flex items-center justify-center border-y-1.5 border-r-1.5 border-solid py-0',
+            !!selectedText
+              ? 'border-zinc-300 dark:border-zinc-500'
+              : 'border-zinc-200 dark:border-zinc-500'
+          )
+        "
+        text-class="text-zinc-400"
+        icon="mdi-close"
+        icon-class="text-zinc-400"
+        is-no-text
+        @click="clearSelected"
+      />
+
+      <!-- Modal Add Style -->
+      <lazy-modals-final-modal
+        :is-open="showModal"
+        :size="'sm'"
+        :label="props.modalTitle"
+        :header-text-class="classMerge('text-lg', props.modalHeaderTextClass)"
+        :custom-class="props.modalCustomClass"
+        :parent-class="props.modalParentClass"
+        @update:is-open="openModal($event)"
+      >
+        <template #label>
+          <div class="flex items-center gap-2">
+            <span class="whitespace-nowrap text-xl dark:text-primary1">
+              {{ props.modalTitle }}
+            </span>
+            <span
+              class="rounded-sm bg-slate-200 px-2 py-1 font-normal"
+              v-if="selectedText"
+            >
+              Selected : {{ selectedText }}
+            </span>
+          </div>
+        </template>
+        <template #top>
+          <form
+            :class="
+              classMerge(
+                'flex flex-col gap-3',
+                generatedFiltersObj.length <= 3 ? 'flex-row' : 'flex-col'
+              )
+            "
+            @submit.prevent="filterData()"
+          >
+            <div
+              v-if="generatedFiltersObj.length > 0"
+              :class="
+                classMerge(
+                  'grid grid-cols-5 gap-3',
+                  generatedFiltersObj.length <= 3
+                    ? `grow grid-cols-${generatedFiltersObj.length}`
+                    : 'grid-cols-5'
+                )
+              "
+            >
+              <div v-for="(filter, index) in generatedFiltersObj" :key="index">
+                <d-text-input
+                  v-if="filter.type === 'text'"
+                  v-model="filters[filter.key]"
+                  :label="filter.title"
+                />
+                <d-date-picker-light
+                  v-else-if="filter.type === 'date'"
+                  v-model="filters[filter.key]"
+                  :label="filter.title"
+                />
+                <d-autocomplete
+                  v-else-if="filter.type === 'autocomplete'"
+                  v-model="filters[filter.key]"
+                  :label="filter.title"
+                  :api="filter.others?.api"
+                  :item-value="filter.others?.itemValue"
+                  :item-title="filter.others?.itemTitle"
+                  :mapping-detail="filter.others?.mappingDetail"
+                  :inner-search-key="filter.others?.innerSearchKey"
+                  :items-prop="filter.others?.itemsProp"
+                  :page-end-prop="filter.others?.pageEndProp"
+                  :method-api="filter.others?.methodApi"
+                />
+              </div>
+
+              <div class="col-span-3 grid grid-cols-2 gap-2 w-full">
+                <!-- <v-text-field
               id="global_search_modal"
               v-model="filters.global"
               hide-details
@@ -512,81 +512,73 @@ onMounted(async () => {
               append-inner-icon="mdi-magnify"
               class="col-span-1"
             /> -->
-            <d-text-input
-              id="global_search_modal"
-              v-model="filters.global"
-              label="Global"
-              placeholder="Search anything related to styles, style name, factory, etc"
+                <d-text-input
+                  id="global_search_modal"
+                  v-model="filters.global"
+                  label="Global"
+                  placeholder="Search anything related to styles, style name, factory, etc"
+                />
+
+                <d-submit-button
+                  @click:submit="filterData"
+                  class="grid-cols-1"
+                />
+              </div>
+            </div>
+          </form>
+        </template>
+
+        <div class="flex h-max w-full flex-col">
+          <v-data-table-server
+            v-model="itemsCheck"
+            :items="metaModal.data ?? []"
+            :headers="headersModal"
+            :items-per-page="filters.per_page"
+            :items-length="metaModal.total ?? 0"
+            :items-per-page-options="useInitials.perPageOptions"
+            :loading="metaModal.loading"
+            density="compact"
+            :header-props="{
+              class: '!bg-scLightest dark:!bg-dark2 whitespace-nowrap',
+            }"
+            :row-props="{
+              class: 'cursor-pointer',
+            }"
+            :item-value="props.itemValue"
+            show-current-page
+            show-select
+            :return-object="props.returnObject"
+            :multiple="props.multiple"
+            :select-strategy="selectStrategy"
+            @update:options="fetchDataServerFetch"
+            fixed-header
+            :height="props.height"
+            hover
+            @click:row="onSelectOption"
+          ></v-data-table-server>
+        </div>
+        <template #footer>
+          <div class="flex h-max w-full items-center justify-end gap-2">
+            <d-bt
+              type="button"
+              cta="Clear"
+              @click="clearSelected"
+              class="!border border-solid border-rose-700 px-4 py-2 rounded-lg bg-white dark:!bg-rose-700 transition-all ease-in-out hover:!bg-rose-50 dark:hover:!bg-rose-900"
+              text-class="text-rose-800 mx-auto text-sm dark:text-primary1"
+              no-icon
             />
 
-            <d-submit-button @click:submit="filterData" class="grid-cols-1" />
+            <button
+              type="button"
+              class="flex items-center gap-2 rounded-md bg-sc px-3 py-2 text-[15px] font-bold text-white shadow-md hover:shadow-xl"
+              @click="onSelectItems"
+            >
+              <Icon name="material-symbols:save-rounded" size="20" />
+              Select {{ props.label }}
+            </button>
           </div>
-        </div>
-      </form>
-    </template>
-
-    <div class="flex h-max w-full flex-col">
-      <v-data-table-server
-        v-model="itemsCheck"
-        :items="metaModal.data ?? []"
-        :headers="headersModal"
-        :items-per-page="filters.per_page"
-        :items-length="metaModal.total ?? 0"
-        :items-per-page-options="useInitials.perPageOptions"
-        :loading="metaModal.loading"
-        density="compact"
-        :header-props="{
-          class: '!bg-scLightest dark:!bg-dark2 whitespace-nowrap',
-        }"
-        :row-props="{
-          class: 'cursor-pointer',
-        }"
-        :item-value="props.itemValue"
-        show-current-page
-        show-select
-        :return-object="props.returnObject"
-        :multiple="props.multiple"
-        :select-strategy="selectStrategy"
-        @update:options="fetchDataServerFetch"
-        fixed-header
-        :height="props.height"
-        hover
-        @click:row="onSelectOption"
-      ></v-data-table-server>
+        </template>
+      </lazy-modals-final-modal>
     </div>
-    <template #footer>
-      <div class="flex h-max w-full items-center justify-end gap-2">
-        <!-- clear -->
-
-        <!-- <v-btn
-          variant="tonal"
-          height="35"
-          density="comfortable"
-          class="text-none"
-          rounded="sm"
-          append-icon="mdi-refresh"
-          @click="clearSelected"
-        >
-          Clear
-        </v-btn> -->
-        <d-bt
-          type="button"
-          cta="Clear"
-          @click="clearSelected"
-          class="!border border-solid border-rose-700 px-4 py-2 rounded-lg bg-white dark:!bg-rose-700 transition-all ease-in-out hover:!bg-rose-50 dark:hover:!bg-rose-900"
-          text-class="text-rose-800 mx-auto text-sm dark:text-primary1"
-          no-icon
-        />
-
-        <button
-          type="button"
-          class="flex items-center gap-2 rounded-md bg-sc px-3 py-2 text-[15px] font-bold text-white shadow-md hover:shadow-xl"
-          @click="onSelectItems"
-        >
-          <Icon name="material-symbols:save-rounded" size="20" />
-          Select {{ props.label }}
-        </button>
-      </div>
-    </template>
-  </modals-final-modal>
+  </slot>
 </template>
