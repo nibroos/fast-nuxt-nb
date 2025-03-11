@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import useLayoutsStore from "~/stores/configs/LayoutsStore";
 import useQuotationStore from "~/stores/orders/QuotationStore";
+import type { QIndexType } from "~/types/quotations/QuotationType";
 import type {
   FieldSelectableType,
   FilterSelectableType,
@@ -295,15 +296,15 @@ const filtersConfig = ref<FilterSelectableType[]>([
         delete-api="/v1/quotations/delete-quotation"
         :fields="fieldsConfig"
         :filters="filtersConfig"
-        :query-modal="queryModal.qListIndex"
+        :query-modal="queryModal.qIndex"
         :create-option="{
           link: '/orders/quotations/create',
           show: true,
           cta: '+ Create',
         }"
         @update:filters="
-          (filters: Record<string, any>) => {
-            queryModal.qListIndex = filters;
+          (filters: QIndexType) => {
+            queryModal.qIndex = filters;
           }
         "
       >

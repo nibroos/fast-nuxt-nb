@@ -121,12 +121,18 @@ export type ProductBomListType = {
   specification: string
   description: string
   tpb_code: string
+
+  price_sell: number
+  price_buy: number
+  subtotal_sell: number
+  subtotal_buy: number
 }
 
 
 export type FormQuoDtProductListType = ProductListType & {
   ref_type: 'products'
-  quo_dt_id?: number
+  quotation_id?: number | null
+  quo_dt_id?: number | null
   vat_id?: number
   vat_perc?: number
   vat_perc_am?: number

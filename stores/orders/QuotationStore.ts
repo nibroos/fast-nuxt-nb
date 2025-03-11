@@ -1,7 +1,8 @@
 import { useAlert } from '~/composables/useAlert'
 import { useMyFetch } from '~/composables/useMyFetch'
 import type { Meta, Pagination, PaginationMeta } from '~/interfaces/LaravelPaginationInterface'
-import type { FormQuotationType } from '~/types/quotations/QuotationType'
+import type { FormQuoDtProductListType } from '~/types/masters/ProductType'
+import type { FormQuotationType, QIndexProductsType, QIndexType, QuoDtType } from '~/types/quotations/QuotationType'
 
 const useQuotationStore = defineStore('QuotationStore', {
   state: () => ({
@@ -9,23 +10,27 @@ const useQuotationStore = defineStore('QuotationStore', {
       id: null,
     } as FormQuotationType,
     queryModal: {
-      qListIndex: {
+      qIndex: {
         page: 1,
         per_page: 10,
         parent_ids: [],
         global: '',
         order_column: 'name',
         order_direction: 'desc'
-      } as Record<string, any>,
+      } as QIndexType,
 
       qIndexProducts: {
+        page: 1,
+        per_page: 10,
         item_group_ids: [],
         item_sub_group_ids: [],
         code: '',
         name: '',
         sku: '',
         factory_code: '',
-      } as any
+        order_column: 'name',
+        order_direction: 'desc'
+      } as QIndexProductsType
     },
     metaModal: {
       index: {
@@ -43,8 +48,8 @@ const useQuotationStore = defineStore('QuotationStore', {
     errors: {} as Record<string, any>,
     formLoading: false,
     itemsCheck: {
-      checkMain: [] as any,
-      checkProducts: [] as any,
+      checkMain: [] as QuoDtType[],
+      checkProducts: [] as FormQuoDtProductListType[],
     },
     isOpenModal: {
       products: false,
@@ -232,9 +237,16 @@ const useQuotationStore = defineStore('QuotationStore', {
 
         return response
       } catch (error: any) {
-        console.log('Failed To Fetch Data', error.response.data);
+        console.log('Failed To Fetch Data', error.response?.data);
       } finally {
         this.metaModal.index.loading = false
+      }
+    },
+
+    selectItemRefModal() {
+      if (this.isOpenModal.products) {
+        this.itemsCheck.checkMain = generateQuoDt(this.itemsCheck.checkProducts, 'products')
+        this.isOpenModal.products = false
       }
     },
 
@@ -245,12 +257,16 @@ const useQuotationStore = defineStore('QuotationStore', {
 
     handleClearQuery() {
       this.queryModal.qIndexProducts = {
+        page: 1,
+        per_page: 10,
         item_group_ids: [],
         item_sub_group_ids: [],
         code: '',
         name: '',
         sku: '',
         factory_code: '',
+        order_column: 'name',
+        order_direction: 'desc'
       }
     }
 

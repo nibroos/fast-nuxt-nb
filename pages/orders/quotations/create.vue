@@ -16,6 +16,8 @@ import type { FormPph23Type } from "~/types/masters/Pph23Type";
 import type { FormCurrencyType } from "~/types/masters/CurrencyType";
 import type {
   FormQuotationType,
+  ModalIndexProductFilterAutoCompleteType,
+  ModalIndexProductFilterTextType,
   QuoDtDiscType,
   QuoDtType,
 } from "~/types/quotations/QuotationType";
@@ -493,7 +495,7 @@ const fetchDataServerFetch = async (options: { [key: string]: any }) => {
 };
 
 const onClickAddProducts = () => {
-  itemsCheck.value.checkMain = itemsCheck.value.checkProducts;
+  quotationStore.selectItemRefModal();
 
   closeAllModal();
 };
@@ -507,7 +509,10 @@ const onClickDeleteBom = (
   indexBom: number,
   internalItem: any
 ) => {
-  itemsCheck.value.checkMain[index].boms.splice(indexBom, 1);
+  const item = itemsCheck.value.checkMain[index];
+  if (item && item.quo_dts_boms) {
+    item.quo_dts_boms.splice(indexBom, 1);
+  }
 
   calculateTotalAmount();
 };
@@ -873,7 +878,7 @@ watchEffect(() => {
 
             <template #item.expand="{ toggleExpand, isExpanded, internalItem }">
               <button
-                v-if="internalItem.raw.boms.length > 0"
+                v-if="internalItem.raw.quo_dts_boms.length > 0"
                 class="cursor-pointer"
                 @click="toggleExpand(internalItem)"
                 @submit.prevent
@@ -898,18 +903,18 @@ watchEffect(() => {
             index: number
           }"
             >
-              <tr v-if="item.boms.length > 0">
+              <tr v-if="item.quo_dts_boms.length > 0">
                 <td :colspan="columns.length" class="!p-0">
                   <div class="">
                     <v-data-table-virtual
                       :headers="headersBOM"
-                      :items="item.boms || []"
+                      :items="item.quo_dts_boms || []"
                       item-value="uid"
                       density="compact"
                       return-object
                       fixed-header
                       class="table-hover"
-                      :height="item.boms.length > 1 ? '170' : '100'"
+                      :height="item.quo_dts_boms.length > 1 ? '170' : '100'"
                       :header-props="{
                         class: '!bg-grey1 dark:!bg-dark2 whitespace-nowrap',
                       }"
@@ -1103,7 +1108,7 @@ watchEffect(() => {
           <d-autocomplete
             v-for="filter in filtersOptionsProducts"
             :key="filter.key"
-            v-model="queryModal.qIndexProducts[filter.key]"
+            v-model="queryModal.qIndexProducts[filter.key as ModalIndexProductFilterAutoCompleteType]"
             :api="filter.api"
             :single-api="filter.singleApi"
             :method-api="filter.methodApi"
@@ -1119,7 +1124,7 @@ watchEffect(() => {
           <d-text-input
             v-for="filter in filtersTextProducts"
             :key="filter.key"
-            v-model="queryModal.qIndexProducts[filter.key]"
+            v-model="queryModal.qIndexProducts[filter.key as ModalIndexProductFilterTextType]"
             :label="filter.title"
             :placeholder="filter.title"
             append-inner-icon="mdi-magnify"
@@ -1176,7 +1181,7 @@ watchEffect(() => {
             @click="onClickAddProducts"
           >
             <Icon name="material-symbols:save-rounded" size="20" />
-            Add Selected Product ({{ itemsCheck.checkProducts.length }})
+            Add Selected Products ({{ itemsCheck.checkProducts.length }})
           </button>
         </div>
       </template>

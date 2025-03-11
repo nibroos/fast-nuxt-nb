@@ -1,16 +1,17 @@
 import type { FormQuoDtProductListType } from "~/types/masters/ProductType"
-import type { FormQuoDtRefType, QuoDtItemType, QuoDtType } from "~/types/quotations/QuotationType"
+import type { FormQuoDtRefType, QuoDtItemType, QuoDtRefType, QuoDtType } from "~/types/quotations/QuotationType"
 
 export function convertItemRefProduct(
   item: FormQuoDtProductListType,
 ): QuoDtType {
-  console.log('item data', item);
+  console.log('convertItemRefProduct-item', item);
 
   let itemType: QuoDtItemType = item.boms.length > 0 ? 'product' : 'item'
 
   const data: QuoDtType = {
     ...item,
-    id: item.id,
+    id: item.quo_dt_id ?? null,
+    quotation_id: item.quotation_id,
     item_unit_id: item.item_unit_id,
     vat_id: item.vat_id,
     ref_id: item.id,
@@ -32,16 +33,26 @@ export function convertItemRefProduct(
     disc_final: item.disc_final || 0,
     disc_type: item.disc_type || null,
     total_am: item.total_am || 0,
+    quo_dts_boms: item.boms,
   }
+
+  console.log('convertItemRefProduct-data', data);
+
+
+  // remove boms
 
   return data
 }
 
 export function generateQuoDt(
   data:
-    | FormQuoDtRefType[]
+    | FormQuoDtRefType[],
+  checkOpened:
+    | QuoDtRefType
 ): QuoDtType[] {
   // let generatedList: QuoDtType[] = []
+  console.log('generateQuoDt-data', data);
+
   const generatedList = data.map((dt: FormQuoDtRefType): QuoDtType => {
     // if (useInventoryInStore().showModal.listPO) {
     //   return convertPoRefToListItem(dt as PoTableCheck, invType)
