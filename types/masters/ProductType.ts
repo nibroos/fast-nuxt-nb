@@ -1,4 +1,4 @@
-import type { QuoDtDiscType } from "../quotations/QuotationType"
+import type { QuoDtDiscType, QuoDtsType } from "../quotations/QuotationType"
 
 export type FormProductType = {
   id?: number | null | undefined | string | string[]
@@ -39,50 +39,50 @@ export type CreateBomsRequestType = {
 }
 
 export type ProductListType = {
-  id: number
-  product_id: number
-  item_sub_group_id: number
-  item_group_id: number
-  item_unit_id: number
-  item_unit_unit_id: number
-  branch_id: number
-  branch_item_id: number
-  item_sub_group_name: string
-  item_group_name: string
-  unit_name: string
-  branch_name: string
-  code: string
-  factory_code: string
-  name: string
-  prod_type: string
-  sku: string
-  barcode: string
-  specification: string
-  description: string
-  tpb_code: string
-  minimum_stock: string
-  is_all_branch: number
-  remark: string
-  price_sell: string
-  price_buy: string
-  margin: string
-  expired_at: string
-  status: number
-  created_by_name: string
-  updated_by_name: string
-  created_at: string
-  updated_at: string
-  deleted_at: string
-  item_name: string
-  item_code: string
-  item_factory_code: string
-  item_sku: string
-  item_barcode: string
-  item_specification: string
-  item_description: string
-  item_remark: string
-  item_tpb_code: string
-  boms: ProductBomListType[]
+  id?: number | null | undefined | string | string[]
+  product_id?: number
+  item_sub_group_id?: number
+  item_group_id?: number
+  item_unit_id?: number | null
+  item_unit_unit_id?: number | null
+  branch_id?: number | null
+  branch_item_id?: number | null
+  item_sub_group_name?: string
+  item_group_name?: string
+  unit_name?: string
+  branch_name?: string
+  code?: string
+  factory_code?: string
+  name?: string
+  prod_type?: string
+  sku?: string
+  barcode?: string
+  specification?: string
+  description?: string
+  tpb_code?: string
+  minimum_stock?: string
+  is_all_branch?: number
+  remark?: string
+  price_sell?: number
+  price_buy?: number
+  margin?: string
+  expired_at?: string
+  status?: number
+  created_by_name?: string
+  updated_by_name?: string
+  created_at?: string
+  updated_at?: string
+  deleted_at?: string
+  item_name?: string
+  item_code?: string
+  item_factory_code?: string
+  item_sku?: string
+  item_barcode?: string
+  item_specification?: string
+  item_description?: string
+  item_remark?: string
+  item_tpb_code?: string
+  boms?: ProductBomListType[]
 }
 
 export type ProductBomListType = {
@@ -129,13 +129,14 @@ export type ProductBomListType = {
 }
 
 
-export type FormQuoDtProductListType = ProductListType & {
+export type FormQuoDtProductListType = ProductListType & QuoDtsType & {
   ref_type: 'products'
   quotation_id?: number | null
   quo_dt_id?: number | null
   vat_id?: number
   vat_perc?: number
   vat_perc_am?: number
+  ref_id?: number
   qty_so?: number
   qty?: number
   subtotal_sell?: number
@@ -147,4 +148,6 @@ export type FormQuoDtProductListType = ProductListType & {
   disc_final?: number
   disc_type?: QuoDtDiscType | null
   total_am?: number
+
+  quo_dts_boms?: ProductBomListType[]
 }

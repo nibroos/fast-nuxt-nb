@@ -16,8 +16,6 @@ const handleChange = (value: any) => {
 };
 
 const onClick = (ref: any) => {
-  console.log("ref", ref);
-
   emits("click:ref", ref);
 };
 

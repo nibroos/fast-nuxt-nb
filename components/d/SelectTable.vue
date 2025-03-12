@@ -102,7 +102,12 @@ const generateFiltersObj = () => {
   });
 };
 
-const emits = defineEmits(["openModal", "update:modelValue", "click:selected"]);
+const emits = defineEmits([
+  "openModal",
+  "update:modelValue",
+  "click:selected",
+  "click:clear",
+]);
 
 let headersModal = ref(props.fields);
 let api = ref<string>(props.api);
@@ -305,6 +310,7 @@ const clearSelected = () => {
   itemsCheck.value = [];
   selectedText.value = "";
   emits("update:modelValue", null);
+  emits("click:clear");
   showModal.value = false;
 };
 
@@ -399,6 +405,7 @@ onMounted(async () => {
           classMerge(
             'text-sm dark:text-primary1  font-normal dark:!text-primary1',
             !!selectedText ? '!text-dark3' : '!text-zinc-400',
+            props.disabled ? 'line-through' : '',
             props.textClass
           )
         "
@@ -409,6 +416,7 @@ onMounted(async () => {
         @click="openModal(true)"
         :max-length-display="props.maxLengthDisplay"
         :loading="showMetaModal.loading"
+        :disabled="props.disabled"
       ></lazy-d-bt>
 
       <d-bt
@@ -428,6 +436,7 @@ onMounted(async () => {
         icon-class="text-zinc-400"
         is-no-text
         @click="clearSelected"
+        :disabled="props.disabled"
       />
 
       <!-- Modal Add Style -->
@@ -446,7 +455,7 @@ onMounted(async () => {
               {{ props.modalTitle }}
             </span>
             <span
-              class="rounded-sm bg-slate-200 px-2 py-1 font-normal"
+              class="rounded-sm bg-slate-200 dark:bg-sc px-2 py-1 font-normal"
               v-if="selectedText"
             >
               Selected : {{ selectedText }}

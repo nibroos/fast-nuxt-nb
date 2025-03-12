@@ -47,7 +47,7 @@ interface CurrencyInputOptions {
 // type CurrencyDisplay = 'symbol' | 'narrowSymbol'
 
 interface IProps {
-  modelValue: number | string | null | undefined;
+  modelValue: number | null | undefined;
   precision?: NumberRange;
   valueRange?: NumberRange;
   decimal?: string;

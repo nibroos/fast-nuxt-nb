@@ -20,7 +20,9 @@ import type {
   ModalIndexProductFilterTextType,
   QuoDtDiscType,
   QuoDtType,
+  VatModeType,
 } from "~/types/quotations/QuotationType";
+import { updateRefsModalFromMain } from "~/composables/maps/quotation";
 
 const layoutStore = useLayoutsStore();
 const { topTitle } = storeToRefs(layoutStore);
@@ -34,6 +36,7 @@ const {
   isOpenModal,
   queryModal,
   metaModal,
+  optionRefBtnRef,
 } = storeToRefs(quotationStore);
 
 definePageMeta({
@@ -219,6 +222,13 @@ const headersModalProducts = ref<FieldSelectableType[]>([
     sortable: true,
   },
   {
+    title: "Item Type",
+    key: "item_type",
+    value: "item_type",
+    align: "start",
+    sortable: true,
+  },
+  {
     title: "Code",
     key: "code",
     value: "code",
@@ -251,6 +261,13 @@ const headersModalProducts = ref<FieldSelectableType[]>([
     key: "specification",
     value: "specification",
     align: "start",
+    sortable: true,
+  },
+  {
+    title: "Stock",
+    key: "qty_stock",
+    value: "qty_stock",
+    align: "end",
     sortable: true,
   },
   {
@@ -385,12 +402,9 @@ const handleSubmit = async () => {
   //   return;
   // }
 
-  await quotationStore.store();
-};
+  form.value.quo_dts = itemsCheck.value.checkMain;
 
-const handleClickClear = () => {
-  form.value = cloneObject(useInitials.formQuotationCreateEdit);
-  errors.value = {};
+  await quotationStore.store();
 };
 
 const autocompleteCustomer = (data: any) => {
@@ -402,11 +416,15 @@ const autocompleteCustomer = (data: any) => {
 const autocompleteVat = (data: FormVatType) => {
   form.value.vat_perc = Number(data.num);
 
+  vatMode.value = null;
+
   if (!!form.value.vat_id) {
     itemsCheck.value.checkMain.forEach((item: QuoDtType) => {
       item.vat_id = null;
       item.vat_perc = 0;
     });
+
+    vatMode.value = "header";
   }
 
   calculateTotalAmount();
@@ -414,6 +432,18 @@ const autocompleteVat = (data: FormVatType) => {
 
 const autocompleteVatDt = (data: FormVatType, quoDtType: QuoDtType) => {
   quoDtType.vat_perc = Number(data.num);
+
+  form.value.vat_id = null;
+  form.value.vat_perc = 0;
+
+  vatMode.value = "detail";
+
+  calculateTotalAmount();
+};
+
+const removeVat = () => {
+  form.value.vat_perc = 0;
+  vatMode.value = null;
 
   calculateTotalAmount();
 };
@@ -423,7 +453,25 @@ const removeVatDt = (quoDtType: QuoDtType) => {
     quoDtType.vat_perc = 0;
     quoDtType.vat_perc_am = 0;
   }
+
+  // if all items vat_id is null, then change vatmode to null
+  const isAllVatNull = itemsCheck.value.checkMain.every(
+    (item: QuoDtType) => !item.vat_id
+  );
+
+  if (isAllVatNull) {
+    form.value.vat_id = null;
+    form.value.vat_perc = 0;
+    vatMode.value = null;
+  }
+
   calculateTotalAmount();
+};
+
+const removePph = () => {
+  console.log("removePph", form.value.pph23_perc);
+  form.value.pph23_perc = 0;
+  console.log("removePph2", form.value.pph23_perc);
 };
 
 const autocompletePph = (data: FormPph23Type) => {
@@ -434,22 +482,22 @@ const autocompleteCurrency = (data: FormCurrencyType) => {
   form.value.exchange_rate = Number(data.num);
 };
 
-const optionRefBtnRef = ref<RefBtnType[]>([
-  {
-    cta: "Ms. Product",
-    key: "products",
-    icon: "mdi-magnify",
-    count: 0,
-    type: "button",
-  },
-]);
-
-const onClickOptionRefBtn = (ref: RefBtnType) => {
-  console.log("refa", ref);
+const onClickOptionRefBtn = async (ref: RefBtnType) => {
   isOpenModal.value.products = false;
   if (ref.key == "products") {
+    console.log("ref", ref.key, ref);
+
+    itemsCheck.value.checkProducts = updateRefsModalFromMain(
+      itemsCheck.value.checkMain,
+      "products",
+      itemsCheck.value.checkProducts
+    );
+
+    quotationStore.countSelectedReferences();
     isOpenModal.value.products = true;
   }
+
+  await quotationStore.indexProduct();
 };
 
 const fetchModalFilter = async () => {
@@ -494,14 +542,16 @@ const fetchDataServerFetch = async (options: { [key: string]: any }) => {
   fetchModalFilter();
 };
 
-const onClickAddProducts = () => {
+const onClickAddProductsModal = () => {
   quotationStore.selectItemRefModal();
-
+  quotationStore.countSelectedReferences();
   closeAllModal();
 };
 
 const onClickDeleteSelected = (item: any, index: number) => {
-  itemsCheck.value.checkProducts.splice(index, 1);
+  itemsCheck.value.checkMain.splice(index, 1);
+
+  quotationStore.countSelectedReferences();
 };
 
 const onClickDeleteBom = (
@@ -515,14 +565,6 @@ const onClickDeleteBom = (
   }
 
   calculateTotalAmount();
-};
-
-const countSelectedReferences = () => {
-  optionRefBtnRef.value.map((item) => {
-    if (item.key == "products") {
-      item.count = itemsCheck.value.checkProducts.length;
-    }
-  });
 };
 
 const calculateTotalAmount = () => {
@@ -539,23 +581,29 @@ const calculateTotalAmount = () => {
     const discPercNum = Number(priceSell - discPercPriceSell);
     const discPercAm = Number(qty * discPercNum);
 
-    let discType: QuoDtDiscType = "p";
+    item.subtotal_sell = subtotalSell;
+    item.subtotal_buy = subtotalBuy;
+
+    let discType: QuoDtDiscType = null;
 
     let discFinal = 0;
     if (!!discAmount && discAmount > 0) {
       discType = "a";
       discFinal = subtotalSell - discAmount;
-    } else {
+    } else if (!!discPercentage && discPercentage > 0) {
+      discType = "p";
       discFinal = discPercAm;
     }
 
-    item.subtotal_sell = subtotalSell;
-    item.subtotal_buy = subtotalBuy;
-
-    item.disc_perc_num = discPercNum;
-    item.disc_perc_am = discPercAm;
-    item.disc_final = discFinal;
-    item.disc_type = discType;
+    item.disc_perc_num = 0;
+    item.disc_perc_am = 0;
+    item.disc_final = 0;
+    if (discPercentage || discAmount) {
+      item.disc_perc_num = discPercNum;
+      item.disc_perc_am = discPercAm;
+      item.disc_final = discFinal;
+      item.disc_type = discType;
+    }
 
     item.vat_perc_am = 0;
 
@@ -581,18 +629,20 @@ const calculateTotalAmount = () => {
 //   { deep: true, immediate: true }
 // );
 
-watch(
-  () => itemsCheck.value.checkMain.length,
-  (oldValue, newVal) => {
-    if (oldValue !== newVal) {
-      countSelectedReferences();
-    }
-  }
-);
+// watch(
+//   () => itemsCheck.value.checkMain.length,
+//   (oldValue, newVal) => {
+//     if (oldValue !== newVal) {
+//       quotationStore.countSelectedReferences();
+//     }
+//   }
+// );
+
+const vatMode = ref<VatModeType>(null);
 
 onMounted(async () => {
   await fetchInitialData();
-  handleClickClear();
+  quotationStore.handleClickClear();
 });
 
 watchEffect(() => {
@@ -606,7 +656,7 @@ watchEffect(() => {
     <d-form-layout
       :config="formLayout"
       @click:save="handleSubmit()"
-      @click:clear="handleClickClear"
+      @click:clear="quotationStore.handleClickClear()"
       @update:current-tab="tabFormIndex = $event"
     >
       <template #header>
@@ -711,6 +761,16 @@ watchEffect(() => {
             ></d-date-picker-light>
           </div>
           <div class="sm:col-span-1">
+            <d-autocomplete-client
+              v-model="form.status"
+              :items="useStatics.formStatusQuotation"
+              label="Status"
+              item-value="id"
+              item-title="name"
+              :clearable="false"
+            />
+          </div>
+          <div class="sm:col-span-1">
             <d-switch-status v-model="form.is_approved" :label="`Approve`" />
           </div>
           <d-bt type="submit" class="!hidden"></d-bt>
@@ -764,7 +824,6 @@ watchEffect(() => {
           >
             <template #item.vat_id="{ item }">
               <lazy-d-select-table
-                v-if="!form.vat_id"
                 api="/v1/vats/index-vat"
                 detail-api="/v1/vats/index-vat"
                 method-api="post"
@@ -780,7 +839,8 @@ watchEffect(() => {
                 :display-single-multiple-keys="['name', 'num']"
                 is-display-multiple-key
                 @click:selected="(data) => autocompleteVatDt(data, item)"
-                @update:model-value="removeVatDt(item)"
+                @click:clear="removeVatDt(item)"
+                :disabled="vatMode === 'header'"
                 :fields="headersVAT"
                 :filters="[
                   {
@@ -789,6 +849,9 @@ watchEffect(() => {
                   },
                 ]"
               />
+            </template>
+            <template #item.item_type="{ item }">
+              <span class="capitalize">{{ item.item_type }} </span>
             </template>
             <template #item.remark="{ item }">
               <d-text-area-input
@@ -1003,7 +1066,9 @@ watchEffect(() => {
               modal-custom-class="!w-4/5"
               :display-single-multiple-keys="['name', 'num']"
               is-display-multiple-key
-              @update:model-value="autocompleteVat"
+              @click:selected="autocompleteVat"
+              @click:clear="removeVat"
+              :disabled="vatMode === 'detail'"
               :fields="headersVAT"
               :filters="[
                 {
@@ -1039,6 +1104,7 @@ watchEffect(() => {
               class="col-span-2 lg:col-span-1"
               is-quick-select
               @click:selected="autocompletePph"
+              @click:clear="removePph"
               modal-parent-class="!z-[2500]"
               modal-custom-class="!w-4/5"
               :display-single-multiple-keys="['name', 'num']"
@@ -1153,7 +1219,7 @@ watchEffect(() => {
         :row-props="{
           class: 'cursor-pointer',
         }"
-        item-value="id"
+        item-value="ref_id"
         show-current-page
         return-object
         multiple
@@ -1163,6 +1229,9 @@ watchEffect(() => {
         height="450"
         hover
       >
+        <template #item.item_type="{ item }">
+          <span class="capitalize">{{ defineItemTypeQuotation(item) }} </span>
+        </template>
         <template #item.price_sell="{ item }">
           <d-num-layout :value="item.price_sell" />
         </template>
@@ -1178,7 +1247,7 @@ watchEffect(() => {
         <div class="flex h-max w-full justify-end">
           <button
             class="flex items-center gap-2 rounded-md bg-sc px-3 py-2 text-[15px] font-bold text-white shadow-md hover:shadow-xl"
-            @click="onClickAddProducts"
+            @click="onClickAddProductsModal"
           >
             <Icon name="material-symbols:save-rounded" size="20" />
             Add Selected Products ({{ itemsCheck.checkProducts.length }})

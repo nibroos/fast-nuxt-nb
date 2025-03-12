@@ -1,8 +1,9 @@
 import { useAlert } from '~/composables/useAlert'
 import { useMyFetch } from '~/composables/useMyFetch'
 import type { Meta, Pagination, PaginationMeta } from '~/interfaces/LaravelPaginationInterface'
+import type { RefBtnType } from '~/types/components/OptionRefBtnType'
 import type { FormQuoDtProductListType } from '~/types/masters/ProductType'
-import type { FormQuotationType, QIndexProductsType, QIndexType, QuoDtType } from '~/types/quotations/QuotationType'
+import type { FormQuotationType, IndexQuotationType, QIndexProductsType, QIndexType, QuoDtType } from '~/types/quotations/QuotationType'
 
 const useQuotationStore = defineStore('QuotationStore', {
   state: () => ({
@@ -34,12 +35,12 @@ const useQuotationStore = defineStore('QuotationStore', {
     },
     metaModal: {
       index: {
-        data: [] as any,
+        data: [] as IndexQuotationType[],
         loading: false,
         meta: {} as Meta
       } as PaginationMeta,
       indexProducts: {
-        data: [] as any,
+        data: [] as FormQuoDtProductListType[],
         loading: false,
         meta: {} as Meta
       } as PaginationMeta
@@ -53,7 +54,16 @@ const useQuotationStore = defineStore('QuotationStore', {
     },
     isOpenModal: {
       products: false,
-    }
+    },
+    optionRefBtnRef: [
+      {
+        cta: "Ms. Product",
+        key: "products",
+        icon: "mdi-magnify",
+        count: 0,
+        type: "button",
+      },
+    ] as RefBtnType[],
   }),
 
   actions: {
@@ -112,7 +122,7 @@ const useQuotationStore = defineStore('QuotationStore', {
 
         useAlert.hideAlert()
         useAlert.alertSuccess(response.data.message)
-        navigateTo(`/masters/customizations/quotations/edit/${response.data.data[0].id}`)
+        navigateTo(`/orders/quotations/edit/${response.data.data[0].id}`)
 
         return response
       } catch (error: any) {
@@ -123,8 +133,8 @@ const useQuotationStore = defineStore('QuotationStore', {
         if (typeof responseData.errors === 'object') {
           await Promise.all(
             Object.keys(responseData.errors).map((row: any) => {
-              errors += `- ${responseData.errors[row][0]} <br />`
-              this.errors[row] = responseData.errors[row][0]
+              errors += `- ${responseData.errors[row]} <br />`
+              this.errors[row] = responseData.errors[row]
             })
           )
         }
@@ -235,7 +245,26 @@ const useQuotationStore = defineStore('QuotationStore', {
 
         this.metaModal.indexProducts = response.data
 
-        return response
+        if (this.itemsCheck.checkProducts.length > 0) {
+          this.itemsCheck.checkProducts.forEach((checkProduct: FormQuoDtProductListType, iCheckProduct: number) => {
+            (this.metaModal.indexProducts.data as FormQuoDtProductListType[]).forEach((resProduct: FormQuoDtProductListType, iResProduct: number) => {
+              console.log('checkProduct', iCheckProduct, checkProduct);
+
+              if (resProduct.ref_id === checkProduct.ref_id) {
+                console.log('resProduct', iResProduct, resProduct);
+
+                const combined = {
+                  ...resProduct,
+                  ...checkProduct
+                }
+
+                this.metaModal.indexProducts.data[iResProduct] = combined
+              }
+            })
+          })
+        }
+
+        return this.metaModal.indexProducts
       } catch (error: any) {
         console.log('Failed To Fetch Data', error.response?.data);
       } finally {
@@ -245,7 +274,7 @@ const useQuotationStore = defineStore('QuotationStore', {
 
     selectItemRefModal() {
       if (this.isOpenModal.products) {
-        this.itemsCheck.checkMain = generateQuoDt(this.itemsCheck.checkProducts, 'products')
+        this.itemsCheck.checkMain = generateQuoDt(this.itemsCheck.checkProducts, 'products', this.itemsCheck.checkMain)
         this.isOpenModal.products = false
       }
     },
@@ -253,6 +282,8 @@ const useQuotationStore = defineStore('QuotationStore', {
     clickClearRefs() {
       this.itemsCheck.checkMain = []
       this.itemsCheck.checkProducts = []
+
+      this.countSelectedReferences()
     },
 
     handleClearQuery() {
@@ -268,8 +299,29 @@ const useQuotationStore = defineStore('QuotationStore', {
         order_column: 'name',
         order_direction: 'desc'
       }
-    }
+    },
 
+    handleClickClear() {
+      this.form = cloneObject(useInitials.formQuotationCreateEdit);
+      this.itemsCheck.checkMain = []
+      this.itemsCheck.checkProducts = []
+      this.errors = {};
+
+      this.countSelectedReferences()
+    },
+
+    countSelectedReferences() {
+
+      this.optionRefBtnRef.map((item) => {
+        if (item.key == "products") {
+          // item.count = itemsCheck.value.checkProducts.length;
+          // count checkMain where ref_type = products
+          item.count = this.itemsCheck.checkMain.filter(
+            (item) => item.ref_type == "products"
+          ).length;
+        }
+      });
+    },
   },
   persist: [
     {

@@ -28,7 +28,7 @@
 
           <div
             @click="onClickClose"
-            class="cursor-pointer rounded-full p-1 transition-all duration-300 ease-in-out hover:bg-gray-200"
+            class="cursor-pointer rounded-full p-1 transition-all duration-300 ease-in-out hover:bg-gray-200 dark:bg-dark1 dark:hover:bg-dark2 dark:text-primary1"
           >
             <Icon name="material-symbols:close-rounded" size="25" />
           </div>

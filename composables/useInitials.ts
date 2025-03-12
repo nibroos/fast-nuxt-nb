@@ -78,7 +78,7 @@ const formQuotationCreateEdit = {
   quo_no: "",
   title: "",
   remark: "",
-  status: "",
+  status: "WAITING",
   is_approved: 0,
   exchange_rate: null,
   vat_perc: 0,

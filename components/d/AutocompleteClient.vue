@@ -208,7 +208,7 @@ watch(
     :clearable="props.disabled ? false : props.clearable"
     :placeholder="props.placeholder"
     :disabled="props.disabled"
-    :class="classMerge(props.aClass)"
+    :class="classMerge('dark:text-primary1', props.aClass)"
     :loading="loadingSearch"
     :chips="props.chips"
     @update:search="innerSearch = $event"

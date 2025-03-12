@@ -1,5 +1,52 @@
 import type { FormQuoDtProductListType } from "../masters/ProductType"
 
+export type IndexQuotationType = {
+  id: number
+  quotation_id: number | null
+  customer_id: number | null
+  order_type_id: number | null
+  currency_id: number | null
+  vat_id: number | null
+  payment_id: number | null
+  pph23_id: number | null
+  branch_id: number | null
+  quo_no: string
+  title: string
+  remark: string | null
+  status: string
+  is_approved: number
+  exchange_rate: number | null
+  vat_perc: number | null
+  pph23_perc: number | null
+  total_qty: number | null
+  subtotal: number | null
+  total_discount: number | null
+  total_pph23: number | null
+  total_vat: number | null
+  grand_total: number | null
+  due_at: string | null
+  expired_at: string | null
+  created_by_id: number | null
+  updated_by_id: number | null
+  deleted_by_id: number | null
+  created_by_name: string | null
+  updated_by_name: string | null
+  deleted_by_name: string | null
+  created_at: string | null
+  updated_at: string | null
+  deleted_at: string | null
+  product_id: string | null
+  item_id: string | null
+  quo_dt_vat_id: string | null
+  currency_name: string | null
+  product_name: string | null
+  item_name: string | null
+  vat_name: string | null
+  pph23_name: string | null
+  quo_dt_remark: string | null
+  quo_dt_bom_remark: string | null
+}
+
 export type FormQuotationType = {
   id?: number | null | undefined | string | string[]
   customer_id?: number | null
@@ -42,7 +89,7 @@ export type QuoDtType = {
   ref_type: QuoDtRefType
   item_type: QuoDtItemType
   gen_code?: string | null
-  remark?: string | null
+  remark?: string
   vat_perc?: number
   vat_perc_am?: number
   qty_so?: number
@@ -59,6 +106,7 @@ export type QuoDtType = {
   disc_type?: QuoDtDiscType | null
   total_am: number
   quo_dts_boms?: QuoDtBomType[] | null
+  boms?: QuoDtBomType[]
 
   code?: string
   name?: string
@@ -137,3 +185,5 @@ export type QIndexProductsType = {
   order_column?: string
   order_direction?: string
 }
+
+export type VatModeType = 'header' | 'detail' | null

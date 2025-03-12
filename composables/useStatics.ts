@@ -203,6 +203,14 @@ const QuoIndexDateType = [
   },
 ]
 
+const formStatusQuotation = [
+  { id: 'WAITING', name: 'WAITING' },
+  { id: 'CONFIRMED', name: 'CONFIRMED' },
+  { id: 'APPROVED', name: 'APPROVED' },
+  { id: 'PENDING', name: 'PENDING' },
+  { id: 'CANCELED', name: 'CANCELED' },
+]
+
 const formTabQuotation = {
   items: 0,
   payments: 1,
@@ -212,5 +220,6 @@ const formTabQuotation = {
 export const useStatics = {
   QuoIndexStatus,
   QuoIndexDateType,
-  formTabQuotation
+  formTabQuotation,
+  formStatusQuotation,
 }
