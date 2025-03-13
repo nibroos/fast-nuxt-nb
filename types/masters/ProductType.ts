@@ -87,6 +87,7 @@ export type ProductListType = {
 
 export type ProductBomListType = {
   id: number
+  product_uuid: string;
   bom_id: number
   product_id: number
   product_item_id: number

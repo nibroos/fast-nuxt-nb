@@ -1,5 +1,14 @@
-import type { FormQuoDtProductListType } from "~/types/masters/ProductType"
-import type { FormQuoDtRefType, QuoDtItemType, QuoDtRefType, QuoDtType } from "~/types/quotations/QuotationType"
+import type { FormQuoDtProductListType, ProductBomListType } from "~/types/masters/ProductType"
+import type { FormQuoDtRefType, QuoDtBomType, QuoDtItemType, QuoDtRefType, QuoDtType } from "~/types/quotations/QuotationType"
+
+const insertProductUuid = (bom: QuoDtBomType[] | ProductBomListType[], productUuid: string): any[] => {
+  return bom.map((bomItem: QuoDtBomType | ProductBomListType) => {
+    return {
+      ...bomItem,
+      product_uuid: productUuid,
+    }
+  })
+}
 
 export function convertItemRefProduct(
   item: FormQuoDtProductListType,
@@ -7,6 +16,15 @@ export function convertItemRefProduct(
   console.log('convertItemRefProduct-item', item);
 
   let itemType: QuoDtItemType = item.boms && item.boms.length > 0 ? 'product' : 'item'
+  let productUuid = randomId()
+
+  if (!!item.boms) {
+    item.boms = insertProductUuid(item.boms, productUuid)
+  }
+
+  if (!!item.quo_dts_boms) {
+    item.quo_dts_boms = insertProductUuid(item.quo_dts_boms, productUuid)
+  }
 
   const data: QuoDtType = {
     ...item,
@@ -16,6 +34,7 @@ export function convertItemRefProduct(
     vat_id: item.vat_id,
     ref_id: item.product_id as number,
     item_id: item.product_id as number,
+    product_uuid: productUuid,
     ref_type: 'products',
     remark: item.remark,
     vat_perc: item.vat_perc || 0,

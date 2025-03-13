@@ -1,4 +1,4 @@
-import type { FormQuoDtProductListType } from "../masters/ProductType"
+import type { FormQuoDtProductListType, ProductBomListType } from "../masters/ProductType"
 
 export type IndexQuotationType = {
   id: number
@@ -86,6 +86,7 @@ export type QuoDtType = {
   vat_id?: number | null
   ref_id: number
   item_id: number
+  product_uuid: string
   ref_type: QuoDtRefType
   item_type: QuoDtItemType
   gen_code?: string | null
@@ -105,7 +106,7 @@ export type QuoDtType = {
   disc_final?: number
   disc_type?: QuoDtDiscType | null
   total_am: number
-  quo_dts_boms?: QuoDtBomType[] | null
+  quo_dts_boms?: (QuoDtBomType | ProductBomListType)[] | null
   boms?: QuoDtBomType[]
 
   code?: string
@@ -115,6 +116,7 @@ export type QuoDtType = {
 
 export type QuoDtBomType = {
   id?: number | null | undefined | string | string[]
+  product_uuid: string
   quotation_id?: number | null
   quo_dt_id?: number | null
   product_id?: number

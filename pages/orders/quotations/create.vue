@@ -80,6 +80,7 @@ const headersBOM = ref([
   { key: "item_name", title: "Product Name", sortable: true },
   { key: "item_unit_name", title: "Unit", sortable: true },
   { key: "qty", title: "Qty", sortable: true },
+  { key: "remark", title: "Remark", sortable: true },
   {
     key: "action",
     title: "Action",
@@ -985,6 +986,14 @@ watchEffect(() => {
                         class: 'whitespace-nowrap',
                       }"
                     >
+                      <template #item.remark="{ item }">
+                        <d-text-area-input
+                          v-model="item.remark"
+                          :label="``"
+                          :placeholder="`Remark`"
+                          class="w-full"
+                        />
+                      </template>
                       <template #item.qty="{ item }">
                         <d-num-v-format
                           v-model="item.qty"
@@ -994,7 +1003,7 @@ watchEffect(() => {
                           }"
                           hide-currency-display
                           label=""
-                          class="w-[9rem]"
+                          class="w-full"
                         />
                       </template>
                       <template #item.action="{ item: itemBom, index: iBom }">
