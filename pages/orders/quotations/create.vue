@@ -10,12 +10,10 @@ import type {
   FieldSelectableType,
   FilterSelectableType,
 } from "~/types/SelectTableType";
-import { debounce } from "lodash-es";
 import type { FormVatType } from "~/types/masters/VatType";
 import type { FormPph23Type } from "~/types/masters/Pph23Type";
 import type { FormCurrencyType } from "~/types/masters/CurrencyType";
 import type {
-  FormQuotationType,
   ModalIndexProductFilterAutoCompleteType,
   ModalIndexProductFilterTextType,
   QuoDtDiscType,
@@ -58,11 +56,11 @@ const headers = ref([
   // { key: "sku", title: "SKU", sortable: true },
   { key: "remark", title: "Remark", sortable: true },
   // { key: "qty_so", title: "Qty SO", sortable: true },
-  { key: "vat_id", title: "VAT", sortable: true },
   { key: "qty", title: "Qty", sortable: true },
   { key: "price_sell", title: "Price", sortable: true },
-  { key: "disc_am", title: "Disc (Am)", sortable: true },
   { key: "disc_perc", title: "Disc (%)", sortable: true },
+  { key: "disc_am", title: "Disc (Am)", sortable: true },
+  { key: "vat_id", title: "VAT", sortable: true },
   { key: "total_am", title: "Total Amount", sortable: true },
   {
     key: "action",
@@ -365,6 +363,66 @@ const filtersTextProducts = ref([
   },
 ]);
 
+const currencySymbolLabel = ref<string | null>("");
+
+const summaryLayout = ref({
+  total_amount: {
+    label: "Total Amount",
+    symbol: currencySymbolLabel.value,
+    value: form.value.subtotal,
+
+    format: {
+      precision: 2,
+    },
+  },
+  total_qty: {
+    label: "Total Qty",
+    value: form.value.total_qty,
+
+    format: {
+      precision: 2,
+    },
+  },
+  total_discount: {
+    label: "Total Discount",
+    symbol: currencySymbolLabel.value,
+    value: form.value.total_discount,
+
+    format: {
+      precision: 2,
+    },
+  },
+  total_vat: {
+    label: "Total VAT",
+    symbol: currencySymbolLabel.value,
+    value: form.value.total_vat,
+    percentage: form.value.vat_perc,
+
+    format: {
+      precision: 2,
+    },
+  },
+  total_pph23: {
+    label: "Total PPH23",
+    symbol: currencySymbolLabel.value,
+    value: form.value.total_pph23,
+    percentage: form.value.pph23_perc,
+
+    format: {
+      precision: 2,
+    },
+  },
+  grand_total: {
+    label: "Grand Total",
+    symbol: currencySymbolLabel.value,
+    value: form.value.grand_total,
+
+    format: {
+      precision: 2,
+    },
+  },
+});
+
 const formLayout = ref({
   title: "Basic Information",
   parentPath: "/orders/quotations",
@@ -379,6 +437,7 @@ const formLayout = ref({
     name: ["c_ms"],
     isActive: true,
   },
+  summary: summaryLayout.value,
 } as FormLayoutType);
 
 // const formSchema = z.object({
@@ -470,24 +529,25 @@ const removeVatDt = (quoDtType: QuoDtType) => {
 };
 
 const removePph = () => {
-  console.log("removePph", form.value.pph23_perc);
   form.value.pph23_perc = 0;
-  console.log("removePph2", form.value.pph23_perc);
 };
 
 const autocompletePph = (data: FormPph23Type) => {
   form.value.pph23_perc = Number(data.num);
+
+  calculateTotalAmount();
 };
 
 const autocompleteCurrency = (data: FormCurrencyType) => {
   form.value.exchange_rate = Number(data.num);
+  currencySymbolLabel.value = data.symbol;
+
+  calculateTotalAmount();
 };
 
 const onClickOptionRefBtn = async (ref: RefBtnType) => {
   isOpenModal.value.products = false;
   if (ref.key == "products") {
-    console.log("ref", ref.key, ref);
-
     itemsCheck.value.checkProducts = updateRefsModalFromMain(
       itemsCheck.value.checkMain,
       "products",
@@ -580,7 +640,9 @@ const calculateTotalAmount = () => {
 
     const discPercPriceSell = Number(priceSell * discPercentage);
     const discPercNum = Number(priceSell - discPercPriceSell);
-    const discPercAm = Number(qty * discPercNum);
+    // const subDiscPercAm = Number(qty * discPercNum);
+    const discPercAm = Number(subtotalSell * discPercentage);
+    const subDiscPercAm = Number(subtotalSell - discPercAm);
 
     item.subtotal_sell = subtotalSell;
     item.subtotal_buy = subtotalBuy;
@@ -590,10 +652,24 @@ const calculateTotalAmount = () => {
     let discFinal = 0;
     if (!!discAmount && discAmount > 0) {
       discType = "a";
-      discFinal = subtotalSell - discAmount;
+      //   discFinal = subtotalSell - discAmount;
     } else if (!!discPercentage && discPercentage > 0) {
       discType = "p";
-      discFinal = discPercAm;
+      //   discFinal = subDiscPercAm;
+    } else if (
+      !!discAmount &&
+      discAmount > 0 &&
+      !!discPercentage &&
+      discPercentage > 0
+    ) {
+      discType = "all";
+      // discFinal = subDiscPercAm - discAmount;
+    }
+
+    // discFinal = subDiscPercAm;
+    discFinal = subDiscPercAm - discAmount;
+    if (discFinal <= 0) {
+      discFinal = subtotalSell;
     }
 
     item.disc_perc_num = 0;
@@ -609,15 +685,108 @@ const calculateTotalAmount = () => {
     item.vat_perc_am = 0;
 
     if (!!item.vat_id) {
-      // const vatMultiplier = item.vat_id.multiplier;
-      // const vatDivider = item.vat_id.divider;
-      // const vatAmount = discAmount * vatMultiplier / vatDivider;
-
       item.vat_perc_am = discFinal * ((item.vat_perc ?? 0) / 100);
     }
 
     item.total_am = discFinal + item.vat_perc_am;
   });
+
+  // header calculation
+  form.value.subtotal = itemsCheck.value.checkMain.reduce(
+    (acc: number, item: QuoDtType) => acc + item.total_am,
+    0
+  );
+
+  form.value.total_qty = itemsCheck.value.checkMain.reduce(
+    (acc: number, item: QuoDtType) => acc + item.qty,
+    0
+  );
+
+  // form.value.total_discount = item.disc_perc_am + item.disc_am + form.value.disc_am + form.value.disc_perc_am;
+  let itemsDiscount = itemsCheck.value.checkMain.reduce(
+    (acc: number, item: QuoDtType) => acc + item.disc_perc_am + item.disc_am,
+    0
+  );
+
+  console.log("form.value.subtotal", form.value.subtotal);
+
+  const discPercentageHead = Number((form.value.disc_perc ?? 0) / 100);
+  const discAmountHead = Number(form.value.disc_am ?? 0);
+
+  let discPercPriceSellHead = Number(form.value.subtotal * discPercentageHead);
+  let discPercAmHead = Number(
+    form.value.subtotal - (discPercPriceSellHead ?? 0)
+  );
+
+  form.value.disc_type = null;
+  form.value.disc_perc_am = 0;
+
+  form.value.total_discount = discAmountHead + itemsDiscount;
+  if (!!discPercPriceSellHead) {
+    form.value.total_discount = discPercPriceSellHead + discAmountHead;
+  }
+
+  let discType: QuoDtDiscType = null;
+
+  let discFinal = 0;
+  if (!!discAmountHead && discAmountHead > 0) {
+    discType = "a";
+  } else if (!!discPercentageHead && discPercentageHead > 0) {
+    discType = "p";
+  } else if (
+    !!discAmountHead &&
+    discAmountHead > 0 &&
+    !!discPercentageHead &&
+    discPercentageHead > 0
+  ) {
+    discType = "all";
+  }
+
+  discFinal = discPercAmHead - discAmountHead;
+  if (discFinal <= 0) {
+    discFinal = form.value.subtotal;
+  }
+
+  if (form.value.disc_perc) {
+    form.value.disc_perc_am = discPercPriceSellHead;
+  }
+
+  form.value.disc_final = 0;
+  if (discAmountHead || discPercentageHead) {
+    form.value.disc_type = discType;
+    form.value.disc_final = discFinal;
+  }
+
+  if (!!form.value.vat_id) {
+    form.value.total_vat = discFinal * ((form.value.vat_perc ?? 0) / 100);
+  }
+
+  if (!!form.value.pph23_id) {
+    form.value.total_pph23 = discFinal * ((form.value.pph23_perc ?? 0) / 100);
+  }
+
+  form.value.grand_total =
+    discFinal + form.value.total_vat + form.value.total_pph23;
+
+  if (formLayout.value.summary) {
+    formLayout.value.summary.total_amount.value = form.value.subtotal;
+    formLayout.value.summary.total_qty.value = form.value.total_qty;
+    formLayout.value.summary.total_discount.value = form.value.total_discount;
+    formLayout.value.summary.total_vat.value = form.value.total_vat;
+    formLayout.value.summary.total_pph23.value = form.value.total_pph23;
+    formLayout.value.summary.grand_total.value = form.value.grand_total;
+
+    // TODO foreach currency symbol
+  }
+
+  console.log(
+    form.value.subtotal,
+    form.value.grand_total,
+    discFinal,
+    form.value.total_vat,
+    form.value.total_pph23,
+    form.value.total_discount
+  );
 };
 
 // watch(
@@ -841,7 +1010,6 @@ watchEffect(() => {
                 is-display-multiple-key
                 @click:selected="(data) => autocompleteVatDt(data, item)"
                 @click:clear="removeVatDt(item)"
-                :disabled="vatMode === 'header'"
                 :fields="headersVAT"
                 :filters="[
                   {
@@ -897,8 +1065,6 @@ watchEffect(() => {
                 }"
                 hide-currency-display
                 @update:modelValue="calculateTotalAmount"
-                :disabled="!!item.disc_perc"
-                :disabled-copy="false"
                 label=""
                 class="w-[9rem]"
               />
@@ -912,8 +1078,6 @@ watchEffect(() => {
                 }"
                 hide-currency-display
                 @update:modelValue="calculateTotalAmount"
-                :disabled="!!item.disc_am"
-                :disabled-copy="false"
                 label=""
                 class="w-[9rem]"
               />
@@ -1031,7 +1195,7 @@ watchEffect(() => {
         </div>
         <div
           v-if="tabFormIndex == useStatics.formTabQuotation.payments"
-          class="grid grid-cols-6 sm:grid-cols-1 gap-2 items-center"
+          class="grid grid-cols-6 sm:grid-cols-1 gap-x-2 gap-y-4 items-center"
         >
           <div class="sm:col-span-1">
             <d-autocomplete
@@ -1077,7 +1241,6 @@ watchEffect(() => {
               is-display-multiple-key
               @click:selected="autocompleteVat"
               @click:clear="removeVat"
-              :disabled="vatMode === 'detail'"
               :fields="headersVAT"
               :filters="[
                 {
@@ -1153,6 +1316,30 @@ watchEffect(() => {
               label="PPH (%)"
               :errors="errors.pph23_perc"
               disabled
+            />
+          </div>
+          <div class="sm:col-span-1">
+            <d-num-v-format
+              v-model="form.disc_perc"
+              :precision="{
+                min: 3,
+                max: 3,
+              }"
+              hide-currency-display
+              @update:modelValue="calculateTotalAmount"
+              label="Disc (%)"
+            />
+          </div>
+          <div class="sm:col-span-1">
+            <d-num-v-format
+              v-model="form.disc_am"
+              :precision="{
+                min: 3,
+                max: 3,
+              }"
+              hide-currency-display
+              @update:modelValue="calculateTotalAmount"
+              label="Disc Amount"
             />
           </div>
         </div>

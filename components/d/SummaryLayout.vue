@@ -1,91 +1,49 @@
 <script setup lang="ts">
-interface IProps {
-  summary?: {
-    total_amount?: {
-      value?: number | string
-      symbol?: string
-      suffix?: string
-      noValue?: boolean
-      format?: {
-        precision?: number
-      }
-    }
-    total_discount?: {
-      value?: number | string
-      symbol?: string
-      suffix?: string
-      noValue?: boolean
-      format?: {
-        precision?: number
-      }
-    }
-    total_pph23?: {
-      value?: number | string
-      symbol?: string
-      suffix?: string
-      noValue?: boolean
-      percentage?: number
-      format?: {
-        precision?: number
-      }
-    }
-    total_vat?: {
-      value?: number | string
-      symbol?: string
-      suffix?: string
-      noValue?: boolean
-      format?: {
-        precision?: number
-      }
-    }
-    grand_total?: {
-      value?: number | string
-      symbol?: string
-      suffix?: string
-      noValue?: boolean
-      format?: {
-        precision?: number
-      }
-    }
-  }
-}
-const props = defineProps<{
-  config?: IProps
-}>()
+export type SummaryPartType = {
+  label: string;
+  value: number | string;
+  symbol?: string | null;
+  suffix?: string | null;
+  noValue?: boolean;
+  percentage?: number;
+  format: {
+    precision: number;
+  };
+};
 
-const countSummaryKeys = computed(() => {
-  return Object.keys(props.config?.summary as object).length
-})
+export type SummaryLayoutType = Record<string, SummaryPartType>;
+
+const props = defineProps<{
+  config?: SummaryLayoutType;
+}>();
 </script>
 
 <template>
   <div
-    v-if="props.config?.summary"
+    v-if="props.config && Object.keys(props.config).length > 0"
     class="grid w-full auto-cols-auto grid-flow-col gap-3 font-medium text-zinc-500"
   >
     <div
-      v-if="props.config?.summary.total_amount"
+      v-for="(value, key) in props.config as Record<string, SummaryPartType>"
+      :key="key"
       class="grid grid-cols-2 items-center gap-2"
     >
       <div class="whitespace-nowrap bg-zinc-100 px-2 py-3 text-[14px]">
-        Total Amount
+        {{ value.label }}
+        {{ !!value.percentage ? `(${value.percentage} %)` : "" }}
       </div>
       <div class="w-full text-[14px]">
         <d-num-layout
-          :symbol="props.config?.summary?.total_amount?.symbol"
-          :value="props.config?.summary?.total_amount?.value"
-          :no-value="props.config?.summary?.total_amount?.noValue"
-          :suffix="props.config?.summary?.total_amount?.suffix"
-          :min-precision="
-            props.config?.summary?.total_amount?.format?.precision ?? 3
-          "
-          :max-precision="
-            props.config?.summary?.total_amount?.format?.precision ?? 3
-          "
+          :symbol="value.symbol ?? ''"
+          :value="value.value"
+          :no-value="value.noValue"
+          :suffix="value.suffix ?? ''"
+          :min-precision="value.format?.precision ?? 3"
+          :max-precision="value.format?.precision ?? 3"
         />
       </div>
     </div>
-    <div
+    <!-- <div
       v-if="props.config?.summary.total_discount"
       class="grid grid-cols-2 items-center gap-2"
     >
@@ -173,6 +131,6 @@ const countSummaryKeys = computed(() => {
           "
         ></d-num-layout>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>

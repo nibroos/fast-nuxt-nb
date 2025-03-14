@@ -1,3 +1,4 @@
+import type { SummaryPartType } from "~/components/d/SummaryLayout.vue"
 import type { FormQuoDtProductListType, ProductBomListType } from "../masters/ProductType"
 
 export type IndexQuotationType = {
@@ -63,6 +64,11 @@ export type FormQuotationType = {
   is_approved: number
   exchange_rate?: number | null
   vat_perc: number
+  disc_am: number
+  disc_perc: number
+  disc_perc_am: number
+  disc_final: number
+  disc_type: QuoDtDiscType | null
   pph23_perc: number
   total_qty: number
   subtotal: number
@@ -77,6 +83,8 @@ export type FormQuotationType = {
   email?: string
   phone?: string
   address?: string
+
+  summary?: Record<string, SummaryPartType>
 }
 
 export type QuoDtType = {
@@ -99,11 +107,11 @@ export type QuoDtType = {
   price_buy: number
   subtotal_sell: number
   subtotal_buy: number
-  disc_am?: number
+  disc_am: number
   disc_perc?: number
   disc_perc_num?: number
-  disc_perc_am?: number
-  disc_final?: number
+  disc_perc_am: number
+  disc_final: number
   disc_type?: QuoDtDiscType | null
   total_am: number
   quo_dts_boms?: (QuoDtBomType | ProductBomListType)[] | null
@@ -155,7 +163,7 @@ export type QuoDtsType = {
   quo_dts_boms: QuoDtBomType[]
 }
 
-export type QuoDtDiscType = 'p' | 'a' | null
+export type QuoDtDiscType = 'p' | 'a' | 'all' | null
 
 export type QuoDtRefType = 'products'
 

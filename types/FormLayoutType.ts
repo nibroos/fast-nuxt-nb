@@ -1,3 +1,4 @@
+import type { SummaryLayoutType } from '~/components/d/SummaryLayout.vue'
 import type { PermissionType } from '~/types/PermissionType'
 
 export type FormLayoutType = {
@@ -15,7 +16,7 @@ export type FormLayoutType = {
   }
   tabs?: string[]
   currentTab?: string | number
-  summary?: object
+  summary?: SummaryLayoutType
   triggerLayout?: boolean
   contentClass?: string
   divHeightOverflowLimit?: number

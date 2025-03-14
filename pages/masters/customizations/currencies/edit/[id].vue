@@ -112,6 +112,14 @@ onMounted(async () => {
           </div>
           <div class="sm:col-span-1">
             <d-text-input
+              v-model="form.symbol"
+              :label="`Symbol`"
+              :placeholder="`Symbol`"
+              :errors="[errors.symbol]"
+            />
+          </div>
+          <div class="sm:col-span-1">
+            <d-text-input
               v-model="form.description"
               :label="`Description`"
               :placeholder="`Description`"

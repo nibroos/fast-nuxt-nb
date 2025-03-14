@@ -4,5 +4,6 @@ export type FormCurrencyType = {
   num: number
   description?: string | null
   remark?: string | null
+  symbol: string | null
   status?: number
 }

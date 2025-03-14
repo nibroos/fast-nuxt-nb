@@ -497,12 +497,13 @@ onBeforeUnmount(() => {
       </div>
 
       <slot name="summary" />
+      <!-- {{ mergedConfig.summary }} -->
       <d-summary-layout
         v-if="
         Object.keys(mergedConfig.summary as object).length > 0 &&
         !slots.summary
       "
-        :config="config.summary"
+        :config="mergedConfig.summary"
       />
     </div>
     <div
