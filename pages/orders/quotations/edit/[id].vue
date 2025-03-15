@@ -22,6 +22,7 @@ import type {
 } from "~/types/quotations/QuotationType";
 import { updateRefsModalFromMain } from "~/composables/maps/quotation";
 
+const router = useRouter();
 const layoutStore = useLayoutsStore();
 const { topTitle } = storeToRefs(layoutStore);
 
@@ -35,6 +36,7 @@ const {
   queryModal,
   metaModal,
   optionRefBtnRef,
+  loading,
 } = storeToRefs(quotationStore);
 
 definePageMeta({
@@ -45,6 +47,8 @@ definePageMeta({
 useHead({
   title: "Create Quotation",
 });
+
+const id = ref(router.currentRoute.value.params.id);
 
 const headers = ref([
   // { key: "ref_type", title: "Ref Type", sortable: true },
@@ -428,7 +432,16 @@ const formLayout = ref({
   parentPath: "/orders/quotations",
   currentTab: tabFormIndex.value,
   tabs: ["Items", "Payments", "Remark"],
+  mode: "edit",
   button: {
+    create: {
+      path: "/orders/quotations/create",
+    },
+    save: {
+      show: true,
+      loading: false,
+      type: "submit",
+    },
     clear: {
       show: true,
     },
@@ -464,7 +477,7 @@ const handleSubmit = async () => {
 
   form.value.quo_dts = itemsCheck.value.checkMain;
 
-  await quotationStore.store();
+  await quotationStore.update();
 };
 
 const autocompleteCustomer = (data: any) => {
@@ -579,7 +592,8 @@ const fetchModalFilter = async () => {
 };
 
 const fetchInitialData = async () => {
-  await quotationStore.indexProduct();
+  form.value.id = Number(id.value);
+  await Promise.all([quotationStore.show(), quotationStore.indexProduct()]);
 };
 
 const closeAllModal = () => {
@@ -708,8 +722,6 @@ const calculateTotalAmount = () => {
     0
   );
 
-  console.log("form.value.subtotal", form.value.subtotal);
-
   const discPercentageHead = Number((form.value.disc_perc ?? 0) / 100);
   const discAmountHead = Number(form.value.disc_am ?? 0);
 
@@ -811,8 +823,9 @@ const calculateTotalAmount = () => {
 const vatMode = ref<VatModeType>(null);
 
 onMounted(async () => {
-  await fetchInitialData();
   quotationStore.handleClickClear();
+  await fetchInitialData();
+  // quotationStore.updateRefsModal();
 });
 
 watchEffect(() => {
@@ -991,7 +1004,6 @@ watchEffect(() => {
             :row-props="{
               class: 'whitespace-nowrap',
             }"
-            hover
           >
             <template #item.vat_id="{ item }">
               <lazy-d-select-table
@@ -1150,7 +1162,6 @@ watchEffect(() => {
                       :row-props="{
                         class: 'whitespace-nowrap',
                       }"
-                      hover
                     >
                       <template #item.remark="{ item }">
                         <d-text-area-input

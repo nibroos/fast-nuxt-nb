@@ -324,10 +324,13 @@ watch(
       //   await fetchBulk(newValue.map((item) => item[props.itemValue]))
       // }
 
-      // if (!multiple.value && !!newValue) {
-      //   // single show
-      //   await fetchSingle(newValue);
-      // }
+      if (!multiple.value && !!newValue) {
+        itemsCheck.value = [newValue];
+        // single show
+        await fetchSingle(newValue);
+      }
+
+      console.log("newValue123", newValue);
 
       if (!newValue && !showMetaModal.value.loading) {
         selectedText.value = "";

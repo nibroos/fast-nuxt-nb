@@ -45,9 +45,13 @@ const useQuotationStore = defineStore('QuotationStore', {
         meta: {} as Meta
       } as PaginationMeta
     },
+    loading: {
+      formLoading: false,
+      editPageLoading: false,
+
+    },
     tabFormIndex: 0,
     errors: {} as Record<string, any>,
-    formLoading: false,
     itemsCheck: {
       checkMain: [] as QuoDtType[],
       checkProducts: [] as FormQuoDtProductListType[],
@@ -84,22 +88,28 @@ const useQuotationStore = defineStore('QuotationStore', {
     },
 
     async show() {
+      if (!!this.loading.editPageLoading) return
+      this.loading.editPageLoading = true
       try {
         const response = await useMyFetch().post(
           '/v1/quotations/show-quotation',
           this.form
         )
         this.form = response.data.data[0]
+        this.itemsCheck.checkMain = this.form.quo_dts
 
         return response
       } catch (error: any) {
         console.log('Failed To Fetch Data', error.response.data);
+      } finally {
+        this.loading.editPageLoading = false
+        this.updateRefsModal();
       }
     },
 
     async store() {
-      if (!!this.formLoading) return
-      this.formLoading = true
+      if (!!this.loading.formLoading) return
+      this.loading.formLoading = true
 
       const isConfirmed = await useAlert.showPopupConfirmation(
         'Are you sure to save this data?',
@@ -107,7 +117,7 @@ const useQuotationStore = defineStore('QuotationStore', {
       )
 
       if (!isConfirmed) {
-        this.formLoading = false
+        this.loading.formLoading = false
         return
       }
 
@@ -142,13 +152,13 @@ const useQuotationStore = defineStore('QuotationStore', {
 
         return error.response.data
       } finally {
-        this.formLoading = false
+        this.loading.formLoading = false
       }
     },
 
     async update() {
-      if (!!this.formLoading) return
-      this.formLoading = true
+      if (!!this.loading.formLoading) return
+      this.loading.formLoading = true
 
       const isConfirmed = await useAlert.showPopupConfirmation(
         'Are you sure to save this data?',
@@ -156,7 +166,7 @@ const useQuotationStore = defineStore('QuotationStore', {
       )
 
       if (!isConfirmed) {
-        this.formLoading = false
+        this.loading.formLoading = false
         return
       }
 
@@ -197,7 +207,7 @@ const useQuotationStore = defineStore('QuotationStore', {
 
         return error.response.data
       } finally {
-        this.formLoading = false
+        this.loading.formLoading = false
       }
     },
 
@@ -259,6 +269,7 @@ const useQuotationStore = defineStore('QuotationStore', {
                 }
 
                 this.metaModal.indexProducts.data[iResProduct] = combined
+                this.itemsCheck.checkProducts[iCheckProduct] = combined
               }
             })
           })
@@ -322,6 +333,17 @@ const useQuotationStore = defineStore('QuotationStore', {
         }
       });
     },
+
+    updateRefsModal() {
+      // this.itemsCheck.checkProducts = updateRefsModalFromMain(
+      //   this.itemsCheck.checkMain,
+      //   "products",
+      //   this.itemsCheck.checkProducts
+      // );
+
+      this.countSelectedReferences();
+    }
+
   },
   persist: [
     {

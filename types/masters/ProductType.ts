@@ -151,4 +151,10 @@ export type FormQuoDtProductListType = ProductListType & QuoDtsType & {
   total_am?: number
 
   quo_dts_boms?: ProductBomListType[]
+
+  item_name?: string
+  item_code?: string
+  product_name?: string
+  product_code?: string
+  unit_name?: string
 }

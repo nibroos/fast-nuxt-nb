@@ -21,14 +21,16 @@ const props = defineProps<{
 <template>
   <div
     v-if="props.config && Object.keys(props.config).length > 0"
-    class="grid w-full auto-cols-auto grid-flow-col gap-3 font-medium text-zinc-500"
+    class="grid w-full auto-cols-auto grid-flow-col gap-3 font-medium text-zinc-500 dark:text-primary1"
   >
     <div
       v-for="(value, key) in props.config as Record<string, SummaryPartType>"
       :key="key"
       class="grid grid-cols-2 items-center gap-2"
     >
-      <div class="whitespace-nowrap bg-zinc-100 px-2 py-3 text-[14px]">
+      <div
+        class="whitespace-nowrap bg-zinc-100 dark:bg-dark1 px-2 py-3 text-[14px]"
+      >
         {{ value.label }}
         {{ !!value.percentage ? `(${value.percentage} %)` : "" }}
       </div>

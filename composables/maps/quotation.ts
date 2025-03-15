@@ -53,6 +53,12 @@ export function convertItemRefProduct(
     disc_type: item.disc_type || null,
     total_am: item.total_am || 0,
     quo_dts_boms: item.quo_dts_boms ?? item.boms,
+
+    item_name: item.name ?? item.item_name ?? item.product_name,
+    item_code: item.code ?? item.item_code ?? item.product_code,
+    product_name: item.name ?? item.item_name ?? item.product_name,
+    product_code: item.code ?? item.item_code ?? item.product_code,
+    unit_name: item.unit_name,
   }
 
   // remove boms
@@ -136,8 +142,11 @@ export function updateRefsModalFromMain(
 
   let updatedList: any[] = []
   checkMain.forEach((mainItem: QuoDtType, iMainItem: number) => {
-    if (mainItem.ref_type == checkOpened) {
+    if (mainItem.ref_type != checkOpened) {
+      return
+    }
 
+    if (checkProducts.length > 0) {
       checkProducts.forEach((prodItem: FormQuoDtProductListType, iProdItem: number) => {
         console.log('updateRefsModalFromMain-mainItem-base', iProdItem, mainItem);
         if (mainItem.ref_id == prodItem.ref_id) {
@@ -151,7 +160,10 @@ export function updateRefsModalFromMain(
           updatedList[iMainItem] = combined
         }
       })
+    } else {
+      updatedList[iMainItem] = mainItem
     }
+
   })
 
   return updatedList

@@ -120,6 +120,10 @@ export type QuoDtType = {
   code?: string
   name?: string
   unit_name?: string
+  product_name?: string
+  product_code?: string
+  item_name?: string
+  item_code?: string
 }
 
 export type QuoDtBomType = {
