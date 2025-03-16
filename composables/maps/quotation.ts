@@ -1,11 +1,12 @@
 import type { FormQuoDtProductListType, ProductBomListType } from "~/types/masters/ProductType"
 import type { FormQuoDtRefType, QuoDtBomType, QuoDtItemType, QuoDtRefType, QuoDtType } from "~/types/quotations/QuotationType"
 
-const insertProductUuid = (bom: QuoDtBomType[] | ProductBomListType[], productUuid: string): any[] => {
+const generateBoms = (bom: QuoDtBomType[] | ProductBomListType[], productUuid: string): any[] => {
   return bom.map((bomItem: QuoDtBomType | ProductBomListType) => {
     return {
       ...bomItem,
       product_uuid: productUuid,
+      item_id: bomItem.bom_id ?? bomItem.item_id
     }
   })
 }
@@ -19,11 +20,11 @@ export function convertItemRefProduct(
   let productUuid = randomId()
 
   if (!!item.boms) {
-    item.boms = insertProductUuid(item.boms, productUuid)
+    item.boms = generateBoms(item.boms, productUuid)
   }
 
   if (!!item.quo_dts_boms) {
-    item.quo_dts_boms = insertProductUuid(item.quo_dts_boms, productUuid)
+    item.quo_dts_boms = generateBoms(item.quo_dts_boms, productUuid)
   }
 
   const data: QuoDtType = {

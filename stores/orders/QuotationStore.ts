@@ -93,7 +93,9 @@ const useQuotationStore = defineStore('QuotationStore', {
       try {
         const response = await useMyFetch().post(
           '/v1/quotations/show-quotation',
-          this.form
+          {
+            id: this.form.id
+          }
         )
         this.form = response.data.data[0]
         this.itemsCheck.checkMain = this.form.quo_dts
@@ -184,7 +186,7 @@ const useQuotationStore = defineStore('QuotationStore', {
         // navigateTo(`/masters/customizations/quotations/edit/${response.data.data[0].id}`)
 
         this.form.id = id
-        this.show()
+        await this.show()
 
         useAlert.hideAlert()
         useAlert.alertSuccess(response.data.message)

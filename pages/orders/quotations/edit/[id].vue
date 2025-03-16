@@ -80,7 +80,7 @@ const headers = ref([
 const headersBOM = ref([
   { key: "item_code", title: "Product Code", sortable: true },
   { key: "item_name", title: "Product Name", sortable: true },
-  { key: "item_unit_name", title: "Unit", sortable: true },
+  { key: "unit_name", title: "Unit", sortable: true },
   { key: "qty", title: "Qty", sortable: true },
   { key: "remark", title: "Remark", sortable: true },
   {
@@ -1112,7 +1112,7 @@ watchEffect(() => {
                   cta="delete"
                   icon-size="16"
                   :is-notif="true"
-                  :notif-text="`${item.name} deleted`"
+                  :notif-text="`${item.name ?? item.item_name} deleted`"
                 ></d-bt>
               </div>
             </template>
@@ -1189,7 +1189,7 @@ watchEffect(() => {
                             @click="onClickDeleteBom(index, iBom, internalItem)"
                             icon="mdi-delete"
                             is-no-text
-                            class="p-1 hover:text-zinc-100 hover:bg-lightCancel2 rounded-full ease-in-out transition-all hover:dark:!bg-cancel1 dark:!bg-cancel"
+                            class="p-1 bg-primary1 hover:text-zinc-100 hover:bg-lightCancel2 rounded-full ease-in-out transition-all hover:dark:!bg-cancel1 dark:!bg-cancel"
                             icon-class="text-cancel dark:text-primary1"
                             rounded="xl"
                             cta="delete"

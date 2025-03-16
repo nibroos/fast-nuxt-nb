@@ -98,6 +98,7 @@ const formQuotationCreateEdit = {
   grand_total: 0,
   due_at: "",
   expired_at: "",
+
   quo_dts: [],
 
   email: "",

@@ -141,6 +141,7 @@ export type QuoDtBomType = {
   price_buy: number
   subtotal_sell: number
   subtotal_buy: number
+  bom_id: number
 
   code?: string
   name?: string

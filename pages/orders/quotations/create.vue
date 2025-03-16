@@ -810,9 +810,14 @@ const calculateTotalAmount = () => {
 
 const vatMode = ref<VatModeType>(null);
 
+const clickClearForm = () => {
+  quotationStore.handleClickClear();
+  calculateTotalAmount();
+};
+
 onMounted(async () => {
   await fetchInitialData();
-  quotationStore.handleClickClear();
+  clickClearForm();
 });
 
 watchEffect(() => {

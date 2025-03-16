@@ -127,6 +127,8 @@ export type ProductBomListType = {
   price_buy: number
   subtotal_sell: number
   subtotal_buy: number
+
+  item_id?: number
 }
 
 
