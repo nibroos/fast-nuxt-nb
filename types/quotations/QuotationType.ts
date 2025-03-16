@@ -1,5 +1,5 @@
 import type { SummaryPartType } from "~/components/d/SummaryLayout.vue"
-import type { FormQuoDtProductListType, ProductBomListType } from "../masters/ProductType"
+import type { ProductBomListType, ProductListType } from "../masters/ProductType"
 
 export type IndexQuotationType = {
   id: number
@@ -146,6 +146,7 @@ export type QuoDtBomType = {
   code?: string
   name?: string
   unit_name?: string
+  ref_id?: number
 }
 
 export type QuoDtsType = {
@@ -202,3 +203,35 @@ export type QIndexProductsType = {
 }
 
 export type VatModeType = 'header' | 'detail' | null
+
+
+export type FormQuoDtProductListType = ProductListType & QuoDtsType & {
+  ref_type: 'products'
+  quotation_id?: number | null
+  quo_dt_id?: number | null
+  vat_id?: number
+  vat_perc?: number
+  vat_perc_am?: number
+  ref_id?: number
+  qty_so?: number
+  qty?: number
+  subtotal_sell?: number
+  subtotal_buy?: number
+  disc_am?: number
+  disc_perc?: number
+  disc_perc_num?: number
+  disc_perc_am?: number
+  disc_final?: number
+  disc_type?: QuoDtDiscType | null
+  total_am?: number
+
+  quo_dts_boms?: ProductBomListType[]
+
+  item_name?: string
+  item_code?: string
+  product_name?: string
+  product_code?: string
+  unit_name?: string
+}
+
+export type FormQuoDtBomListType = ProductListType & QuoDtBomType

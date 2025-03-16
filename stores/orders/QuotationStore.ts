@@ -2,8 +2,7 @@ import { useAlert } from '~/composables/useAlert'
 import { useMyFetch } from '~/composables/useMyFetch'
 import type { Meta, Pagination, PaginationMeta } from '~/interfaces/LaravelPaginationInterface'
 import type { RefBtnType } from '~/types/components/OptionRefBtnType'
-import type { FormQuoDtProductListType } from '~/types/masters/ProductType'
-import type { FormQuotationType, IndexQuotationType, QIndexProductsType, QIndexType, QuoDtType } from '~/types/quotations/QuotationType'
+import type { FormQuoDtBomListType, FormQuoDtProductListType, FormQuotationType, IndexQuotationType, QIndexProductsType, QIndexType, QuoDtBomType, QuoDtType } from '~/types/quotations/QuotationType'
 
 const useQuotationStore = defineStore('QuotationStore', {
   state: () => ({
@@ -31,6 +30,18 @@ const useQuotationStore = defineStore('QuotationStore', {
         factory_code: '',
         order_column: 'name',
         order_direction: 'desc'
+      } as QIndexProductsType,
+      qIndexBoms: {
+        page: 1,
+        per_page: 10,
+        item_group_ids: [],
+        item_sub_group_ids: [],
+        code: '',
+        name: '',
+        sku: '',
+        factory_code: '',
+        order_column: 'name',
+        order_direction: 'desc'
       } as QIndexProductsType
     },
     metaModal: {
@@ -41,6 +52,11 @@ const useQuotationStore = defineStore('QuotationStore', {
       } as PaginationMeta,
       indexProducts: {
         data: [] as FormQuoDtProductListType[],
+        loading: false,
+        meta: {} as Meta
+      } as PaginationMeta,
+      indexBoms: {
+        data: [] as FormQuoDtBomListType[],
         loading: false,
         meta: {} as Meta
       } as PaginationMeta
@@ -55,9 +71,11 @@ const useQuotationStore = defineStore('QuotationStore', {
     itemsCheck: {
       checkMain: [] as QuoDtType[],
       checkProducts: [] as FormQuoDtProductListType[],
+      checkBoms: [] as QuoDtBomType[],
     },
     isOpenModal: {
       products: false,
+      boms: false,
     },
     optionRefBtnRef: [
       {
@@ -68,6 +86,12 @@ const useQuotationStore = defineStore('QuotationStore', {
         type: "button",
       },
     ] as RefBtnType[],
+    openedModal: {
+      boms: {
+        id: null as number | null,
+        index: null as number | null,
+      }
+    }
   }),
 
   actions: {
@@ -255,29 +279,56 @@ const useQuotationStore = defineStore('QuotationStore', {
           this.queryModal.qIndexProducts
         )
 
-        this.metaModal.indexProducts = response.data
+        if (this.isOpenModal.products) {
+          this.metaModal.indexProducts = response.data
 
-        if (this.itemsCheck.checkProducts.length > 0) {
-          this.itemsCheck.checkProducts.forEach((checkProduct: FormQuoDtProductListType, iCheckProduct: number) => {
-            (this.metaModal.indexProducts.data as FormQuoDtProductListType[]).forEach((resProduct: FormQuoDtProductListType, iResProduct: number) => {
-              console.log('checkProduct', iCheckProduct, checkProduct);
+          if (this.itemsCheck.checkProducts.length > 0) {
+            this.itemsCheck.checkProducts.forEach((checkProduct: FormQuoDtProductListType, iCheckProduct: number) => {
+              (this.metaModal.indexProducts.data as FormQuoDtProductListType[]).forEach((resProduct: FormQuoDtProductListType, iResProduct: number) => {
+                console.log('checkProduct', iCheckProduct, checkProduct);
 
-              if (resProduct.ref_id === checkProduct.ref_id) {
-                console.log('resProduct', iResProduct, resProduct);
+                if (resProduct.ref_id === checkProduct.ref_id) {
+                  console.log('resProduct', iResProduct, resProduct);
 
-                const combined = {
-                  ...resProduct,
-                  ...checkProduct
+                  const combined = {
+                    ...resProduct,
+                    ...checkProduct
+                  }
+
+                  this.metaModal.indexProducts.data[iResProduct] = combined
+                  this.itemsCheck.checkProducts[iCheckProduct] = combined
                 }
-
-                this.metaModal.indexProducts.data[iResProduct] = combined
-                this.itemsCheck.checkProducts[iCheckProduct] = combined
-              }
+              })
             })
-          })
+          }
         }
 
-        return this.metaModal.indexProducts
+        if (this.isOpenModal.boms) {
+          this.metaModal.indexBoms = response.data
+
+          if (this.itemsCheck.checkBoms.length > 0) {
+            this.itemsCheck.checkBoms.forEach((checkBom: QuoDtBomType, iCheckBom: number) => {
+              (this.metaModal.indexBoms.data as QuoDtBomType[]).forEach((resBom: FormQuoDtBomListType, iResBom: number) => {
+                console.log('checkBom', iCheckBom, checkBom);
+
+                if (resBom.ref_id === checkBom.item_id) {
+                  console.log('resBom', iResBom, resBom);
+
+                  const combined = {
+                    ...resBom,
+                    ...checkBom
+                  }
+
+                  this.metaModal.indexBoms.data[iResBom] = combined
+                  this.itemsCheck.checkBoms[iCheckBom] = combined
+                }
+              })
+            })
+          }
+        }
+
+        // return this.metaModal.indexProducts
+        return response.data
       } catch (error: any) {
         console.log('Failed To Fetch Data', error.response?.data);
       } finally {
@@ -289,6 +340,10 @@ const useQuotationStore = defineStore('QuotationStore', {
       if (this.isOpenModal.products) {
         this.itemsCheck.checkMain = generateQuoDt(this.itemsCheck.checkProducts, 'products', this.itemsCheck.checkMain)
         this.isOpenModal.products = false
+      }
+      if (this.isOpenModal.boms) {
+        // this.itemsCheck.checkMain = generateQuoDt(this.itemsCheck.checkProducts, 'boms', this.itemsCheck.checkMain)
+        this.isOpenModal.boms = false
       }
     },
 

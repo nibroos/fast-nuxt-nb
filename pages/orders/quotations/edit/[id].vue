@@ -14,6 +14,7 @@ import type { FormVatType } from "~/types/masters/VatType";
 import type { FormPph23Type } from "~/types/masters/Pph23Type";
 import type { FormCurrencyType } from "~/types/masters/CurrencyType";
 import type {
+  FormQuoDtProductListType,
   ModalIndexProductFilterAutoCompleteType,
   ModalIndexProductFilterTextType,
   QuoDtDiscType,
@@ -37,6 +38,7 @@ const {
   metaModal,
   optionRefBtnRef,
   loading,
+  openedModal,
 } = storeToRefs(quotationStore);
 
 definePageMeta({
@@ -45,7 +47,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "Create Quotation",
+  title: "Edit Quotation",
 });
 
 const id = ref(router.currentRoute.value.params.id);
@@ -558,7 +560,7 @@ const autocompleteCurrency = (data: FormCurrencyType) => {
   calculateTotalAmount();
 };
 
-const onClickOptionRefBtn = async (ref: RefBtnType) => {
+const onClickOpenModalOptionRefBtn = async (ref: RefBtnType) => {
   isOpenModal.value.products = false;
   if (ref.key == "products") {
     itemsCheck.value.checkProducts = updateRefsModalFromMain(
@@ -576,6 +578,9 @@ const onClickOptionRefBtn = async (ref: RefBtnType) => {
 
 const fetchModalFilter = async () => {
   if (isOpenModal.value.products) {
+    await quotationStore.indexProduct();
+  }
+  if (isOpenModal.value.boms) {
     await quotationStore.indexProduct();
   }
   // else if (showModal.value.listPO) {
@@ -614,10 +619,23 @@ const fetchDataServerFetch = async (options: { [key: string]: any }) => {
     }
   }
 
+  if (isOpenModal.value.boms) {
+    queryModal.value.qIndexBoms.page = options.page;
+    queryModal.value.qIndexBoms.per_page = options.itemsPerPage;
+
+    if (options.sortBy.length > 0) {
+      queryModal.value.qIndexBoms.order_column = options.sortBy[0].key;
+      queryModal.value.qIndexBoms.order_direction = options.sortBy[0].order;
+    } else {
+      queryModal.value.qIndexBoms.order_column = "";
+      queryModal.value.qIndexBoms.order_direction = "";
+    }
+  }
+
   fetchModalFilter();
 };
 
-const onClickAddProductsModal = () => {
+const onClickUpdateProductsModal = () => {
   quotationStore.selectItemRefModal();
   quotationStore.countSelectedReferences();
   closeAllModal();
@@ -627,6 +645,26 @@ const onClickDeleteSelected = (item: any, index: number) => {
   itemsCheck.value.checkMain.splice(index, 1);
 
   quotationStore.countSelectedReferences();
+};
+
+const onClickUpdateBomsModal = () => {
+  console.log("item, onClickUpdateBomsModal", itemsCheck.value.checkBoms);
+  quotationStore.selectItemRefModal();
+  quotationStore.countSelectedReferences();
+  closeAllModal();
+};
+
+const onClickOpenModalBOM = async (
+  item: FormQuoDtProductListType,
+  index: number
+) => {
+  console.log("item", index, item);
+  openedModal.value.boms.index = index;
+  openedModal.value.boms.id = item.ref_id;
+  itemsCheck.value.checkBoms = item.quo_dts_boms;
+
+  isOpenModal.value.boms = true;
+  await quotationStore.indexProduct();
 };
 
 const onClickDeleteBom = (
@@ -967,7 +1005,7 @@ watchEffect(() => {
           <d-option-ref-btn
             :refs="optionRefBtnRef"
             class="col-span-2"
-            @click:ref="onClickOptionRefBtn"
+            @click:ref="onClickOpenModalOptionRefBtn"
           >
             <!-- <template #append-cta-product>
               <v-icon
@@ -1100,7 +1138,16 @@ watchEffect(() => {
               <d-num-layout :value="item.total_am" />
             </template>
             <template #item.action="{ item, index }">
-              <div class="action-button">
+              <div class="action-button flex gap-2">
+                <d-bt
+                  v-if="item.item_type == 'product'"
+                  @click="onClickOpenModalBOM(item, index)"
+                  class="px-2 py-1 bg-scLighter hover:bg-scDarker hover:text-primary1 rounded-lg ease-in-out transition-all hover:dark:!bg-scDarker3 dark:!bg-sc"
+                  text-class="text-primary1 dark:text-white"
+                  rounded="xl"
+                  cta="+ Add BOM"
+                  no-icon
+                ></d-bt>
                 <d-bt
                   @click="onClickDeleteSelected(item, index)"
                   icon="mdi-delete"
@@ -1456,10 +1503,106 @@ watchEffect(() => {
         <div class="flex h-max w-full justify-end">
           <button
             class="flex items-center gap-2 rounded-md bg-sc px-3 py-2 text-[15px] font-bold text-white shadow-md hover:shadow-xl"
-            @click="onClickAddProductsModal"
+            @click="onClickUpdateProductsModal"
           >
             <Icon name="material-symbols:save-rounded" size="20" />
             Add Selected Products ({{ itemsCheck.checkProducts.length }})
+          </button>
+        </div>
+      </template>
+    </modals-final-modal>
+    <modals-final-modal
+      :is-open="isOpenModal.boms"
+      size="xl"
+      custom-class="overflow-y-auto"
+      label="List of Boms"
+      @update:is-open="isOpenModal.boms = $event"
+    >
+      <template #top>
+        <form
+          class="grid grid-cols-5 w-full flex-row items-center gap-2"
+          @submit.prevent="fetchModalFilter"
+        >
+          <d-autocomplete
+            v-for="filter in filtersOptionsProducts"
+            :key="filter.key"
+            v-model="queryModal.qIndexBoms[filter.key as ModalIndexProductFilterAutoCompleteType]"
+            :api="filter.api"
+            :single-api="filter.singleApi"
+            :method-api="filter.methodApi"
+            inner-search-key="global"
+            :page-end-prop="filter.pageEndProp"
+            :label="filter.title"
+            :item-value="filter.itemValue"
+            :item-title="filter.itemTitle"
+            multiple
+            :placeholder="`Type ${filter.title} ...`"
+          ></d-autocomplete>
+
+          <d-text-input
+            v-for="filter in filtersTextProducts"
+            :key="filter.key"
+            v-model="queryModal.qIndexBoms[filter.key as ModalIndexProductFilterTextType]"
+            :label="filter.title"
+            :placeholder="filter.title"
+            append-inner-icon="mdi-magnify"
+          />
+
+          <d-submit-button
+            @click:submit="fetchModalFilter"
+            @click:clear="quotationStore.handleClearQuery()"
+            class="grid-cols-1"
+          />
+        </form>
+      </template>
+
+      <v-data-table-server
+        v-model="itemsCheck.checkBoms"
+        :items="metaModal.indexBoms.data ?? []"
+        :headers="headersModalProducts"
+        :items-per-page="queryModal.qIndexBoms.per_page"
+        :items-length="metaModal.indexBoms.meta.total ?? 0"
+        :items-per-page-options="useInitials.perPageOptions"
+        :loading="metaModal.indexBoms.loading"
+        density="compact"
+        :header-props="{
+          class: '!bg-scLightest dark:!bg-dark2 whitespace-nowrap',
+        }"
+        :row-props="{
+          class: 'cursor-pointer',
+        }"
+        item-value="ref_id"
+        show-current-page
+        return-object
+        multiple
+        show-select
+        @update:options="fetchDataServerFetch"
+        fixed-header
+        height="450"
+        hover
+      >
+        <template #item.item_type="{ item }">
+          <span class="capitalize">{{ defineItemTypeQuotation(item) }} </span>
+        </template>
+        <template #item.price_sell="{ item }">
+          <d-num-layout :value="item.price_sell" />
+        </template>
+        <template #item.price_buy="{ item }">
+          <d-num-layout :value="item.price_buy" />
+        </template>
+        <template #item.status="{ item }">
+          <d-active-status :value="item.status" />
+        </template>
+      </v-data-table-server>
+
+      <template #footer>
+        <div class="flex h-max w-full justify-end">
+          <button
+            class="flex items-center gap-2 rounded-md bg-sc px-3 py-2 text-[15px] font-bold text-white shadow-md hover:shadow-xl"
+            @click="onClickUpdateBomsModal"
+          >
+            <Icon name="material-symbols:save-rounded" size="20" />
+            Add Selected Boms ({{ itemsCheck.checkBoms.length }})
           </button>
         </div>
       </template>

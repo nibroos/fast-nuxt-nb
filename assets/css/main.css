@@ -50,17 +50,17 @@
 }
 
 .action-table .action-button a {
-  margin-right: 0.25em;
+  /* margin-right: 0.25em; */
 }
 
 .table-hover tbody tr:hover td.action-table .action-button {
   opacity: 1;
-  background-color: #bfa094 !important;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(151, 118, 105, 0.5));
 }
 
 [data-theme="dark"].table-hover tbody tr:hover td.action-table .action-button {
   opacity: 1;
-  background-color: #3f3f46 !important;
+  background: linear-gradient(to right, rgba(63, 63, 70, 0), rgba(255, 187, 124, 0.8)) !important;
 }
 
 .custom-swal {
