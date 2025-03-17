@@ -211,6 +211,11 @@ const formStatusQuotation = [
   { id: 'CANCELED', name: 'CANCELED' },
 ]
 
+const formApprovedQuotation = [
+  { code: 0, name: 'Not Approved' },
+  { code: 1, name: 'Approved' },
+]
+
 const formTabQuotation = {
   items: 0,
   payments: 1,
@@ -222,4 +227,5 @@ export const useStatics = {
   QuoIndexDateType,
   formTabQuotation,
   formStatusQuotation,
+  formApprovedQuotation,
 }

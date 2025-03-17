@@ -1,12 +1,22 @@
 import type { ProductBomListType } from "~/types/masters/ProductType"
 import type { FormQuoDtProductListType, FormQuoDtRefType, QuoDtBomType, QuoDtItemType, QuoDtRefType, QuoDtType } from "~/types/quotations/QuotationType"
 
-const generateBoms = (bom: QuoDtBomType[] | ProductBomListType[], productUuid: string): any[] => {
+export const generateBoms = (bom: QuoDtBomType[] | ProductBomListType[], productUuid: string): any[] => {
   return bom.map((bomItem: QuoDtBomType | ProductBomListType) => {
     return {
       ...bomItem,
       product_uuid: productUuid,
-      item_id: bomItem.bom_id ?? bomItem.item_id
+      item_id: bomItem.bom_id ?? bomItem.item_id ?? bomItem.ref_id,
+      name: bomItem.name ?? bomItem.item_name,
+      code: bomItem.code ?? bomItem.item_code,
+      sku: bomItem.sku ?? bomItem.item_sku,
+      barcode: bomItem.barcode ?? bomItem.item_barcode,
+      factory_code: bomItem.factory_code ?? bomItem.item_factory_code,
+      item_name: bomItem.name ?? bomItem.item_name,
+      item_code: bomItem.code ?? bomItem.item_code,
+      item_sku: bomItem.sku ?? bomItem.item_sku,
+      item_barcode: bomItem.barcode ?? bomItem.item_barcode,
+      item_factory_code: bomItem.factory_code ?? bomItem.item_factory_code,
     }
   })
 }

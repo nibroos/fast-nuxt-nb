@@ -38,8 +38,8 @@ const fieldsConfig = ref<FieldSelectableType[]>([
   },
   {
     title: "Order Type",
-    key: "item_sub_group_name",
-    value: "item_sub_group_name",
+    key: "order_type_name",
+    value: "order_type_name",
     align: "start",
     sortable: true,
   },
@@ -58,6 +58,13 @@ const fieldsConfig = ref<FieldSelectableType[]>([
     sortable: true,
   },
   {
+    title: "Due Date",
+    key: "due_at",
+    value: "due_at",
+    align: "start",
+    sortable: true,
+  },
+  {
     title: "Currency",
     key: "currency_name",
     value: "currency_name",
@@ -68,62 +75,55 @@ const fieldsConfig = ref<FieldSelectableType[]>([
     title: "Exc. Rate",
     key: "exchange_rate",
     value: "exchange_rate",
-    align: "start",
+    align: "end",
     sortable: true,
   },
   {
     title: "VAT",
     key: "total_vat",
     value: "total_vat",
-    align: "start",
+    align: "end",
     sortable: true,
   },
   {
     title: "PPH",
     key: "total_pph23",
     value: "total_pph23",
-    align: "start",
+    align: "end",
     sortable: true,
   },
   {
     title: "Discount",
     key: "total_discount",
     value: "total_discount",
-    align: "start",
+    align: "end",
     sortable: true,
   },
   {
-    title: "Total Amount",
-    key: "total_amount",
-    value: "total_amount",
-    align: "start",
+    title: "Subtotal",
+    key: "subtotal",
+    value: "subtotal",
+    align: "end",
+    sortable: true,
+  },
+  {
+    title: "Grand Total",
+    key: "grand_total",
+    value: "grand_total",
+    align: "end",
     sortable: true,
   },
   {
     title: "Status",
     key: "status",
     value: "status",
-    align: "start",
-    sortable: true,
-  },
-  {
-    title: "Order Date",
-    key: "trx_date",
-    value: "trx_date",
     align: "start",
     sortable: true,
   },
   {
     title: "Approve",
-    key: "is_approve",
-    value: "is_approve",
-    align: "start",
-    sortable: true,
-  },
-  {
-    title: "Status",
-    key: "status",
-    value: "status",
+    key: "is_approved",
+    value: "is_approved",
     align: "start",
     sortable: true,
   },
@@ -308,14 +308,29 @@ const filtersConfig = ref<FilterSelectableType[]>([
           }
         "
       >
-        <template #item.price_sell="{ item }">
-          <d-num-layout :value="item.price_sell" />
+        <template #item.total_vat="{ item }">
+          <d-num-layout :value="item.total_vat" />
         </template>
-        <template #item.price_buy="{ item }">
-          <d-num-layout :value="item.price_buy" />
+        <template #item.total_discount="{ item }">
+          <d-num-layout :value="item.total_discount" />
+        </template>
+        <template #item.total_pph23="{ item }">
+          <d-num-layout :value="item.total_pph23" />
+        </template>
+        <template #item.subtotal="{ item }">
+          <d-num-layout :value="item.subtotal" />
+        </template>
+        <template #item.grand_total="{ item }">
+          <d-num-layout :value="item.grand_total" />
         </template>
         <template #item.status="{ item }">
-          <d-active-status :value="item.status" />
+          {{ item.status }}
+        </template>
+        <template #item.is_approved="{ item }">
+          <d-active-status
+            :value="item.is_approved"
+            :labels="useStatics.formApprovedQuotation"
+          />
         </template>
       </d-datatable>
     </d-index-layout>

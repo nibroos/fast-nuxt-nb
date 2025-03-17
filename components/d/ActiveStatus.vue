@@ -5,13 +5,22 @@ type IProps = {
   parentClass?: string;
   colors?: string[];
   capitalize?: boolean;
+  labels?: LabelsType[];
 };
+
+type LabelsType = {
+  code: number;
+  name: string;
+  color?: string;
+};
+
 const props = withDefaults(defineProps<IProps>(), {
   value: 0,
   class: "",
   parentClass: "",
   colors: () => [],
   capitalize: false,
+  labels: () => [],
 });
 
 const defaultColor = "bg-rose-100 text-rose-700 border !border-rose-700";
@@ -38,6 +47,21 @@ const colorFound = ref({
 });
 
 const changeColor = (newVal: number) => {
+  if (props.labels.length > 0) {
+    props.labels.forEach((label) => {
+      initialColors.value.forEach((color, iColor) => {
+        if (color.code === label.code) {
+          let combined = {
+            ...color,
+            ...label,
+          };
+
+          initialColors.value[iColor] = combined;
+        }
+      });
+    });
+  }
+
   const color = initialColors.value.find((c) => c.code === newVal);
   status.value = color?.name;
   colorFound.value = color as { name: string; color: string };

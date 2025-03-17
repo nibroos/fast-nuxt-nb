@@ -14,6 +14,7 @@ import type { FormVatType } from "~/types/masters/VatType";
 import type { FormPph23Type } from "~/types/masters/Pph23Type";
 import type { FormCurrencyType } from "~/types/masters/CurrencyType";
 import type {
+  FormQuoDtProductListType,
   ModalIndexProductFilterAutoCompleteType,
   ModalIndexProductFilterTextType,
   QuoDtDiscType,
@@ -35,6 +36,7 @@ const {
   queryModal,
   metaModal,
   optionRefBtnRef,
+  openedModal,
 } = storeToRefs(quotationStore);
 
 definePageMeta({
@@ -615,6 +617,26 @@ const onClickDeleteSelected = (item: any, index: number) => {
   quotationStore.countSelectedReferences();
 };
 
+const onClickUpdateBomsModal = () => {
+  console.log("item, onClickUpdateBomsModal", itemsCheck.value.checkBoms);
+  quotationStore.selectItemRefModal();
+  quotationStore.countSelectedReferences();
+  closeAllModal();
+};
+
+const onClickOpenModalBOM = async (
+  item: FormQuoDtProductListType,
+  index: number
+) => {
+  console.log("item", index, item);
+  openedModal.value.boms.index = index;
+  openedModal.value.boms.id = item.ref_id;
+  itemsCheck.value.checkBoms = item.quo_dts_boms;
+
+  isOpenModal.value.boms = true;
+  await quotationStore.indexProduct();
+};
+
 const onClickDeleteBom = (
   index: number,
   indexBom: number,
@@ -1093,7 +1115,16 @@ watchEffect(() => {
               <d-num-layout :value="item.total_am" />
             </template>
             <template #item.action="{ item, index }">
-              <div class="action-button">
+              <div class="action-button flex gap-2">
+                <d-bt
+                  v-if="item.item_type == 'product'"
+                  @click="onClickOpenModalBOM(item, index)"
+                  class="px-2 py-1 bg-scLighter hover:bg-scDarker hover:text-primary1 rounded-lg ease-in-out transition-all hover:dark:!bg-scDarker3 dark:!bg-sc"
+                  text-class="text-primary1 dark:text-white"
+                  rounded="xl"
+                  cta="+ Add BOM"
+                  no-icon
+                ></d-bt>
                 <d-bt
                   @click="onClickDeleteSelected(item, index)"
                   icon="mdi-delete"
@@ -1183,7 +1214,7 @@ watchEffect(() => {
                             @click="onClickDeleteBom(index, iBom, internalItem)"
                             icon="mdi-delete"
                             is-no-text
-                            class="p-1 hover:text-zinc-100 hover:bg-lightCancel2 rounded-full ease-in-out transition-all hover:dark:!bg-cancel1 dark:!bg-cancel"
+                            class="p-1 bg-primary1 hover:text-zinc-100 hover:bg-lightCancel2 rounded-full ease-in-out transition-all hover:dark:!bg-cancel1 dark:!bg-cancel"
                             icon-class="text-cancel dark:text-primary1"
                             rounded="xl"
                             cta="delete"
@@ -1454,6 +1485,102 @@ watchEffect(() => {
           >
             <Icon name="material-symbols:save-rounded" size="20" />
             Add Selected Products ({{ itemsCheck.checkProducts.length }})
+          </button>
+        </div>
+      </template>
+    </modals-final-modal>
+    <modals-final-modal
+      :is-open="isOpenModal.boms"
+      size="xl"
+      custom-class="overflow-y-auto"
+      label="List of Boms"
+      @update:is-open="isOpenModal.boms = $event"
+    >
+      <template #top>
+        <form
+          class="grid grid-cols-5 w-full flex-row items-center gap-2"
+          @submit.prevent="fetchModalFilter"
+        >
+          <d-autocomplete
+            v-for="filter in filtersOptionsProducts"
+            :key="filter.key"
+            v-model="queryModal.qIndexBoms[filter.key as ModalIndexProductFilterAutoCompleteType]"
+            :api="filter.api"
+            :single-api="filter.singleApi"
+            :method-api="filter.methodApi"
+            inner-search-key="global"
+            :page-end-prop="filter.pageEndProp"
+            :label="filter.title"
+            :item-value="filter.itemValue"
+            :item-title="filter.itemTitle"
+            multiple
+            :placeholder="`Type ${filter.title} ...`"
+          ></d-autocomplete>
+
+          <d-text-input
+            v-for="filter in filtersTextProducts"
+            :key="filter.key"
+            v-model="queryModal.qIndexBoms[filter.key as ModalIndexProductFilterTextType]"
+            :label="filter.title"
+            :placeholder="filter.title"
+            append-inner-icon="mdi-magnify"
+          />
+
+          <d-submit-button
+            @click:submit="fetchModalFilter"
+            @click:clear="quotationStore.handleClearQuery()"
+            class="grid-cols-1"
+          />
+        </form>
+      </template>
+
+      <v-data-table-server
+        v-model="itemsCheck.checkBoms"
+        :items="metaModal.indexBoms.data ?? []"
+        :headers="headersModalProducts"
+        :items-per-page="queryModal.qIndexBoms.per_page"
+        :items-length="metaModal.indexBoms.meta.total ?? 0"
+        :items-per-page-options="useInitials.perPageOptions"
+        :loading="metaModal.indexBoms.loading"
+        density="compact"
+        :header-props="{
+          class: '!bg-scLightest dark:!bg-dark2 whitespace-nowrap',
+        }"
+        :row-props="{
+          class: 'cursor-pointer',
+        }"
+        item-value="ref_id"
+        show-current-page
+        return-object
+        multiple
+        show-select
+        @update:options="fetchDataServerFetch"
+        fixed-header
+        height="450"
+        hover
+      >
+        <template #item.item_type="{ item }">
+          <span class="capitalize">{{ defineItemTypeQuotation(item) }} </span>
+        </template>
+        <template #item.price_sell="{ item }">
+          <d-num-layout :value="item.price_sell" />
+        </template>
+        <template #item.price_buy="{ item }">
+          <d-num-layout :value="item.price_buy" />
+        </template>
+        <template #item.status="{ item }">
+          <d-active-status :value="item.status" />
+        </template>
+      </v-data-table-server>
+
+      <template #footer>
+        <div class="flex h-max w-full justify-end">
+          <button
+            class="flex items-center gap-2 rounded-md bg-sc px-3 py-2 text-[15px] font-bold text-white shadow-md hover:shadow-xl"
+            @click="onClickUpdateBomsModal"
+          >
+            <Icon name="material-symbols:save-rounded" size="20" />
+            Add Selected Boms ({{ itemsCheck.checkBoms.length }})
           </button>
         </div>
       </template>

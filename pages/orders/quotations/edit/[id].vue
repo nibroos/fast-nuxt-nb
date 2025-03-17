@@ -648,7 +648,7 @@ const onClickDeleteSelected = (item: any, index: number) => {
 };
 
 const onClickUpdateBomsModal = () => {
-  console.log("item, onClickUpdateBomsModal", itemsCheck.value.checkBoms);
+  // console.log("item, onClickUpdateBomsModal", itemsCheck.value.checkBoms);
   quotationStore.selectItemRefModal();
   quotationStore.countSelectedReferences();
   closeAllModal();
@@ -658,7 +658,6 @@ const onClickOpenModalBOM = async (
   item: FormQuoDtProductListType,
   index: number
 ) => {
-  console.log("item", index, item);
   openedModal.value.boms.index = index;
   openedModal.value.boms.id = item.ref_id;
   itemsCheck.value.checkBoms = item.quo_dts_boms;

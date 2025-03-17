@@ -129,4 +129,5 @@ export type ProductBomListType = {
   subtotal_buy: number
 
   item_id?: number
+  ref_id?: number
 }

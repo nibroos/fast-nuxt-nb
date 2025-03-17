@@ -1,3 +1,4 @@
+import { generateBoms } from '~/composables/maps/quotation'
 import { useAlert } from '~/composables/useAlert'
 import { useMyFetch } from '~/composables/useMyFetch'
 import type { Meta, Pagination, PaginationMeta } from '~/interfaces/LaravelPaginationInterface'
@@ -307,12 +308,14 @@ const useQuotationStore = defineStore('QuotationStore', {
           this.metaModal.indexBoms = response.data
 
           if (this.itemsCheck.checkBoms.length > 0) {
-            this.itemsCheck.checkBoms.forEach((checkBom: QuoDtBomType, iCheckBom: number) => {
+            let generatedBoms = generateBoms(this.itemsCheck.checkBoms, this.itemsCheck.checkBoms[0].product_uuid)
+
+            generatedBoms.forEach((checkBom: QuoDtBomType, iCheckBom: number) => {
               (this.metaModal.indexBoms.data as QuoDtBomType[]).forEach((resBom: FormQuoDtBomListType, iResBom: number) => {
-                console.log('checkBom', iCheckBom, checkBom);
+                // console.log('checkBom', iCheckBom, checkBom);
 
                 if (resBom.ref_id === checkBom.item_id) {
-                  console.log('resBom', iResBom, resBom);
+                  // console.log('resBom', iResBom, resBom);
 
                   const combined = {
                     ...resBom,
@@ -343,6 +346,13 @@ const useQuotationStore = defineStore('QuotationStore', {
       }
       if (this.isOpenModal.boms) {
         // this.itemsCheck.checkMain = generateQuoDt(this.itemsCheck.checkProducts, 'boms', this.itemsCheck.checkMain)
+
+        if (this.itemsCheck.checkBoms.length > 0) {
+          this.itemsCheck.checkBoms = generateBoms(this.itemsCheck.checkBoms, this.itemsCheck.checkBoms[0].product_uuid)
+        } else {
+          this.itemsCheck.checkBoms = []
+        }
+        this.itemsCheck.checkMain[this.openedModal.boms.index as number].quo_dts_boms = this.itemsCheck.checkBoms
         this.isOpenModal.boms = false
       }
     },

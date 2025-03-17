@@ -147,6 +147,14 @@ export type QuoDtBomType = {
   name?: string
   unit_name?: string
   ref_id?: number
+  sku?: string
+  factory_code?: string
+  barcode?: string
+  item_name?: string
+  item_code?: string
+  item_sku?: string
+  item_factory_code?: string
+  item_barcode?: string
 }
 
 export type QuoDtsType = {
