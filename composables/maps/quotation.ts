@@ -1,22 +1,45 @@
 import type { ProductBomListType } from "~/types/masters/ProductType"
 import type { FormQuoDtProductListType, FormQuoDtRefType, QuoDtBomType, QuoDtItemType, QuoDtRefType, QuoDtType } from "~/types/quotations/QuotationType"
 
-export const generateBoms = (bom: QuoDtBomType[] | ProductBomListType[], productUuid: string): any[] => {
+export const generateBoms = (bom: QuoDtBomType[] | ProductBomListType[], productUuid: string, type: 'product' | 'bom' = 'product', productId: number): any[] => {
   return bom.map((bomItem: QuoDtBomType | ProductBomListType) => {
-    return {
-      ...bomItem,
-      product_uuid: productUuid,
-      item_id: bomItem.bom_id ?? bomItem.item_id ?? bomItem.ref_id,
-      name: bomItem.name ?? bomItem.item_name,
-      code: bomItem.code ?? bomItem.item_code,
-      sku: bomItem.sku ?? bomItem.item_sku,
-      barcode: bomItem.barcode ?? bomItem.item_barcode,
-      factory_code: bomItem.factory_code ?? bomItem.item_factory_code,
-      item_name: bomItem.name ?? bomItem.item_name,
-      item_code: bomItem.code ?? bomItem.item_code,
-      item_sku: bomItem.sku ?? bomItem.item_sku,
-      item_barcode: bomItem.barcode ?? bomItem.item_barcode,
-      item_factory_code: bomItem.factory_code ?? bomItem.item_factory_code,
+    if (type === 'bom') {
+      return {
+        ...bomItem,
+        product_uuid: productUuid,
+        item_id: bomItem.product_item_id ?? bomItem.bom_id ?? bomItem.item_id ?? bomItem.ref_id,
+        name: bomItem.item_name ?? bomItem.name,
+        code: bomItem.item_code ?? bomItem.code,
+        sku: bomItem.item_sku ?? bomItem.sku,
+        barcode: bomItem.item_barcode ?? bomItem.barcode,
+        factory_code: bomItem.item_factory_code ?? bomItem.factory_code,
+        specification: bomItem.item_specification ?? bomItem.specification,
+        item_name: bomItem.item_name ?? bomItem.name,
+        item_code: bomItem.item_code ?? bomItem.code,
+        item_sku: bomItem.item_sku ?? bomItem.sku,
+        item_barcode: bomItem.item_barcode ?? bomItem.barcode,
+        item_factory_code: bomItem.item_factory_code ?? bomItem.factory_code,
+        item_unit_name: bomItem.unit_name ?? bomItem.item_unit_name,
+        product_id: productId,
+      }
+    } else {
+      return {
+        ...bomItem,
+        product_uuid: productUuid,
+        item_id: bomItem.bom_id ?? bomItem.item_id ?? bomItem.ref_id,
+        name: bomItem.name ?? bomItem.item_name,
+        code: bomItem.code ?? bomItem.item_code,
+        sku: bomItem.sku ?? bomItem.item_sku,
+        barcode: bomItem.barcode ?? bomItem.item_barcode,
+        factory_code: bomItem.factory_code ?? bomItem.item_factory_code,
+        specification: bomItem.item_specification,
+        item_name: bomItem.name ?? bomItem.item_name,
+        item_code: bomItem.code ?? bomItem.item_code,
+        item_sku: bomItem.sku ?? bomItem.item_sku,
+        item_barcode: bomItem.barcode ?? bomItem.item_barcode,
+        item_factory_code: bomItem.factory_code ?? bomItem.item_factory_code,
+        product_id: productId,
+      }
     }
   })
 }
@@ -28,13 +51,14 @@ export function convertItemRefProduct(
 
   let itemType: QuoDtItemType = item.boms && item.boms.length > 0 ? 'product' : 'item'
   let productUuid = randomId()
+  let productId = item.product_id ?? item.ref_id
 
   if (!!item.boms) {
-    item.boms = generateBoms(item.boms, productUuid)
+    item.boms = generateBoms(item.boms, productUuid, 'bom', productId)
   }
 
   if (!!item.quo_dts_boms) {
-    item.quo_dts_boms = generateBoms(item.quo_dts_boms, productUuid)
+    item.quo_dts_boms = generateBoms(item.quo_dts_boms, productUuid, 'bom', productId)
   }
 
   const data: QuoDtType = {
@@ -86,7 +110,6 @@ export function generateQuoDt(
   checkMain: QuoDtType[],
 ): QuoDtType[] {
   // let generatedList: QuoDtType[] = []
-  console.log('generateQuoDt-data', data);
 
   // const generatedList = data.map((dt: FormQuoDtRefType): QuoDtType => {
   //   // if (useInventoryInStore().showModal.listPO) {

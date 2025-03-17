@@ -99,6 +99,7 @@ export type ProductBomListType = {
   branch_name: string
   qty: number
   remark: string
+  unit_name: string
   item_unit_name: string
   created_by_name: string
   updated_by_name: string

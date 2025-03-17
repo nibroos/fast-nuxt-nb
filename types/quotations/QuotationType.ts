@@ -143,18 +143,22 @@ export type QuoDtBomType = {
   subtotal_buy: number
   bom_id: number
 
+  product_item_id?: number
   code?: string
   name?: string
   unit_name?: string
   ref_id?: number
   sku?: string
   factory_code?: string
+  specification?: string
   barcode?: string
   item_name?: string
   item_code?: string
   item_sku?: string
   item_factory_code?: string
+  item_specification?: string
   item_barcode?: string
+  item_unit_name?: string
 }
 
 export type QuoDtsType = {
@@ -164,6 +168,7 @@ export type QuoDtsType = {
   ref_id: number
   item_id: number
   ref_type: string
+  product_uuid?: string | null
   remark?: string | null
   vat_perc: number
   qty_so: number

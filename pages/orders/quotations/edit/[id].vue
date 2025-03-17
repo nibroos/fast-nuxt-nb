@@ -577,10 +577,7 @@ const onClickOpenModalOptionRefBtn = async (ref: RefBtnType) => {
 };
 
 const fetchModalFilter = async () => {
-  if (isOpenModal.value.products) {
-    await quotationStore.indexProduct();
-  }
-  if (isOpenModal.value.boms) {
+  if (isOpenModal.value.products || isOpenModal.value.boms) {
     await quotationStore.indexProduct();
   }
   // else if (showModal.value.listPO) {
@@ -603,6 +600,7 @@ const fetchInitialData = async () => {
 
 const closeAllModal = () => {
   isOpenModal.value.products = false;
+  isOpenModal.value.boms = false;
 };
 
 const fetchDataServerFetch = async (options: { [key: string]: any }) => {
@@ -660,8 +658,10 @@ const onClickOpenModalBOM = async (
 ) => {
   openedModal.value.boms.index = index;
   openedModal.value.boms.id = item.ref_id;
-  itemsCheck.value.checkBoms = item.quo_dts_boms;
+  openedModal.value.boms.product_id = item.item_id as number;
+  openedModal.value.boms.product_uuid = item.product_uuid as string;
 
+  itemsCheck.value.checkBoms = item.quo_dts_boms;
   isOpenModal.value.boms = true;
   await quotationStore.indexProduct();
 };

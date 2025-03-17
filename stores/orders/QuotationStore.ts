@@ -91,6 +91,8 @@ const useQuotationStore = defineStore('QuotationStore', {
       boms: {
         id: null as number | null,
         index: null as number | null,
+        product_id: null as number | null,
+        product_uuid: '' as string
       }
     }
   }),
@@ -274,10 +276,15 @@ const useQuotationStore = defineStore('QuotationStore', {
       if (this.metaModal.index.loading) return
       this.metaModal.index.loading = true
 
+      let params = this.queryModal.qIndexProducts
+
+      if (this.isOpenModal.boms) {
+        params = this.queryModal.qIndexBoms
+      }
       try {
         const response = await useMyFetch().post(
           '/v1/products/index-product',
-          this.queryModal.qIndexProducts
+          params
         )
 
         if (this.isOpenModal.products) {
@@ -308,13 +315,14 @@ const useQuotationStore = defineStore('QuotationStore', {
           this.metaModal.indexBoms = response.data
 
           if (this.itemsCheck.checkBoms.length > 0) {
-            let generatedBoms = generateBoms(this.itemsCheck.checkBoms, this.itemsCheck.checkBoms[0].product_uuid)
+            let generatedBoms = generateBoms(this.itemsCheck.checkBoms, this.openedModal.boms.product_uuid, 'bom', this.openedModal.boms.product_id as number)
 
             generatedBoms.forEach((checkBom: QuoDtBomType, iCheckBom: number) => {
               (this.metaModal.indexBoms.data as QuoDtBomType[]).forEach((resBom: FormQuoDtBomListType, iResBom: number) => {
-                // console.log('checkBom', iCheckBom, checkBom);
 
                 if (resBom.ref_id === checkBom.item_id) {
+                  console.log('checkBom', iCheckBom, checkBom);
+                  console.log('checkResBom', iResBom, resBom);
                   // console.log('resBom', iResBom, resBom);
 
                   const combined = {
@@ -348,7 +356,9 @@ const useQuotationStore = defineStore('QuotationStore', {
         // this.itemsCheck.checkMain = generateQuoDt(this.itemsCheck.checkProducts, 'boms', this.itemsCheck.checkMain)
 
         if (this.itemsCheck.checkBoms.length > 0) {
-          this.itemsCheck.checkBoms = generateBoms(this.itemsCheck.checkBoms, this.itemsCheck.checkBoms[0].product_uuid)
+          console.log('select-itemcheck-product_id', this.openedModal.boms.product_id);
+
+          this.itemsCheck.checkBoms = generateBoms(this.itemsCheck.checkBoms, this.openedModal.boms.product_uuid, 'bom', this.openedModal.boms.product_id as number)
         } else {
           this.itemsCheck.checkBoms = []
         }

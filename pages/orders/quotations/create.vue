@@ -76,8 +76,8 @@ const headers = ref([
 ]);
 
 const headersBOM = ref([
-  { key: "item_code", title: "Product Code", sortable: true },
-  { key: "item_name", title: "Product Name", sortable: true },
+  { key: "item_code", title: "Item Code", sortable: true },
+  { key: "item_name", title: "Item Name", sortable: true },
   { key: "item_unit_name", title: "Unit", sortable: true },
   { key: "qty", title: "Qty", sortable: true },
   { key: "remark", title: "Remark", sortable: true },
@@ -547,7 +547,7 @@ const autocompleteCurrency = (data: FormCurrencyType) => {
   calculateTotalAmount();
 };
 
-const onClickOptionRefBtn = async (ref: RefBtnType) => {
+const onClickOpenModalOptionRefBtn = async (ref: RefBtnType) => {
   isOpenModal.value.products = false;
   if (ref.key == "products") {
     itemsCheck.value.checkProducts = updateRefsModalFromMain(
@@ -564,7 +564,7 @@ const onClickOptionRefBtn = async (ref: RefBtnType) => {
 };
 
 const fetchModalFilter = async () => {
-  if (isOpenModal.value.products) {
+  if (isOpenModal.value.products || isOpenModal.value.boms) {
     await quotationStore.indexProduct();
   }
   // else if (showModal.value.listPO) {
@@ -586,6 +586,7 @@ const fetchInitialData = async () => {
 
 const closeAllModal = () => {
   isOpenModal.value.products = false;
+  isOpenModal.value.boms = false;
 };
 
 const fetchDataServerFetch = async (options: { [key: string]: any }) => {
@@ -599,6 +600,17 @@ const fetchDataServerFetch = async (options: { [key: string]: any }) => {
     } else {
       queryModal.value.qIndexProducts.order_column = "";
       queryModal.value.qIndexProducts.order_direction = "";
+    }
+  } else if (isOpenModal.value.boms) {
+    queryModal.value.qIndexBoms.page = options.page;
+    queryModal.value.qIndexBoms.per_page = options.itemsPerPage;
+
+    if (options.sortBy.length > 0) {
+      queryModal.value.qIndexBoms.order_column = options.sortBy[0].key;
+      queryModal.value.qIndexBoms.order_direction = options.sortBy[0].order;
+    } else {
+      queryModal.value.qIndexBoms.order_column = "";
+      queryModal.value.qIndexBoms.order_direction = "";
     }
   }
 
@@ -628,11 +640,13 @@ const onClickOpenModalBOM = async (
   item: FormQuoDtProductListType,
   index: number
 ) => {
-  console.log("item", index, item);
+  console.log("item, onClickOpenModalBOM", item);
   openedModal.value.boms.index = index;
   openedModal.value.boms.id = item.ref_id;
-  itemsCheck.value.checkBoms = item.quo_dts_boms;
+  openedModal.value.boms.product_id = item.item_id as number;
+  openedModal.value.boms.product_uuid = item.product_uuid as string;
 
+  itemsCheck.value.checkBoms = item.quo_dts_boms;
   isOpenModal.value.boms = true;
   await quotationStore.indexProduct();
 };
@@ -981,7 +995,7 @@ watchEffect(() => {
           <d-option-ref-btn
             :refs="optionRefBtnRef"
             class="col-span-2"
-            @click:ref="onClickOptionRefBtn"
+            @click:ref="onClickOpenModalOptionRefBtn"
           >
             <!-- <template #append-cta-product>
               <v-icon
